@@ -6,7 +6,7 @@
 #include<Qstring>
 #include<QGraphicsItem>
 
-class Card:public QGraphicsItem
+class Card//:public QGraphicsItem
 {
 public:
 
@@ -18,6 +18,7 @@ public:
 
 	int genre;//卡牌种类（近战、远程、攻城、功能牌）
 	int attack;//卡牌的攻击力
+	int skill;//卡牌技能（功能牌为其功能）
 	
 	bool isHero;//卡牌是否是英雄牌
 	bool isPickerActive;//卡牌能否被选择
@@ -30,9 +31,9 @@ public:
 	//根据所给卡牌信息（No）创建卡牌
 	Card(int num);
 	//卡牌的初始化
-	int Init(int num);
+	void Init(int num);
 	//创建卡牌的逻辑函数
-	int CreateLogic(int num);
+	void CreateLogic(int num);
 
 };
 
