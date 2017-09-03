@@ -103,6 +103,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_CardsSelectionDirector.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="CardsSelectionDirector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="MainWindow.h">

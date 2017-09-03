@@ -70,6 +70,7 @@
   <ItemGroup>
     <ClCompile Include="BeginBackground.cpp" />
     <ClCompile Include="CardsSelectionBackground.cpp" />
+    <ClCompile Include="CardsSelectionDirector.cpp" />
     <ClCompile Include="CardsSelectionScene.cpp" />
     <ClCompile Include="CP_Card.cpp" />
     <ClCompile Include="CP_CardStack.cpp" />

@@ -4,7 +4,14 @@
         <file>Resources/backgrounds/gameSelection_background.jpg</file>
         <file>Resources/backgrounds/cardsSelection_background.jpg</file>
     </qresource>
-    <qresource prefix="/cards"/>
+    <qresource prefix="/cards">
+        <file alias="Unseen_Elder">Resources/cards/013010530.png</file>
+        <file alias="Bekker_Twister_Mirror">Resources/cards/025010091.png</file>
+        <file alias="Impenetrable_Fog">Resources/cards/035020092.png</file>
+        <file alias="Biting_Frost">Resources/cards/045030092.png</file>
+        <file alias="Dagon">Resources/cards/053020630.png</file>
+        <file alias="Archgriffin">Resources/cards/063030882.png</file>
+    </qresource>
     <qresource prefix="/buttons">
         <file>Resources/buttons/editCardsDeck_button.png</file>
         <file>Resources/buttons/playWithAI_button.png</file>
