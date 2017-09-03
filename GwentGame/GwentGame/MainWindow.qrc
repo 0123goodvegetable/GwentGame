@@ -2,6 +2,7 @@
     <qresource prefix="/backgrounds">
         <file>Resources/backgrounds/begin_background.jpg</file>
         <file>Resources/backgrounds/gameSelection_background.jpg</file>
+        <file>Resources/backgrounds/cardsSelection_background.jpg</file>
     </qresource>
     <qresource prefix="/cards"/>
     <qresource prefix="/buttons">
@@ -9,5 +10,7 @@
         <file>Resources/buttons/playWithAI_button.png</file>
         <file>Resources/buttons/playWithPlayer_button.png</file>
         <file>Resources/buttons/quit_button.png</file>
+        <file>Resources/buttons/cardsHide_button.png</file>
+        <file>Resources/buttons/cardsSelectionFinished_button.png</file>
     </qresource>
 </RCC>

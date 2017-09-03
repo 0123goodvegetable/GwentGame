@@ -6,7 +6,7 @@
 #include<Qstring>
 #include<QGraphicsItem>
 
-class Card//:public QGraphicsItem
+class Card:public QGraphicsItem
 {
 public:
 

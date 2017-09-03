@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 
+	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), this, SLOT(toCardsSelectionBackground()));
+
 }
 
 MainWindow::~MainWindow()
@@ -18,6 +20,7 @@ MainWindow::~MainWindow()
 	delete BackgroundController;	
 	delete beginBackground;
 	delete gameSelectionBackground;
+	delete cardsSelectionBackground;
 }
 
 void MainWindow::init()
@@ -27,12 +30,14 @@ void MainWindow::init()
 
 	beginBackground = new BeginBackground(this);
 	gameSelectionBackground = new GameSelectionBackground(this);
+	cardsSelectionBackground = new CardsSelectionBackground(this);
 
 	this->setCentralWidget(BackgroundController);//将页面设置为中心窗口
 
 	//将界面加入到界面控制器中
 	BackgroundController->addWidget(beginBackground);
 	BackgroundController->addWidget(gameSelectionBackground);
+	BackgroundController->addWidget(cardsSelectionBackground);
 
 	BackgroundNo = 0;
 
@@ -55,6 +60,12 @@ void MainWindow::toBeginBackground()
 void MainWindow::toGameSelectionBackground()
 {
 	BackgroundNo = 1;
+	emit changeBackgroundNo(BackgroundNo);
+}
+
+void MainWindow::toCardsSelectionBackground()
+{
+	BackgroundNo = 2;
 	emit changeBackgroundNo(BackgroundNo);
 }
 

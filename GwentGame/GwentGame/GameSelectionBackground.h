@@ -24,14 +24,13 @@ public:
 	void resizeEvent(QResizeEvent*event);//使背景图片填充整个界面
 	void updateIconImage();//更新图片按钮
 
-
-private:
-	Ui::GameSelectionBackground ui;
-
 	QPushButton *playWithPlayer_button;//联机游戏按钮
 	QPushButton *playWithAI_button;//单人游戏按钮（与AI作战）
 	QPushButton *editCardsDeck_button;//牌组编辑器按钮
 	QPushButton *quit_button;//离开按钮
+
+private:
+	Ui::GameSelectionBackground ui;
 
 	QLabel *playWithPlayer_label;//联机游戏提示对话框
 	QLabel *playWithAI_label;//单人游戏提示对话框
