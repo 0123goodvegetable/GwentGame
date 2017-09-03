@@ -16,9 +16,10 @@ public:
 	int number;//牌组中有几张该卡牌
 	QString path;//卡牌图片所在文件路径
 
-	int genre;//卡牌种类（近战、远程、攻城、功能牌）
+	int genre;//卡牌种类（近战、远程、攻城、我方任意、敌方任意、功能牌）
 	int attack;//卡牌的攻击力
 	int skill;//卡牌技能（功能牌为其功能）
+	int material;//卡牌材质（金、银、铜）
 	
 	bool isHero;//卡牌是否是英雄牌
 	bool isPickerActive;//卡牌能否被选择
