@@ -24,14 +24,14 @@ public:
 
 	CardsSelectionUI *selectedCardUI();//选取正在操作的卡牌
 	bool isCardUIClicked();//判断是否点击卡牌图片
-	void cardUISizeAdjust() {}//重新调整选牌界面大小
+	void cardUISizeAdjust();//重新调整选牌界面大小
 
 private:
 	Ui::CardsSelectionBackground ui;
 
 	void init();//初始化界面
 
-	void GetScreenInfo() {}//获取屏幕信息
+	void GetScreenInfo();//获取屏幕信息
 	QGraphicsView *view;
 	CardsSelectionScene *scene;
 

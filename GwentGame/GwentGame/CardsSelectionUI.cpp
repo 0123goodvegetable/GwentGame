@@ -21,7 +21,7 @@ QRectF CardsSelectionUI::boundingRect() const
 {
 	QRect rect = this->pixmap().rect();
 	//return QRectF(rect);
-	return QRectF(0, 0, rect.width(), rect.width() + 15);
+	return QRectF(0, 0, rect.width(), rect.height() + 15);
 }
 
 void CardsSelectionUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -34,7 +34,7 @@ void CardsSelectionUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
 
 	//print name,calculate the text's heigh & width for center layout
-	QPen pen(Qt::black);
+	QPen pen(Qt::white);
 	painter->setPen(pen);
 	painter->setRenderHint(QPainter::Antialiasing);
 	QFont font("Verdana", 8, QFont::Normal);
