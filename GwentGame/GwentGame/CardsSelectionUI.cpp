@@ -7,9 +7,9 @@ CardsSelectionUI::CardsSelectionUI()
 {
 }
 
-CardsSelectionUI::CardsSelectionUI(const Card aim_card)
+CardsSelectionUI::CardsSelectionUI(int cardNo)
 {
-	operating_card = new Card(aim_card.No);
+	operating_card = new Card(cardNo);
 
 	QPixmap pixmap;
 	pixmap.load(operating_card->path);

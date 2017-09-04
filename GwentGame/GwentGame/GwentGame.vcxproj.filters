@@ -164,5 +164,8 @@
     <ClInclude Include="GeneratedFiles\ui_CardsSelectionBackground.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="CP_AllCards.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
 	init();//初始化各项变量
 
 	this->resize(1800, 1000);
+	this->setWindowOpacity(1);
+	this->setAttribute(Qt::WA_TranslucentBackground);
 
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 

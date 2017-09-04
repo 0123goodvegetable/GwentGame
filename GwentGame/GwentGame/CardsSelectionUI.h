@@ -17,7 +17,7 @@ class CardsSelectionUI : public QObject, public QGraphicsPixmapItem
 
 public:
 	CardsSelectionUI();
-	CardsSelectionUI(const Card aim_card);
+	CardsSelectionUI(int cardNo);
 
 	//Ðéº¯Êý
 	QRectF boundingRect() const;
