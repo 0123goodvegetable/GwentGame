@@ -1,4 +1,4 @@
-//实现手牌选择界面的大部分功能
+//实现与卡牌显示相关界面
 
 #pragma once
 #ifndef CARDSSELECTIONDIRECTOR_H
@@ -11,13 +11,13 @@
 #include<QGraphicsSceneMouseEvent>
 #include<QPointF>
 
-class CardsSelectionUI : public QObject, public QGraphicsPixmapItem
+class CardsUI : public QObject, public QGraphicsPixmapItem
 {
 	Q_OBJECT
 
 public:
-	CardsSelectionUI();
-	CardsSelectionUI(int cardNo);
+	CardsUI();
+	CardsUI(int cardNo);
 
 	//虚函数
 	QRectF boundingRect() const;

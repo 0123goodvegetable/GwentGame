@@ -100,13 +100,13 @@
     <ClCompile Include="CP_AllCards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_CardsSelectionUI.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_CardsUI.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_CardsSelectionUI.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_CardsUI.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="CardsSelectionUI.cpp">
+    <ClCompile Include="CardsUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -144,7 +144,7 @@
     <CustomBuild Include="CardsSelectionScene.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="CardsSelectionUI.h">
+    <CustomBuild Include="CardsUI.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

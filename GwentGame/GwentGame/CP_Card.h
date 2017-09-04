@@ -43,8 +43,7 @@ public:
 	void Init(int num);
 	//添加卡牌名字
 	void AddName(int num);
-	//添加卡牌图片
-	//void AddPicture();
+
 	//创建卡牌的逻辑函数
 	void CreateLogic(int num);
 

@@ -12,18 +12,20 @@
 #include"CP_AllCards.h"
 
 //定义全局变量
-const qreal CARD_POS_Y = 150;
-const qreal CARD_DIS = 300;
-const qreal CARD_STA = 100;
-const int   CARD_SIZE = 200;
-int   SCREEN_SIZE = 1800;
+const qreal CARD_POS_Y = 150;//卡牌y坐标（保持水平所以为常量）
+const qreal CARD_DIS = 300;//卡牌间距
+const qreal CARD_STA = 100;//第一张卡牌开始时的位置
+int   SCREEN_SIZE = 1800;//窗口宽度
 
 CardsSelectionBackground::CardsSelectionBackground(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
 
+	//初始化窗口
 	init();
+
+	
 }
 
 CardsSelectionBackground::~CardsSelectionBackground()
@@ -35,9 +37,6 @@ void CardsSelectionBackground::init()
 	//初始化
 	Pressed = false;
 
-	//获取屏幕尺寸
-	GetScreenInfo();
-
 	view = new QGraphicsView(this);
 	scene = new CardsSelectionScene();
 
@@ -48,12 +47,12 @@ void CardsSelectionBackground::init()
 	connect(scene, SIGNAL(isMoving(QPointF&)), 
 		this, SLOT(isMoving(QPointF&))); 
 
-	CardsSelectionUI *temp_card;
+	CardsUI *temp_card;
 	QPointF pos;
 
-	//添加卡牌
+	//添加卡牌（需要改进，添加卡牌选择函数）
 	//第一张牌：暗影长者
-	temp_card = new CardsSelectionUI(Unseen_Elder_No);
+	temp_card = new CardsUI(Unseen_Elder_No);
 	pos = QPointF(CARD_STA, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -61,7 +60,7 @@ void CardsSelectionBackground::init()
 	cardUIPixmapLists.append(temp_card->pixmap());
 
 	//第二张牌：贝克尔的扭曲之镜
-	temp_card = new CardsSelectionUI(Bekker_Twister_Mirror_No);
+	temp_card = new CardsUI(Bekker_Twister_Mirror_No);
 	pos = QPointF(CARD_STA + CARD_DIS * 1, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -69,7 +68,7 @@ void CardsSelectionBackground::init()
 	cardUIPixmapLists.append(temp_card->pixmap());
 
 	//第三张牌：蔽日浓雾
-	temp_card = new CardsSelectionUI(Impenetrable_Fog_No);
+	temp_card = new CardsUI(Impenetrable_Fog_No);
 	pos = QPointF(CARD_STA + CARD_DIS * 2, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -77,7 +76,7 @@ void CardsSelectionBackground::init()
 	cardUIPixmapLists.append(temp_card->pixmap());
 
 	//第四张牌：刺骨冰霜
-	temp_card = new CardsSelectionUI(Biting_Frost_No);
+	temp_card = new CardsUI(Biting_Frost_No);
 	pos = QPointF(CARD_STA + CARD_DIS * 3, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -88,7 +87,7 @@ void CardsSelectionBackground::init()
 	cardUISizeAdjust();
 
 	int i = 0;
-	foreach(CardsSelectionUI* card_temp, cardUILists)
+	foreach(CardsUI* card_temp, cardUILists)
 	{
 
 		card_temp->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
@@ -117,6 +116,7 @@ void CardsSelectionBackground::init()
 void  CardsSelectionBackground::isMoving(QPointF &pos)
 {
 	int i = 0;
+
 	int min_pos, max_pos;
 	min_pos = cardUIPosLists.at(0).x() + pos.x();
 	max_pos = cardUIPosLists.at(cardUIPosLists.size() - 1).x() + pos.x() + cardUIPixmapLists.at(cardUIPosLists.size() - 1).width();
@@ -128,7 +128,7 @@ void  CardsSelectionBackground::isMoving(QPointF &pos)
 		}
 		else
 		{
-			foreach(CardsSelectionUI* card_temp, cardUILists)
+			foreach(CardsUI* card_temp, cardUILists)
 			{
 				card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(), CARD_POS_Y);
 				i++;
@@ -157,14 +157,15 @@ void CardsSelectionBackground::isReleased()
 void CardsSelectionBackground::selectionChanged()
 {
 	int i = 0, j = 0;
+
 	QList<QGraphicsItem *> items = scene->selectedItems();
 	if (items.count() == 1)
 	{
 		//当前所选择的UI图标的坐标
 		QPointF pos = items.first()->pos();
-		CardsSelectionUI* card_temp = dynamic_cast<CardsSelectionUI*>(items.first());
+		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
 
-		foreach(CardsSelectionUI* card, cardUILists)
+		foreach(CardsUI* card, cardUILists)
 		{
 			if (card == card_temp)
 				break;
@@ -172,6 +173,7 @@ void CardsSelectionBackground::selectionChanged()
 		}
 		j = i;
 		i = 0;
+
 		foreach(QPointF card_pos, cardUIPosLists)
 		{
 			Q_UNUSED(card_pos);
@@ -198,7 +200,7 @@ bool CardsSelectionBackground::isCardUIClicked()
 	if (items.count() == 1) 
 	{
 		QPointF pos = items.first()->pos();
-		CardsSelectionUI* card_temp = dynamic_cast<CardsSelectionUI*>(items.first());
+		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
 		i = cardUILists.indexOf(card_temp);
 		if (pos == cardUIPosLists.at(i))
 		{		
@@ -211,14 +213,12 @@ bool CardsSelectionBackground::isCardUIClicked()
 void CardsSelectionBackground::cardUISizeAdjust()
 {
 	quint16 i = 0;
-	foreach(CardsSelectionUI* card, cardUILists)
+	foreach(CardsUI* card, cardUILists)
 	{
 		QPointF pos = card->pos();
 
 		pos.setX(card->pos().x()+card->pixmap().width());
 
-		//quint16 width = 400;
-		//quint16 height = 400;
 		QPixmap pixmap = cardUIPixmapLists.at(i);
 		pixmap = pixmap.scaled(350, 400, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		cardUILists[i]->setPixmap(pixmap);
@@ -244,20 +244,6 @@ void CardsSelectionBackground::cardUISizeAdjust()
 	}
 }
 
-//获取设备分辨率信息
-void CardsSelectionBackground::GetScreenInfo()
-{
-	QDesktopWidget* desktopWidget = QApplication::desktop();
-	//获取可用桌面大小
-	//QRect deskRect = desktopWidget->availableGeometry();
-	//获取设备屏幕大小
-	QRect screenRect = desktopWidget->screenGeometry();
-
-	sceenSizeX = screenRect.width();
-	sceenSizeY = screenRect.height();
-
-}
-
 
 void CardsSelectionBackground::resizeEvent(QResizeEvent *event)
 {
@@ -278,3 +264,4 @@ void CardsSelectionBackground::resizeEvent(QResizeEvent *event)
 	SCREEN_SIZE = this->width();
 	
 }
+

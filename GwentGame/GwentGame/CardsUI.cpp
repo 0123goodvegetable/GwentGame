@@ -1,30 +1,30 @@
-#include"CardsSelectionUI.h"
+#include"CardsUI.h"
 #include <QPixmap>
 #include <iostream>
 #include <QDebug>
 
-CardsSelectionUI::CardsSelectionUI()
+CardsUI::CardsUI()
 {
 }
 
-CardsSelectionUI::CardsSelectionUI(int cardNo)
+CardsUI::CardsUI(int cardNo)
 {
 	operating_card = new Card(cardNo);
 
+	//加载卡牌对应图片
 	QPixmap pixmap;
 	pixmap.load(operating_card->path);
 	pixmap = pixmap.scaled(operating_card->card_width, operating_card->card_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	setPixmap(pixmap);
 }
 
-QRectF CardsSelectionUI::boundingRect() const
+QRectF CardsUI::boundingRect() const
 {
 	QRect rect = this->pixmap().rect();
-	//return QRectF(rect);
 	return QRectF(0, 0, rect.width(), rect.height() + 15);
 }
 
-void CardsSelectionUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+void CardsUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	QWidget *widget)
 {
 	QPixmap pixmap = this->pixmap();
@@ -33,7 +33,7 @@ void CardsSelectionUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 	painter->drawPixmap(rect, pixmap);
 
 
-	//print name,calculate the text's heigh & width for center layout
+	//卡牌下方附带卡牌相关信息
 	QPen pen(Qt::white);
 	painter->setPen(pen);
 	painter->setRenderHint(QPainter::Antialiasing);
@@ -41,18 +41,9 @@ void CardsSelectionUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 	painter->setFont(font);
 	painter->drawText(QRectF(0, rect.height(), rect.width(), 15), Qt::AlignCenter, operating_card->name);
 
-	if (option->state & QStyle::State_Sunken)
-	{
-		QRectF rect1 = boundingRect();
-		painter->setPen(QPen(Qt::darkGreen));
-	}
-	else
-	{
-
-	}
 }
 
-QPainterPath  CardsSelectionUI::shape() const
+QPainterPath  CardsUI::shape() const
 {
 	QRectF rect = boundingRect();
 
@@ -61,20 +52,20 @@ QPainterPath  CardsSelectionUI::shape() const
 	return path;
 }
 
-void  CardsSelectionUI::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void  CardsUI::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	emit cardIsPressed();
 	QGraphicsItem::mousePressEvent(event);
 }
-void  CardsSelectionUI::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void  CardsUI::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	update(boundingRect());
 	emit cardIsReleased();  
 	QGraphicsItem::mouseReleaseEvent(event);
 }
 
-void  CardsSelectionUI::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void  CardsUI::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	QPointF point = event->pos();
-}
 
+}
