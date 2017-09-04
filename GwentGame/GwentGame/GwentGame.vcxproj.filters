@@ -97,13 +97,16 @@
     <ClCompile Include="CardsSelectionScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_CardsSelectionDirector.cpp">
+    <ClCompile Include="CP_AllCards.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_CardsSelectionUI.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_CardsSelectionDirector.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_CardsSelectionUI.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="CardsSelectionDirector.cpp">
+    <ClCompile Include="CardsSelectionUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,7 +144,7 @@
     <CustomBuild Include="CardsSelectionScene.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="CardsSelectionDirector.h">
+    <CustomBuild Include="CardsSelectionUI.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

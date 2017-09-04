@@ -1,17 +1,15 @@
 //包括与选择游戏手牌相关的内容
 #pragma once
-#ifndef CARDSSELECTIONBACKGROUND_H
-#define CARDSSELECTIONBACKGROUND_H
 
 #include <QWidget>
 #include "ui_CardsSelectionBackground.h"
-#include<QGraphicsView>
-#include<QGraphicsScene>
-#include<QPointF>
-#include"CardsSelectionDirector.h"
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QPointF>
+#include <QMap>
+
 #include"CardsSelectionScene.h"
-#include<QMap>
-#include"CP_CardStack.h"
+#include"CardsSelectionUI.h"
 
 class CardsSelectionBackground : public QWidget
 {
@@ -21,45 +19,37 @@ public:
 	CardsSelectionBackground(QWidget *parent = Q_NULLPTR);
 	~CardsSelectionBackground();
 
-	void init();//初始化函数
-
-	CardsSelectionDirector *selectCard();//选取卡牌（节点形式）
-	bool isCardClicked();//是否点击卡牌
-	void cardSizeAdjust();//调整卡牌大小
-
-private slots:
-	//判断鼠标状态
-	void isMoving(QPointF &pos);
-	void isPressed();
-	void isReleased();
-
-	void selectionChanged();//改变选择对象
-
-signals:
-	void cardClicked(CardsSelectionDirector *card);
+	CardsSelectionUI *selectedCardUI();//选取正在操作的卡牌
+	bool isCardUIClicked();//判断是否点击卡牌图片
+	void cardUISizeAdjust();//重新调整选牌界面大小
 
 private:
 	Ui::CardsSelectionBackground ui;
 
 	void GetScreenInfo();//获取屏幕信息
-	
-	QGraphicsView *cardsSelectionView;
-	CardsSelectionScene *cardsSelectionScene;
-	CardsSelectionDirector *operation_card;
-	QPointF cardPos;
-	volatile bool Pressed;
+	QGraphicsView *view;
+	CardsSelectionScene *scene;
 
-	QList<CardsSelectionDirector*> cardsLists;
-	QList<QPointF> cardsPosLists;
-	QList<QPixmap> cardsPixmapLists;
+	volatile bool Pressed;//（常用）点击鼠标的判断变量
 
-	//屏幕尺寸信息
-	qint16 screenSizeX;
-	qint16 screenSizeY;
+	QList<CardsSelectionUI *> cardUILists;//卡牌列表
+	QList<QPointF> cardUIPosLists;//卡牌位置列表
+	QList<QPixmap> cardUIPixmapLists;//卡牌图片列表
 
 
+	CardsSelectionUI *cardUI;//卡牌
+	QPointF cardUIPos;//卡牌位置
+
+	//屏幕信息
+	qint16 sceenSizeX;
+	qint16 sceenSizeY;
+
+	private slots:
+	void isMoving(QPointF &pos);//鼠标移动函数
+	void isPressed();//鼠标按下函数
+	void isReleased();//鼠标释放函数
+	void selectionChanged();//选择对象改变函数
+
+signals:
+	void nodeUiClicked(CardsSelectionUI* node);
 };
-
-#endif // !CARDSSELECTIONBACKGROUND_H
-
-

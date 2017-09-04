@@ -1,5 +1,4 @@
 //这是Card类，其中包含了与卡牌相关的各种属性
-//头文件包含所有卡牌
 
 #pragma once
 #ifndef CP_CARD_H
@@ -9,7 +8,7 @@
 #include<QPainter>
 #include<QGraphicsPixmapItem>
 
-class Card:public QGraphicsPixmapItem
+class Card:public QGraphicsItem
 {
 public:
 
@@ -34,18 +33,18 @@ public:
 
 	int card_width;//卡牌的宽度
 	int card_height;//卡牌的高度
-	int card_height;
 
 	//卡牌相关函数
 	Card();
 	//根据所给卡牌信息（No）创建卡牌
 	Card(int num);
+
 	//卡牌的初始化
 	void Init(int num);
 	//添加卡牌名字
 	void AddName(int num);
 	//添加卡牌图片
-	void AddPicture();
+	//void AddPicture();
 	//创建卡牌的逻辑函数
 	void CreateLogic(int num);
 
@@ -54,15 +53,6 @@ public:
 	virtual QRectF boundingRect() const;
 
 };
-
-
-//所有卡牌
-Card Unseen_Elder(13010530);//暗影长者
-Card Bekker_Twister_Mirror(25010091);//贝克尔的扭曲之镜
-Card Impenetrable_Fog(35020092);//蔽日浓雾
-Card Biting_Frost(45030092);//刺骨冰霜
-Card Dagon(53020630);//达冈
-Card Archgriffin(63030882);//大狮鹫
 
 
 #endif // !CP_CARD_H
