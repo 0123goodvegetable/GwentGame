@@ -1,8 +1,8 @@
 //实现与卡牌显示相关界面
 
 #pragma once
-#ifndef CARDSSELECTIONDIRECTOR_H
-#define CARDSSELECTIONDIRECTOR_H
+#ifndef CARDSUI_H
+#define CARDSUI_H
 
 #include"CP_Card.h"
 #include<QGraphicsItem>
@@ -42,5 +42,5 @@ public:
 };
 
 
-#endif // !CARDSSELECTIONDIRECTOR_H
+#endif // !CARDSUI_H
 

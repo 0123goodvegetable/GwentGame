@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	init();//初始化各项变量
 
+	//设置主窗口属性
 	this->resize(1800, 1000);
 	this->setWindowOpacity(1);
 	this->setAttribute(Qt::WA_TranslucentBackground);
@@ -14,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 
 	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), this, SLOT(toCardsSelectionBackground()));
+
+	connect(gameSelectionBackground->editCardsDeck_button, SIGNAL(clicked()), this, SLOT(toCardsEditBackground()));
 
 }
 
@@ -23,6 +26,7 @@ MainWindow::~MainWindow()
 	delete beginBackground;
 	delete gameSelectionBackground;
 	delete cardsSelectionBackground;
+	delete cardsEditBackground;
 }
 
 void MainWindow::init()
@@ -33,6 +37,7 @@ void MainWindow::init()
 	beginBackground = new BeginBackground(this);
 	gameSelectionBackground = new GameSelectionBackground(this);
 	cardsSelectionBackground = new CardsSelectionBackground(this);
+	cardsEditBackground = new CardsEditBackground(this);
 
 	this->setCentralWidget(BackgroundController);//将页面设置为中心窗口
 
@@ -40,6 +45,7 @@ void MainWindow::init()
 	BackgroundController->addWidget(beginBackground);
 	BackgroundController->addWidget(gameSelectionBackground);
 	BackgroundController->addWidget(cardsSelectionBackground);
+	BackgroundController->addWidget(cardsEditBackground);
 
 	BackgroundNo = 0;
 
@@ -68,6 +74,12 @@ void MainWindow::toGameSelectionBackground()
 void MainWindow::toCardsSelectionBackground()
 {
 	BackgroundNo = 2;
+	emit changeBackgroundNo(BackgroundNo);
+}
+
+void MainWindow::toCardsEditBackground()
+{
+	BackgroundNo = 3;
 	emit changeBackgroundNo(BackgroundNo);
 }
 

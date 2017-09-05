@@ -32,6 +32,40 @@ extern int Foglet_No = 253250482;
 extern int Arachas_No = 262260382;
 extern int Arachas_Behemoth_No = 270270682;
 extern int Harpy_Egg_No = 283280182;
+extern int Commander_Horn = 295290091;
+
+
+extern const int AllCards[31] = 
+{0,
+Unseen_Elder_No,
+Bekker_Twister_Mirror_No,
+Impenetrable_Fog_No,
+Biting_Frost_No,
+ Dagon_No,
+Archgriffin_No,
+Ge_Els_No,
+Geralt_Igni_No,
+Caranthir_No,
+Wild_Hunt_Rider_No,
+Crone_Whispess_No,
+Crone_Weavess_No,
+Crone_Brewess_No,
+Thunderbolt_potion_No,
+Woodland_Spirit_No,
+Raging_Wolf_No,
+Roach_No,
+First_Light_No,
+Torrential_Rain_No,
+Celaeno_Harpy_No,
+Lacerate_No,
+Earth_Elemental_No,
+Frightener_No,
+Vran_Warrior_No,
+Foglet_No,
+Arachas_No,
+Arachas_Behemoth_No,
+Harpy_Egg_No,
+Commander_Horn };
 
 
 #endif // !CP_ALLCARDS_H

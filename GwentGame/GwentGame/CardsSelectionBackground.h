@@ -6,10 +6,9 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QPointF>
-#include <QMap>
 #include<QResizeEvent>
 
-#include"CardsSelectionScene.h"
+#include"CardsScene.h"
 #include"CardsUI.h"
 
 class CardsSelectionBackground : public QWidget
@@ -32,7 +31,7 @@ private:
 	void init();//初始化界面
 
 	QGraphicsView *view;
-	CardsSelectionScene *scene;
+	CardsScene *scene;
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
 

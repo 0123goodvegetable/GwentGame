@@ -15,7 +15,7 @@
 const qreal CARD_POS_Y = 250;//卡牌y坐标（保持水平所以为常量）
 const qreal CARD_DIS = 300;//卡牌间距
 const qreal CARD_STA = 100;//第一张卡牌开始时的位置
-int   SCREEN_SIZE = 2250;//窗口宽度
+int   SCREEN_SIZE = 2000;//窗口宽度
 
 CardsSelectionBackground::CardsSelectionBackground(QWidget *parent)
 	: QWidget(parent)
@@ -38,7 +38,7 @@ void CardsSelectionBackground::init()
 	Pressed = false;
 
 	view = new QGraphicsView(this);
-	scene = new CardsSelectionScene();
+	scene = new CardsScene();
 
 
 	//建立图像移动的信号槽
