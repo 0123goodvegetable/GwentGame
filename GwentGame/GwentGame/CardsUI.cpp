@@ -16,6 +16,9 @@ CardsUI::CardsUI(int cardNo)
 	pixmap.load(operating_card->path);
 	pixmap = pixmap.scaled(operating_card->card_width, operating_card->card_height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	setPixmap(pixmap);
+
+	//初始化使用背景
+	using_background = -1;
 }
 
 QRectF CardsUI::boundingRect() const
@@ -32,14 +35,19 @@ void CardsUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 	painter->drawPixmap(rect, pixmap);
 
-
-	//卡牌下方附带卡牌相关信息
-	QPen pen(Qt::white);
-	painter->setPen(pen);
-	painter->setRenderHint(QPainter::Antialiasing);
-	QFont font("Verdana", 8, QFont::Normal);
-	painter->setFont(font);
-	painter->drawText(QRectF(0, rect.height(), rect.width(), 15), Qt::AlignCenter, operating_card->name);
+	if (using_background == 2)//在卡牌选择界面
+	{
+		//卡牌下方附带卡牌相关信息
+		QPen pen(Qt::white);
+		painter->setPen(pen);
+		painter->setRenderHint(QPainter::Antialiasing);
+		QFont font("Verdana", 12, QFont::Normal);
+		painter->setFont(font);
+		painter->drawText(QRectF(0, rect.height()-10, rect.width(), 25),
+							Qt::AlignCenter,
+							operating_card->name);
+	}
+	
 
 }
 

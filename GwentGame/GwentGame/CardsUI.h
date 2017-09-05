@@ -37,6 +37,8 @@ protected:
 public:
 	Card *operating_card;
 
+	int using_background;//Ê¹ÓÃUIµÄ±³¾°
+
 };
 
 

@@ -12,10 +12,10 @@
 #include"CP_AllCards.h"
 
 //定义全局变量
-const qreal CARD_POS_Y = 150;//卡牌y坐标（保持水平所以为常量）
+const qreal CARD_POS_Y = 250;//卡牌y坐标（保持水平所以为常量）
 const qreal CARD_DIS = 300;//卡牌间距
 const qreal CARD_STA = 100;//第一张卡牌开始时的位置
-int   SCREEN_SIZE = 1800;//窗口宽度
+int   SCREEN_SIZE = 2250;//窗口宽度
 
 CardsSelectionBackground::CardsSelectionBackground(QWidget *parent)
 	: QWidget(parent)
@@ -83,14 +83,13 @@ void CardsSelectionBackground::init()
 	cardUIPosLists.append(pos);
 	cardUIPixmapLists.append(temp_card->pixmap());
 
-	//重新计算UI尺寸
-	cardUISizeAdjust();
 
 	int i = 0;
 	foreach(CardsUI* card_temp, cardUILists)
 	{
 
 		card_temp->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+		card_temp->using_background = 2;
 
 		//用于卡牌的点击
 		connect(cardUILists.at(i), SIGNAL(cardIsPressed()), 
@@ -102,6 +101,9 @@ void CardsSelectionBackground::init()
 
 		i++;
 	}
+
+	//重新计算UI尺寸
+	cardUISizeAdjust();
 
 	//设置视口view的属性
 	view->setScene(scene);
@@ -219,27 +221,26 @@ void CardsSelectionBackground::cardUISizeAdjust()
 
 		pos.setX(card->pos().x()+card->pixmap().width());
 
-		QPixmap pixmap = cardUIPixmapLists.at(i);
+		/*QPixmap pixmap = cardUIPixmapLists.at(i);
 		pixmap = pixmap.scaled(350, 400, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		cardUILists[i]->setPixmap(pixmap);
+		cardUILists[i]->setPixmap(pixmap);*/
 
 		//改变两端卡牌大小
-		/*if (pos.x() >= 0 && pos.x() <= SCREEN_SIZE / 2)
-		{
-			
-			quint16 size = pos.x() / 5 + 200;
+		if (pos.x() >= 0 && pos.x()<= SCREEN_SIZE / 2)
+		{			
+			quint16 width = pos.x() / 5 + 200;
 			QPixmap pixmap = cardUIPixmapLists.at(i);
-			pixmap = pixmap.scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			pixmap = pixmap.scaled(width, width*1.1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 			cardUILists[i]->setPixmap(pixmap);
 		}
 
-		if (pos.x()>SCREEN_SIZE / 2 && pos.x() <= SCREEN_SIZE + 10)
+		if (pos.x()>SCREEN_SIZE / 2 && pos.x() <= SCREEN_SIZE )
 		{
-			quint16 size = (SCREEN_SIZE - pos.x()) / 5 + 200;
+			quint16 width = (SCREEN_SIZE - pos.x()) / 5 + 200;
 			QPixmap pixmap = cardUIPixmapLists.at(i);
-			pixmap = pixmap.scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			pixmap = pixmap.scaled(width, width*1.1, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 			cardUILists[i]->setPixmap(pixmap);
-		}*/
+		}
 		i++;
 	}
 }

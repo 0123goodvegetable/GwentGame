@@ -3,6 +3,7 @@
         <file>Resources/backgrounds/begin_background.jpg</file>
         <file>Resources/backgrounds/gameSelection_background.jpg</file>
         <file>Resources/backgrounds/cardsSelection_background.jpg</file>
+        <file>Resources/backgrounds/cardsEdit_background.jpg</file>
     </qresource>
     <qresource prefix="/cards">
         <file alias="Unseen_Elder">Resources/cards/013010530.png</file>
@@ -11,6 +12,29 @@
         <file alias="Biting_Frost">Resources/cards/045030092.png</file>
         <file alias="Dagon">Resources/cards/053020630.png</file>
         <file alias="Archgriffin">Resources/cards/063030882.png</file>
+        <file alias="Ge_Els">Resources/cards/073040180.png</file>
+        <file alias="Geralt_Igni">Resources/cards/83050580.png</file>
+        <file alias="Caranthir">Resources/cards/093060880.png</file>
+        <file alias="Wild_Hunt_Rider">Resources/cards/103070882.png</file>
+        <file alias="Crone_Whispess">Resources/cards/112110681.png</file>
+        <file alias="Crone_Weavess">Resources/cards/122120681.png</file>
+        <file alias="Crone_Brewess">Resources/cards/132130881.png</file>
+        <file alias="Thunderbolt_potion">Resources/cards/145140092.png</file>
+        <file alias="Woodland_Spirit">Resources/cards/153150580.png</file>
+        <file alias="Raging_Wolf">Resources/cards/163160182.png</file>
+        <file alias="Roach">Resources/cards/173170481.png</file>
+        <file alias="First_Light">Resources/cards/185180092.png</file>
+        <file alias="Torrential_Rain">Resources/cards/195190092.png</file>
+        <file alias="Celaeno_Harpy">Resources/cards/203200582.png</file>
+        <file alias="Lacerate">Resources/cards/215210092.png</file>
+        <file alias="Earth_Elemental">Resources/cards/220220682.png</file>
+        <file alias="Frightener">Resources/cards/234231281.png</file>
+        <file alias="Vran_Warrior">Resources/cards/243240682.png</file>
+        <file alias="Foglet">Resources/cards/253250482.png</file>
+        <file alias="Arachas">Resources/cards/262260382.png</file>
+        <file alias="Arachas_Behemoth">Resources/cards/270270682.png</file>
+        <file alias="Harpy_Egg">Resources/cards/283280182.png</file>
+        <file alias="Commander_Horn">Resources/cards/295290091.png</file>
     </qresource>
     <qresource prefix="/buttons">
         <file>Resources/buttons/editCardsDeck_button.png</file>
