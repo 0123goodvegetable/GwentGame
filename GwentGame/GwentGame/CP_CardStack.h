@@ -16,7 +16,7 @@ public:
 	void addGameCard(int No);//向进行游戏的卡组中插入卡牌
 	void deleteGameCard(int No);//移除游戏卡组中的卡牌
 
-	static QList<Card> game_cardStack;//游戏卡组
+	QList<int> game_cardStack_num;//游戏卡组
 
 };
 

@@ -87,6 +87,7 @@ void Card::CreateLogic(int num)
 	isSelected = false;
 	isFielded = false;
 	isGarbaged = false;
+	isInGameCardsStack = false;
 	number = 1;
 
 	int temp_num = 0;

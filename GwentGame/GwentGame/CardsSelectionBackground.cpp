@@ -49,10 +49,11 @@ void CardsSelectionBackground::init()
 
 	CardsUI *temp_card;
 	QPointF pos;
+	AllCards all_cards;
 
 	//添加卡牌（需要改进，添加卡牌选择函数）
 	//第一张牌：暗影长者
-	temp_card = new CardsUI(Unseen_Elder_No);
+	temp_card = new CardsUI(all_cards.Unseen_Elder_No);
 	pos = QPointF(CARD_STA, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -60,7 +61,7 @@ void CardsSelectionBackground::init()
 	cardUIPixmapLists.append(temp_card->pixmap());
 
 	//第二张牌：贝克尔的扭曲之镜
-	temp_card = new CardsUI(Bekker_Twister_Mirror_No);
+	temp_card = new CardsUI(all_cards.Bekker_Twister_Mirror_No);
 	pos = QPointF(CARD_STA + CARD_DIS * 1, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -68,7 +69,7 @@ void CardsSelectionBackground::init()
 	cardUIPixmapLists.append(temp_card->pixmap());
 
 	//第三张牌：蔽日浓雾
-	temp_card = new CardsUI(Impenetrable_Fog_No);
+	temp_card = new CardsUI(all_cards.Impenetrable_Fog_No);
 	pos = QPointF(CARD_STA + CARD_DIS * 2, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);
@@ -76,7 +77,7 @@ void CardsSelectionBackground::init()
 	cardUIPixmapLists.append(temp_card->pixmap());
 
 	//第四张牌：刺骨冰霜
-	temp_card = new CardsUI(Biting_Frost_No);
+	temp_card = new CardsUI(all_cards.Biting_Frost_No);
 	pos = QPointF(CARD_STA + CARD_DIS * 3, CARD_POS_Y);
 	temp_card->setPos(pos);
 	cardUILists.append(temp_card);

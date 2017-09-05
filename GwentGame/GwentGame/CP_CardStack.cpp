@@ -1,23 +1,21 @@
 #include"CP_CardStack.h"
 CardStack::CardStack()
 {
-	Card init_card(13010530);	
-	game_cardStack << init_card;
+	game_cardStack_num << 13010530;
 }
 
 void CardStack::addGameCard(int No)
 {
-	Card newCard(No);
-	game_cardStack.append(newCard);
+	game_cardStack_num.append(No);
 }
 
 void CardStack::deleteGameCard(int No)
 {
-	for (int i = 0; i < game_cardStack.size(); i++)
+	for (int i = 0; i < game_cardStack_num.size(); i++)
 	{
-		if (game_cardStack.at(i).No == No)
+		if (game_cardStack_num.at(i) == No)
 		{
-			game_cardStack.removeAt(i);
+			game_cardStack_num.removeAt(i);
 		}
 	}
 }

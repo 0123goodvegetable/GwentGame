@@ -65,6 +65,7 @@ void  CardsUI::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	emit cardIsPressed();
 	QGraphicsItem::mousePressEvent(event);
 }
+
 void  CardsUI::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	update(boundingRect());

@@ -26,6 +26,7 @@ public:
 	int material;//卡牌材质（金、银、铜）
 	
 	bool isHero;//卡牌是否是英雄牌
+	bool isInGameCardsStack;//卡牌是否在游戏牌组中
 	bool isPickerActive;//卡牌能否被选择
 	bool isSelected;//卡牌是否被选择
 	bool isFielded;//卡牌是否在战场上
