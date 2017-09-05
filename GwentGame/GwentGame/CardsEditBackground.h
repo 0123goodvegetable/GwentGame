@@ -25,6 +25,9 @@ public:
 	void cardUISizeAdjust();//重新调整卡牌编辑界面
 	bool isCardUIClicked();//判断是否点击卡牌图片
 
+signals:
+	void toAdd();//向游戏牌组中添加手牌
+
 private:
 	Ui::CardsEditBackground ui;
 
@@ -48,5 +51,6 @@ private:
 	void isPressed();//鼠标按下函数
 	void isReleased();//鼠标释放函数
 	void selectionChanged();//选择对象改变函数
+	void addCardsToStacks();//向游戏牌组中添加手牌
 
 };

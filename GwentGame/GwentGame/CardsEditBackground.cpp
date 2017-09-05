@@ -69,6 +69,9 @@ void CardsEditBackground::init()
 	connect(scene, SIGNAL(isMoving(QPointF&)),
 		this, SLOT(isMoving(QPointF&)));
 
+	//建立添加卡牌的信号槽
+	connect(this, SIGNAL(toAdd()), this, SLOT(addCardsToStacks()));
+
 	CardsUI *temp_card;
 	QPointF pos;
 	AllCards all_cards;
@@ -97,8 +100,14 @@ void CardsEditBackground::init()
 			this, SLOT(isPressed()));
 		connect(cardUILists.at(i), SIGNAL(cardIsReleased()),
 			this, SLOT(isReleased()));
+
 		//向场景中添加部件
-		scene->addItem(card_temp);
+		if (card_temp->pos().x() >= BASIS_COLUMN_POS_X&&
+			card_temp->pos().x() + NONSELECTED_CARD_WIDTH <= BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
+		{
+			scene->addItem(card_temp);
+		}
+
 
 		i++;
 	}
@@ -152,14 +161,14 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 	{
 		//找到未选择卡组中第一张与最后一张牌,控制卡牌位置
 		int j, k;
-		for (j = 0; j < cardUIPosLists.size(); j++)
+		for (j = 0; j < cardUILists.size(); j++)
 		{
 			if (cardUILists[j]->operating_card->isInGameCardsStack == false)
 			{
 				break;
 			}
 		}
-		for (k = cardUIPosLists.size()-1; k>=0; k--)
+		for (k = cardUILists.size()-1; k>=0; k--)
 		{
 			if (cardUILists[k]->operating_card->isInGameCardsStack == false)
 			{
@@ -167,19 +176,22 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 			}
 		}
 		int min_pos, max_pos;
-		min_pos = cardUIPosLists.at(j).x() + pos.x();
-		max_pos = cardUIPosLists.at(k).x()
+		min_pos = cardUILists[j]->pos().x() + pos.x();
+		max_pos = cardUILists[k]->pos().x()
 			+ pos.x() + cardUIPixmapLists.at(k).width();
-		if (min_pos > BASIS_COLUMN_POS_X || max_pos < BASIS_COLUMN_POS_X+ BASIS_COLUMN_LENGTH)
+		if (min_pos > BASIS_COLUMN_POS_X || max_pos < BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
 		{
 			return;
+
 		}
 
 		//进行卡牌移动
 		else
 		{
+
 			foreach(CardsUI* card_temp, cardUILists)
 			{
+
 				if(card_temp->operating_card->isInGameCardsStack==false)
 				{
 					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
@@ -204,7 +216,7 @@ void CardsEditBackground::isPressed()
 void CardsEditBackground::isReleased()
 {
 	if (isCardUIClicked())
-		qDebug() << "clicked";
+		emit toAdd();
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
@@ -270,6 +282,19 @@ void CardsEditBackground::cardUISizeAdjust()
 
 		pos.setX(card->pos().x() + card->pixmap().width());
 		pos.setY(card->pos().y());
+
+
+			//向场景中添加部件
+			if (card->pos().x() >= BASIS_COLUMN_POS_X&&
+				card->pos().x() + NONSELECTED_CARD_WIDTH <= BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
+			{
+				scene->addItem(card);
+			}
+			else
+			{
+				scene->removeItem(card);
+			}
+
 
 		QPixmap pixmap = cardUIPixmapLists.at(i);
 		pixmap = pixmap.scaled(NONSELECTED_CARD_WIDTH, NONSELECTED_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
