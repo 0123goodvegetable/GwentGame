@@ -91,9 +91,6 @@
     <ClCompile Include="CardsSelectionScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CP_AllCards.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_CardsUI.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>

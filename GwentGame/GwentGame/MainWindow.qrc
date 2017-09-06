@@ -29,7 +29,6 @@
         <file alias="Crone_Brewess">Resources/card/132130881.png</file>
         <file alias="Thunderbolt_potion">Resources/card/145140092.png</file>
         <file alias="Woodland_Spirit">Resources/card/153150580.png</file>
-        <file alias="Raging_Wolf">Resources/card/163160182.png</file>
         <file alias="Roach">Resources/card/173170481.png</file>
         <file alias="First_Light">Resources/card/185180092.png</file>
         <file alias="Torrential_Rain">Resources/card/195190092.png</file>
@@ -39,9 +38,10 @@
         <file alias="Frightener">Resources/card/234231281.png</file>
         <file alias="Vran_Warrior">Resources/card/243240682.png</file>
         <file alias="Foglet">Resources/card/253250482.png</file>
-        <file alias="Arachas">Resources/card/262260382.png</file>
-        <file alias="Arachas_Behemoth">Resources/card/270270682.png</file>
         <file alias="Harpy_Egg">Resources/card/283280182.png</file>
         <file alias="Commander_Horn">Resources/card/295290091.png</file>
+        <file alias="Raging_Wolf">Resources/card/160160182.png</file>
+        <file alias="Arachas">Resources/card/261260382.png</file>
+        <file alias="Arachas_Behemoth">Resources/card/272270682.png</file>
     </qresource>
 </RCC>

@@ -26,22 +26,25 @@ public:
 	bool isCardUIClicked();//判断是否点击卡牌图片
 
 signals:
-	void toAdd();//向游戏牌组中添加手牌
+	void toEdit();//编辑牌组
 
 private:
 	Ui::CardsEditBackground ui;
 
 	void init();//初始化卡牌编辑界面
 	void updateCoordinate();//更新坐标
+	void updatePictures();//更新卡牌图像位置
+	void putInText();//将牌组信息存储到文本文件中
+	void getFromText();//从文本文件中获取牌组信息
 
-	QGraphicsView *view;
-	CardsScene *scene;
-
+	QGraphicsView *view;//视口
+	CardsScene *scene;//场景
 	CardStack *stack;//牌组
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
-	bool change_size = false;//窗口尺寸变化
+	CardsUI* selected_card;//目前正在选择的卡牌
 
+	QList<int> cardStackNo;//在游戏牌组中的卡牌号码
 	QList<CardsUI *> cardUILists;//卡牌列表
 	QList<QPointF> cardUIPosLists;//卡牌位置列表
 	QList<QPixmap> cardUIPixmapLists;//卡牌图片列表
@@ -51,6 +54,7 @@ private:
 	void isPressed();//鼠标按下函数
 	void isReleased();//鼠标释放函数
 	void selectionChanged();//选择对象改变函数
-	void addCardsToStacks();//向游戏牌组中添加手牌
+	void editStacks();//编辑牌组
+
 
 };

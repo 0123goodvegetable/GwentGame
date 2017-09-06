@@ -74,7 +74,6 @@
     <ClCompile Include="CardsSelectionBackground.cpp" />
     <ClCompile Include="CardsSelectionScene.cpp" />
     <ClCompile Include="CardsUI.cpp" />
-    <ClCompile Include="CP_AllCards.cpp" />
     <ClCompile Include="CP_Card.cpp" />
     <ClCompile Include="CP_CardStack.cpp" />
     <ClCompile Include="GameSelectionBackground.cpp" />

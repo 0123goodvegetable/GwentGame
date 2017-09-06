@@ -17,7 +17,7 @@ AllCards::AllCards()
 	Crone_Brewess_No = 132130881;
 	Thunderbolt_potion_No = 145140092;
 	Woodland_Spirit_No = 153150580;
-	Raging_Wolf_No = 163160182;
+	Raging_Wolf_No = 160160182;
 	Roach_No = 173170481;
 	First_Light_No = 185180092;
 	Torrential_Rain_No = 195190092;

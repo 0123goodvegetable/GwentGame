@@ -9,16 +9,20 @@
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QDebug>
+#include<QFile>
+#include<QTextStream>
 
 #include"CP_AllCards.h"
 
+#define min(x,y) x<y?x:y//最小值
+#define max(x,y) x>y?x:y//最大值
 
 //定义全局变量
 const qreal CARD_DIS = 150;//卡牌间距
 const int CARDS_NUM = 29;//所有卡牌数量
 
 int SCREEN_WIDTH = 1800;//画面宽度
-int SCREEN_HEIGHT = 1000;//画面高度
+int SCREEN_HEIGHT = 961;//画面高度
 
 int NONSELECTED_CARD_WIDTH;//在下方框内未选择的卡牌宽度
 int NONSELECTED_CARD_HEIGHT;//在下方框内未选择的卡牌高度
@@ -57,11 +61,14 @@ void CardsEditBackground::init()
 {
 	//初始化
 	Pressed = false;
-	change_size = false;
 
 	view = new QGraphicsView(this);
 	scene = new CardsScene();
 	stack = new CardStack();
+	selected_card = new CardsUI();
+
+	//从文件中读取数据
+	getFromText();
 
 	//建立图像移动的信号槽
 	connect(scene, SIGNAL(selectionChanged()),
@@ -70,7 +77,7 @@ void CardsEditBackground::init()
 		this, SLOT(isMoving(QPointF&)));
 
 	//建立添加卡牌的信号槽
-	connect(this, SIGNAL(toAdd()), this, SLOT(addCardsToStacks()));
+	connect(this, SIGNAL(toEdit()), this, SLOT(editStacks()));
 
 	CardsUI *temp_card;
 	QPointF pos;
@@ -91,6 +98,13 @@ void CardsEditBackground::init()
 	int i = 0;
 	foreach(CardsUI* card_temp, cardUILists)
 	{
+		for (int i = 0; i < cardStackNo.size(); i++)
+		{
+			if (cardStackNo[i] == card_temp->operating_card->No)
+			{
+				card_temp->operating_card->isInGameCardsStack = true;
+			}
+		}
 
 		card_temp->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
 		card_temp->using_background = 3;
@@ -107,12 +121,11 @@ void CardsEditBackground::init()
 		{
 			scene->addItem(card_temp);
 		}
-
-
 		i++;
 	}
 
-	//重新计算UI尺寸
+	//初始化卡牌图像
+	updatePictures();
 	cardUISizeAdjust();
 
 	//设置视口view的属性
@@ -128,8 +141,8 @@ void  CardsEditBackground::updateCoordinate()
 	//卡牌尺寸
 	 NONSELECTED_CARD_WIDTH = SCREEN_WIDTH*0.082;//在下方框内未选择的卡牌宽度
 	 NONSELECTED_CARD_HEIGHT = SCREEN_HEIGHT*0.17;//在下方框内未选择的卡牌高度
-	 SELECTED_CARD_WIDTH = SCREEN_WIDTH*0.048;//已选择的卡牌宽度
-	 SELECTED_CARD_HEIGHT = SCREEN_HEIGHT*0.114;//已选择卡牌高度
+	 SELECTED_CARD_WIDTH = SCREEN_WIDTH*0.065;//已选择的卡牌宽度
+	 SELECTED_CARD_HEIGHT = SCREEN_HEIGHT*0.145;//已选择卡牌高度
 
 	 //卡牌栏x坐标
 	 FIGHT_COLUMN_POS_X = SCREEN_WIDTH*0.231;//近战、远程、攻城三栏的x坐标
@@ -138,10 +151,10 @@ void  CardsEditBackground::updateCoordinate()
 
 
 	
-	 BASIS_COLUMN_POS_Y = (SCREEN_HEIGHT*0.72)+geometry().y();//未被选择卡牌栏y坐标
-	 MELEE_COLUMN_POS_Y = SCREEN_HEIGHT*0.1;//近战栏y坐标
-	 ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT*0.224;//远程栏y坐标
-	 SIEGE_COLUMN_POS_Y = SCREEN_HEIGHT*0.346;//攻城栏y坐标
+	 BASIS_COLUMN_POS_Y = SCREEN_HEIGHT*0.734;//未被选择卡牌栏y坐标
+	 MELEE_COLUMN_POS_Y = SCREEN_HEIGHT*0.115;//近战栏y坐标
+	 ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT*0.235;//远程栏y坐标
+	 SIEGE_COLUMN_POS_Y = SCREEN_HEIGHT*0.361;//攻城栏y坐标
 	 FUNCTION_COLUMN_POS_Y = SCREEN_HEIGHT*0.5;//功能牌栏y坐标
 
 
@@ -156,43 +169,67 @@ void  CardsEditBackground::updateCoordinate()
 void  CardsEditBackground::isMoving(QPointF &pos)
 {
 	int i = 0;
-
 	if (Pressed)
 	{
-		//找到未选择卡组中第一张与最后一张牌,控制卡牌位置
-		int j, k;
+		//找到未选择卡组中第一张与最后一张牌,控制卡牌拖拽范围
+		int j, k, min_pos = selected_card->pos().x(), max_pos = selected_card->pos().x();
 		for (j = 0; j < cardUILists.size(); j++)
 		{
-			if (cardUILists[j]->operating_card->isInGameCardsStack == false)
+			if (cardUILists.at(j)->pos().y() == selected_card->pos().y())
 			{
-				break;
+				min_pos = min(cardUILists.at(j)->pos().x(), min_pos);
+				max_pos = max(cardUILists.at(j)->pos().x(), max_pos);
 			}
 		}
-		for (k = cardUILists.size()-1; k>=0; k--)
+
+		if (selected_card->pos().y() == BASIS_COLUMN_POS_Y)
 		{
-			if (cardUILists[k]->operating_card->isInGameCardsStack == false)
+			max_pos = max_pos + pos.x() + NONSELECTED_CARD_WIDTH;
+			if (min_pos + pos.x() > BASIS_COLUMN_POS_X) //)|| max_pos < BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
 			{
-				break;
+				pos = QPointF(BASIS_COLUMN_POS_X - min_pos, pos.y());
+
+			}
+			else if (max_pos + pos.x() + NONSELECTED_CARD_WIDTH < BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
+			{
+				pos = QPointF(BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH - max_pos-NONSELECTED_CARD_WIDTH, pos.y());
 			}
 		}
-		int min_pos, max_pos;
-		min_pos = cardUILists[j]->pos().x() + pos.x();
-		max_pos = cardUILists[k]->pos().x()
-			+ pos.x() + cardUIPixmapLists.at(k).width();
-		if (min_pos > BASIS_COLUMN_POS_X || max_pos < BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
+		else if (selected_card->pos().y() == FUNCTION_COLUMN_POS_Y)
 		{
-			return;
 
+			if (min_pos + pos.x() > FUNCTION_COLUMN_POS_X )
+			{
+				pos = QPointF(FUNCTION_COLUMN_POS_X - min_pos, pos.y());
+
+			}
+
+			else if (max_pos + pos.x() + SELECTED_CARD_WIDTH < FUNCTION_COLUMN_POS_X + FUNCTION_COLUMN_LENGTH)
+			{
+				pos = QPointF(FUNCTION_COLUMN_POS_X + FUNCTION_COLUMN_LENGTH - max_pos - SELECTED_CARD_WIDTH, pos.y());
+			}
 		}
-
-		//进行卡牌移动
 		else
 		{
+			if (min_pos + pos.x() > FIGHT_COLUMN_POS_X)
+			{
+				pos = QPointF(FIGHT_COLUMN_POS_X - min_pos, pos.y());
 
+			}
+
+			else if (max_pos + pos.x() + SELECTED_CARD_WIDTH < FIGHT_COLUMN_POS_X + FIGHT_COLUMN_LENGTH)
+			{
+				pos = QPointF(FIGHT_COLUMN_POS_X + FIGHT_COLUMN_LENGTH - max_pos - SELECTED_CARD_WIDTH, pos.y());
+			}
+
+		}
+
+		//进行卡牌拖拽(首先判断卡牌在哪一栏）
+		if (selected_card->operating_card->isInGameCardsStack == false)
+		{
 			foreach(CardsUI* card_temp, cardUILists)
 			{
-
-				if(card_temp->operating_card->isInGameCardsStack==false)
+				if (card_temp->operating_card->isInGameCardsStack == false)
 				{
 					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
 						cardUIPosLists.at(i).y());
@@ -200,6 +237,20 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 				i++;
 			}
 		}
+		else
+		{
+			foreach(CardsUI* card_temp, cardUILists)
+			{
+				if (card_temp->operating_card->isInGameCardsStack == true&&
+					card_temp->operating_card->genre== selected_card->operating_card->genre)
+				{
+					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
+						cardUIPosLists.at(i).y());
+				}
+				i++;
+			}
+		}
+		
 
 		cardUISizeAdjust();
 	}
@@ -216,34 +267,62 @@ void CardsEditBackground::isPressed()
 void CardsEditBackground::isReleased()
 {
 	if (isCardUIClicked())
-		emit toAdd();
+	{
+		emit toEdit();
+	}
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
 void CardsEditBackground::selectionChanged()
 {
-	int i = 0, j = 0;
+	int i = 0, j = 0, k = 0, num = 0;
 
 	QList<QGraphicsItem *> items = scene->selectedItems();
 	if (items.count() == 1)
 	{
-		//当前所选择的UI图标的坐标
+		//当前所选择的卡牌的坐标
 		QPointF pos = items.first()->pos();
 		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
 
 		foreach(CardsUI* card, cardUILists)
 		{
 			if (card == card_temp)
+			{
+				selected_card = card;
 				break;
+			}
 			i++;
 		}
 		j = i;
 		i = 0;
 
+		//设置卡牌位置
 		foreach(QPointF card_pos, cardUIPosLists)
 		{
 			Q_UNUSED(card_pos);
-			cardUIPosLists[i].setX((i - j)*NONSELECTED_CARD_WIDTH + pos.x());
+			if (i <= j)
+			{
+				for (k = i, num = 0; k < j; k++)
+				{
+					if (cardUILists[k]->pos().y()==selected_card->pos().y())
+					{
+						num++;
+					}
+				}
+				cardUIPosLists[i].setX(-num*NONSELECTED_CARD_WIDTH + pos.x());
+			}
+			else
+			{
+				for (k = j, num = 0; k < i; k++)
+				{
+					if (cardUILists[k]->pos().y() == selected_card->pos().y())
+					{
+						num++;
+					}
+				}
+				cardUIPosLists[i].setX(num*NONSELECTED_CARD_WIDTH + pos.x());
+			}
+
 			i++;
 		}
 	}
@@ -251,6 +330,139 @@ void CardsEditBackground::selectionChanged()
 	{
 		return;
 	}
+}
+
+//槽函数，处理鼠标点击事件
+void CardsEditBackground::editStacks()
+{
+	//选定点击的卡牌
+	int No = 0;
+	QList<QGraphicsItem *> items = scene->selectedItems();
+	if (items.count() == 1)
+	{
+		//当前所选择的卡牌的坐标
+		QPointF pos = items.first()->pos();
+		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
+
+		foreach(CardsUI* card, cardUILists)
+		{
+			if (card == card_temp)
+				break;
+			No++;
+		}
+	}
+
+	//当点击卡牌在未选择牌组中
+	if (cardUILists[No]->operating_card->isInGameCardsStack == false)
+	{
+		cardUILists[No]->operating_card->isInGameCardsStack = true;//卡牌设置为在游戏卡组中
+	}
+
+	//当卡牌在场上游戏卡组中
+	else
+	{	
+		cardUILists[No]->operating_card->isInGameCardsStack = false;//卡牌退回未选择卡组中
+	}
+	updatePictures();
+	cardUISizeAdjust();
+
+	//将信息输入文本文件中
+	putInText();
+}
+
+void CardsEditBackground::updatePictures()
+{
+	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0;
+	//更新每一个卡牌栏的图像位置
+	foreach(CardsUI *card, cardUILists)
+	{
+		if (card->operating_card->isInGameCardsStack == false)
+		{
+			card->setPos(BASIS_COLUMN_POS_X + num1*NONSELECTED_CARD_WIDTH, BASIS_COLUMN_POS_Y);
+			num1++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->genre == 0)
+		{
+			card->setPos(FIGHT_COLUMN_POS_X + num2*SELECTED_CARD_WIDTH, MELEE_COLUMN_POS_Y);
+			num2++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->genre == 1)
+		{
+			card->setPos(FIGHT_COLUMN_POS_X + num3*SELECTED_CARD_WIDTH, ARCHER_COLUMN_POS_Y);
+			num3++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->genre == 2)
+		{
+			card->setPos(FIGHT_COLUMN_POS_X + num4*SELECTED_CARD_WIDTH, SIEGE_COLUMN_POS_Y);
+			num4++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->genre == 3)
+		{
+			card->setPos(FIGHT_COLUMN_POS_X + num5*SELECTED_CARD_WIDTH, ARCHER_COLUMN_POS_Y);
+			num5++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->genre == 4)
+		{
+			card->setPos(FIGHT_COLUMN_POS_X + num6*SELECTED_CARD_WIDTH, ARCHER_COLUMN_POS_Y);
+			num6++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->genre == 5)
+		{
+			card->setPos(FUNCTION_COLUMN_POS_X + num7*SELECTED_CARD_WIDTH, FUNCTION_COLUMN_POS_Y);
+			num7++;
+		}
+	}
+
+	int i = 0;
+	foreach(CardsUI *card, cardUILists)
+	{
+		cardUIPosLists[i] = card->pos();
+		i++;
+	}
+}
+
+void CardsEditBackground::putInText()
+{
+	QFile file("gameCardStack.txt");
+
+	if (file.open(QFile::WriteOnly | QIODevice::Truncate| QIODevice::Text))
+	{
+		QTextStream outPut(&file);
+
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->isInGameCardsStack == true)
+			{
+				outPut << card->operating_card->No;
+				outPut << "\n";
+			}
+		}
+	}
+	file.close();
+}
+
+void CardsEditBackground::getFromText()
+{
+	QFile file("gameCardStack.txt");
+
+	if (file.open(QFile::ReadOnly))
+	{
+		QTextStream inPut(&file);
+		QString temp_No;
+		while (!inPut.atEnd())
+		{
+			temp_No = inPut.readLine();
+			cardStackNo.append(temp_No.toInt());
+		}
+	}
+
+	file.close();
 }
 
 //判断cardUI接收的是否是单击信号。
@@ -284,20 +496,26 @@ void CardsEditBackground::cardUISizeAdjust()
 		pos.setY(card->pos().y());
 
 
-			//向场景中添加部件
-			if (card->pos().x() >= BASIS_COLUMN_POS_X&&
-				card->pos().x() + NONSELECTED_CARD_WIDTH <= BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH)
-			{
-				scene->addItem(card);
-			}
-			else
-			{
-				scene->removeItem(card);
-			}
-
+		//向场景中添加卡牌
+		if (card->pos().x() >= BASIS_COLUMN_POS_X-10  &&
+			card->pos().x() + NONSELECTED_CARD_WIDTH <= BASIS_COLUMN_POS_X + BASIS_COLUMN_LENGTH+10)
+		{
+			scene->addItem(card);
+		}
+		else
+		{
+			scene->removeItem(card);
+		}
 
 		QPixmap pixmap = cardUIPixmapLists.at(i);
-		pixmap = pixmap.scaled(NONSELECTED_CARD_WIDTH, NONSELECTED_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		if (card->operating_card->isInGameCardsStack == false)
+		{
+			pixmap = pixmap.scaled(NONSELECTED_CARD_WIDTH, NONSELECTED_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		}
+		else
+		{
+			pixmap = pixmap.scaled(SELECTED_CARD_WIDTH, SELECTED_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		}
 		cardUILists[i]->setPixmap(pixmap);
 		i++;
 	}

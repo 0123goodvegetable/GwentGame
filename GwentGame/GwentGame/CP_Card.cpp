@@ -68,6 +68,10 @@ void Card::Init(int num)
 
 	//º«¬ºø®≈∆ID
 	ID = num / 10000000;
+
+	//ø®≈∆±‡∫≈
+	No = num;
+
 	num %= 10000000;
 
 	//¥¥Ω®ø®≈∆–≈œ¢
@@ -91,8 +95,6 @@ void Card::CreateLogic(int num)
 	number = 1;
 
 	int temp_num = 0;
-
-	No = num;//ø®≈∆±‡∫≈
 
 	genre = num / 1000000;//ø®≈∆÷÷¿‡
 
@@ -160,7 +162,7 @@ void  Card::AddName(int num)
 	case 153150580:
 		name = "Woodland_Spirit";
 		break;
-	case 163160182:
+	case 160160182:
 		name = "Raging_Wolf";
 		break;
 	case 173170481:
@@ -190,10 +192,10 @@ void  Card::AddName(int num)
 	case 253250482:
 		name = "Foglet";
 		break;
-	case 262260382:
+	case 261260382:
 		name = "Arachas";
 		break;
-	case 270270682:
+	case 272270682:
 		name = "Arachas_Behemoth";
 		break;
 	case 283280182:
