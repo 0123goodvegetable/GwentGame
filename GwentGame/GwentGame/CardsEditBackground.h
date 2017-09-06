@@ -7,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QPointF>
 #include<QResizeEvent>
+#include<QPushButton>
 
 #include"CardsScene.h"
 #include"CardsUI.h"
@@ -24,6 +25,8 @@ public:
 	void resizeEvent(QResizeEvent *event);//画面调整事件
 	void cardUISizeAdjust();//重新调整卡牌编辑界面
 	bool isCardUIClicked();//判断是否点击卡牌图片
+
+	QPushButton *saveAndQuit_button;//保存并退出按钮
 
 signals:
 	void toEdit();//编辑牌组

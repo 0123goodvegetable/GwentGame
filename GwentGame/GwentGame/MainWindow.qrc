@@ -12,6 +12,7 @@
         <file>Resources/buttons/quit_button.png</file>
         <file>Resources/buttons/cardsHide_button.png</file>
         <file>Resources/buttons/cardsSelectionFinished_button.png</file>
+        <file>Resources/buttons/saveAndQuit_button.png</file>
     </qresource>
     <qresource prefix="/cards">
         <file alias="Unseen_Elder">Resources/card/013010530.png</file>

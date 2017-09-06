@@ -7,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QPointF>
 #include<QResizeEvent>
+#include<QPushButton>
 
 #include"CardsScene.h"
 #include"CardsUI.h"
@@ -25,6 +26,11 @@ public:
 	bool isCardUIClicked();//判断是否点击卡牌图片
 	void cardUISizeAdjust();//重新调整选牌界面坐标
 
+	QPushButton *cardsSelectionFinished_button;//手牌调度完毕按钮
+
+signals:
+	void toChange();//更换卡牌
+
 private:
 	Ui::CardsSelectionBackground ui;
 
@@ -38,11 +44,14 @@ private:
 	QList<CardsUI *> cardUILists;//卡牌列表
 	QList<QPointF> cardUIPosLists;//卡牌位置列表
 	QList<QPixmap> cardUIPixmapLists;//卡牌图片列表
+	QList<int> cardStackNo;//可选择的牌组
 
 	private slots:
 	void isMoving(QPointF &pos);//鼠标移动函数
 	void isPressed();//鼠标按下函数
 	void isReleased();//鼠标释放函数
 	void selectionChanged();//选择对象改变函数
+	void getFromText();//从文本文件中获取牌组信息
+	void changeCard();//更换卡牌
 
 };

@@ -8,6 +8,11 @@
 #include <QGraphicsPixmapItem>
 #include <QMessageBox>
 #include <QDebug>
+#include<QFile>
+#include<QTextStream>
+#include<stdlib.h>
+#include<time.h>
+
 
 #include"CP_AllCards.h"
 
@@ -39,7 +44,22 @@ void CardsSelectionBackground::init()
 
 	view = new QGraphicsView(this);
 	scene = new CardsScene();
+	cardsSelectionFinished_button = new QPushButton(this);
 
+	//初始化按钮图标
+	QIcon cardsSelectionFinished_button_icon;
+	cardsSelectionFinished_button_icon.addFile(":/buttons/Resources/buttons/cardsSelectionFinished_button.png");
+	cardsSelectionFinished_button->setIcon(cardsSelectionFinished_button_icon);
+	cardsSelectionFinished_button->setGeometry(855, 895, 155, 55);
+	cardsSelectionFinished_button->setIconSize(QSize(150, 80));
+	cardsSelectionFinished_button->setFlat(true);
+
+	//从文本中获取牌组
+	getFromText();
+
+	//设置窗口属性
+	view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	//建立图像移动的信号槽
 	connect(scene, SIGNAL(selectionChanged()), 
@@ -47,43 +67,27 @@ void CardsSelectionBackground::init()
 	connect(scene, SIGNAL(isMoving(QPointF&)), 
 		this, SLOT(isMoving(QPointF&))); 
 
+	//建立点击更换卡牌的信号槽
+	connect(this, SIGNAL(toChange()), this, SLOT(changeCard()));
+
 	CardsUI *temp_card;
 	QPointF pos;
 	AllCards all_cards;
 
-	//添加卡牌（需要改进，添加卡牌选择函数）
-	//第一张牌：暗影长者
-	temp_card = new CardsUI(all_cards.Unseen_Elder_No);
-	pos = QPointF(CARD_STA, CARD_POS_Y);
-	temp_card->setPos(pos);
-	cardUILists.append(temp_card);
-	cardUIPosLists.append(pos);
-	cardUIPixmapLists.append(temp_card->pixmap());
+	//随机添加卡牌
+	for (int i = 0; i < 10; i++)
+	{
+		srand((unsigned)time(NULL));
+		int n = (rand() % cardStackNo.size());
 
-	//第二张牌：贝克尔的扭曲之镜
-	temp_card = new CardsUI(all_cards.Bekker_Twister_Mirror_No);
-	pos = QPointF(CARD_STA + CARD_DIS * 1, CARD_POS_Y);
-	temp_card->setPos(pos);
-	cardUILists.append(temp_card);
-	cardUIPosLists.append(pos);
-	cardUIPixmapLists.append(temp_card->pixmap());
-
-	//第三张牌：蔽日浓雾
-	temp_card = new CardsUI(all_cards.Impenetrable_Fog_No);
-	pos = QPointF(CARD_STA + CARD_DIS * 2, CARD_POS_Y);
-	temp_card->setPos(pos);
-	cardUILists.append(temp_card);
-	cardUIPosLists.append(pos);
-	cardUIPixmapLists.append(temp_card->pixmap());
-
-	//第四张牌：刺骨冰霜
-	temp_card = new CardsUI(all_cards.Biting_Frost_No);
-	pos = QPointF(CARD_STA + CARD_DIS * 3, CARD_POS_Y);
-	temp_card->setPos(pos);
-	cardUILists.append(temp_card);
-	cardUIPosLists.append(pos);
-	cardUIPixmapLists.append(temp_card->pixmap());
-
+		temp_card = new CardsUI(cardStackNo.at(n));
+		pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
+		temp_card->setPos(pos);
+		cardUILists.append(temp_card);
+		cardUIPosLists.append(pos);
+		cardUIPixmapLists.append(temp_card->pixmap());
+		cardStackNo.removeAt(n);
+	}
 
 	int i = 0;
 	foreach(CardsUI* card_temp, cardUILists)
@@ -125,7 +129,7 @@ void  CardsSelectionBackground::isMoving(QPointF &pos)
 	max_pos = cardUIPosLists.at(cardUIPosLists.size() - 1).x() + pos.x() + cardUIPixmapLists.at(cardUIPosLists.size() - 1).width();
 	if (Pressed)
 	{
-		if (min_pos < 0||max_pos > SCREEN_SIZE)
+		if (min_pos > 40||max_pos < SCREEN_SIZE)
 		{
 			return;
 		}
@@ -153,7 +157,9 @@ void CardsSelectionBackground::isPressed()
 void CardsSelectionBackground::isReleased()
 {
 	if (isCardUIClicked())
-		qDebug() << "clicked";
+	{
+		emit toChange();
+	}
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
@@ -192,6 +198,65 @@ void CardsSelectionBackground::selectionChanged()
 	}
 }
 
+//槽函数，当点击卡牌时更换卡牌
+void CardsSelectionBackground::changeCard()
+{
+	//选定点击的卡牌
+	int No = 0;
+	QList<QGraphicsItem *> items = scene->selectedItems();
+	if (items.count() == 1)
+	{
+		//当前所选择的卡牌的坐标
+		QPointF pos = items.first()->pos();
+		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
+
+		foreach(CardsUI* card, cardUILists)
+		{
+			if (card == card_temp)
+				break;
+			No++;
+		}
+	}
+
+	CardsUI *temp_card;
+
+	srand((unsigned)time(NULL));
+	int n = (rand() % cardStackNo.size());
+	temp_card = new CardsUI(cardStackNo.at(n));
+	temp_card->setPos(cardUILists[No]->pos());
+	cardStackNo.removeAt(n);
+
+	//去掉原来的牌
+	scene->removeItem(cardUILists[No]);
+	cardUILists.removeAt(No);
+	cardUIPosLists.removeAt(No);
+	cardUIPixmapLists.removeAt(No);
+
+
+
+	//插入新牌
+	cardUILists.insert(No,temp_card);
+	cardUIPosLists.insert(No,temp_card->pos());
+	cardUIPixmapLists.insert(No,temp_card->pixmap());
+
+
+	//设置新牌的参数
+	temp_card->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+	temp_card->using_background = 2;
+
+	//用于卡牌的点击
+	connect(temp_card, SIGNAL(cardIsPressed()),
+		this, SLOT(isPressed()));
+	connect(temp_card, SIGNAL(cardIsReleased()),
+		this, SLOT(isReleased()));
+
+	//将新牌插入场景
+	scene->addItem(temp_card);
+
+	cardUISizeAdjust();
+
+}
+
 //判断cardUI接收的是否是单击信号。
 //判断依据是当前单击的cardUI对象的pos与存储在cardUIPosListsd的位置比较，相等则为单击。
 //用于更换卡牌
@@ -227,7 +292,7 @@ void CardsSelectionBackground::cardUISizeAdjust()
 		cardUILists[i]->setPixmap(pixmap);*/
 
 		//改变两端卡牌大小
-		if (pos.x() >= 0 && pos.x()<= SCREEN_SIZE / 2)
+		if ( pos.x()<= SCREEN_SIZE / 2)//pos.x() >= 0 &&
 		{			
 			quint16 width = pos.x() / 5 + 200;
 			QPixmap pixmap = cardUIPixmapLists.at(i);
@@ -235,7 +300,7 @@ void CardsSelectionBackground::cardUISizeAdjust()
 			cardUILists[i]->setPixmap(pixmap);
 		}
 
-		if (pos.x()>SCREEN_SIZE / 2 && pos.x() <= SCREEN_SIZE )
+		if (pos.x()> SCREEN_SIZE / 2)// && pos.x() <= SCREEN_SIZE+50 
 		{
 			quint16 width = (SCREEN_SIZE - pos.x()) / 5 + 200;
 			QPixmap pixmap = cardUIPixmapLists.at(i);
@@ -246,6 +311,23 @@ void CardsSelectionBackground::cardUISizeAdjust()
 	}
 }
 
+void CardsSelectionBackground::getFromText()
+{
+	QFile file("gameCardStack.txt");
+
+	if (file.open(QFile::ReadOnly))
+	{
+		QTextStream inPut(&file);
+		QString temp_No;
+		while (!inPut.atEnd())
+		{
+			temp_No = inPut.readLine();
+			cardStackNo.append(temp_No.toInt());
+		}
+	}
+
+	file.close();
+}
 
 void CardsSelectionBackground::resizeEvent(QResizeEvent *event)
 {

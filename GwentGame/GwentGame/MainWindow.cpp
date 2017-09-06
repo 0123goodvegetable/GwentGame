@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(gameSelectionBackground->editCardsDeck_button, SIGNAL(clicked()), this, SLOT(toCardsEditBackground()));
 
+	connect(cardsEditBackground->saveAndQuit_button, SIGNAL(clicked()), this, SLOT(toGameSelectionBackground()));
+
 }
 
 MainWindow::~MainWindow()
