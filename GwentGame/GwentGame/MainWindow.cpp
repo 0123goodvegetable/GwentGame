@@ -93,6 +93,9 @@ void MainWindow::toCardsEditBackground()
 
 void MainWindow::toGamePlayingBackground()
 {
+	delete gamePlayingBackground;
+	gamePlayingBackground = new GamePlayingBackground(this);
+	BackgroundController->addWidget(gamePlayingBackground);
 	BackgroundNo = 4;
 	emit changeBackgroundNo(BackgroundNo);
 }

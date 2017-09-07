@@ -48,9 +48,9 @@ private:
 	CardsUI* selected_card;//目前正在选择的卡牌
 
 	QList<int> cardStackNo;//在游戏牌组中的卡牌号码
-	QList<CardsUI *> cardUILists;//卡牌列表
-	QList<QPointF> cardUIPosLists;//卡牌位置列表
-	QList<QPixmap> cardUIPixmapLists;//卡牌图片列表
+	QList<CardsUI *> cardUILists;//卡牌图片列表
+	QList<QPointF> cardUIPosLists;//卡牌图片位置列表
+	QList<QPixmap> cardUIPixmapLists;//卡牌图片图像列表
 
 	private slots:
 	void isMoving(QPointF &pos);//鼠标移动函数

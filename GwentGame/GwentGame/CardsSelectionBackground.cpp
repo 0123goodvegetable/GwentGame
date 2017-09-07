@@ -81,7 +81,6 @@ void CardsSelectionBackground::init()
 		int n = (rand() % cardStackNo.size());
 
 		temp_card = new CardsUI(cardStackNo.at(n));
-		//stack.addGameCard(*temp_card->operating_card);
 		pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
 		temp_card->setPos(pos);
 		cardUILists.append(temp_card);
@@ -234,29 +233,27 @@ void CardsSelectionBackground::changeCard()
 	cardUILists.removeAt(No);
 	cardUIPosLists.removeAt(No);
 	cardUIPixmapLists.removeAt(No);
-	//stack.deleteGameCard(*cardUILists[No]->operating_card);
 
 	//插入新牌
-	cardUILists.insert(No,temp_card);
 	cardUIPosLists.insert(No,temp_card->pos());
 	cardUIPixmapLists.insert(No,temp_card->pixmap());
-	//stack.addGameCard(*temp_card->operating_card);
+	cardUILists.insert(No, temp_card);
 
+	putInText();
 
 	//设置新牌的参数
-	temp_card->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-	temp_card->using_background = 2;
+	cardUILists[No]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+	cardUILists[No]->using_background = 2;
 
 	//用于卡牌的点击
-	connect(temp_card, SIGNAL(cardIsPressed()),
+	connect(cardUILists[No], SIGNAL(cardIsPressed()),
 		this, SLOT(isPressed()));
-	connect(temp_card, SIGNAL(cardIsReleased()),
+	connect(cardUILists[No], SIGNAL(cardIsReleased()),
 		this, SLOT(isReleased()));
 
 	//将新牌插入场景
-	scene->addItem(temp_card);
+	scene->addItem(cardUILists[No]);
 
-	putInText();
 	cardUISizeAdjust();
 
 }
@@ -291,12 +288,8 @@ void CardsSelectionBackground::cardUISizeAdjust()
 
 		pos.setX(card->pos().x()+card->pixmap().width());
 
-		/*QPixmap pixmap = cardUIPixmapLists.at(i);
-		pixmap = pixmap.scaled(350, 400, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		cardUILists[i]->setPixmap(pixmap);*/
-
 		//改变两端卡牌大小
-		if ( pos.x()<= SCREEN_SIZE / 2)//pos.x() >= 0 &&
+		if ( pos.x()<= SCREEN_SIZE / 2)
 		{			
 			quint16 width = pos.x() / 5 + 200;
 			QPixmap pixmap = cardUIPixmapLists.at(i);
@@ -304,7 +297,7 @@ void CardsSelectionBackground::cardUISizeAdjust()
 			cardUILists[i]->setPixmap(pixmap);
 		}
 
-		if (pos.x()> SCREEN_SIZE / 2)// && pos.x() <= SCREEN_SIZE+50 
+		if (pos.x()> SCREEN_SIZE / 2)
 		{
 			quint16 width = (SCREEN_SIZE - pos.x()) / 5 + 200;
 			QPixmap pixmap = cardUIPixmapLists.at(i);
@@ -341,9 +334,9 @@ void CardsSelectionBackground::putInText()
 	{
 		QTextStream outPut(&file);
 
-		foreach(CardsUI *card, cardUILists)
+		foreach(CardsUI* temp_card, cardUILists)
 		{
-			outPut << card->operating_card->No;
+			outPut << temp_card->operating_card->No;
 			outPut << "\n";
 		}
 	}

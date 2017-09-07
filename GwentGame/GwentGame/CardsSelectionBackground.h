@@ -41,9 +41,9 @@ private:
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
 
-	QList<CardsUI *> cardUILists;//卡牌列表
-	QList<QPointF> cardUIPosLists;//卡牌位置列表
-	QList<QPixmap> cardUIPixmapLists;//卡牌图片列表
+	QList<CardsUI *> cardUILists;//卡牌图片列表
+	QList<QPointF> cardUIPosLists;//卡牌图片位置列表
+	QList<QPixmap> cardUIPixmapLists;//卡牌图片图像列表
 	QList<int> cardStackNo;//可选择的牌组
 
 	private slots:
