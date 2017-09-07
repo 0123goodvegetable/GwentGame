@@ -88,9 +88,6 @@
     <ClCompile Include="CardsSelectionBackground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CardsSelectionScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_CardsUI.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -114,6 +111,21 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_CardsScene.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="CP_PlayingLogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CardsScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GamePlayingBackground.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GamePlayingBackground.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GamePlayingBackground.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +171,12 @@
     <CustomBuild Include="CardsScene.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="GamePlayingBackground.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GamePlayingBackground.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h">
@@ -180,6 +198,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_CardsEditBackground.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CP_PlayingLogic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_GamePlayingBackground.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>

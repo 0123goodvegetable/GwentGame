@@ -81,6 +81,7 @@ void CardsSelectionBackground::init()
 		int n = (rand() % cardStackNo.size());
 
 		temp_card = new CardsUI(cardStackNo.at(n));
+		//stack.addGameCard(*temp_card->operating_card);
 		pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
 		temp_card->setPos(pos);
 		cardUILists.append(temp_card);
@@ -88,6 +89,8 @@ void CardsSelectionBackground::init()
 		cardUIPixmapLists.append(temp_card->pixmap());
 		cardStackNo.removeAt(n);
 	}
+
+	putInText();
 
 	int i = 0;
 	foreach(CardsUI* card_temp, cardUILists)
@@ -231,13 +234,13 @@ void CardsSelectionBackground::changeCard()
 	cardUILists.removeAt(No);
 	cardUIPosLists.removeAt(No);
 	cardUIPixmapLists.removeAt(No);
-
-
+	//stack.deleteGameCard(*cardUILists[No]->operating_card);
 
 	//插入新牌
 	cardUILists.insert(No,temp_card);
 	cardUIPosLists.insert(No,temp_card->pos());
 	cardUIPixmapLists.insert(No,temp_card->pixmap());
+	//stack.addGameCard(*temp_card->operating_card);
 
 
 	//设置新牌的参数
@@ -253,6 +256,7 @@ void CardsSelectionBackground::changeCard()
 	//将新牌插入场景
 	scene->addItem(temp_card);
 
+	putInText();
 	cardUISizeAdjust();
 
 }
@@ -326,6 +330,23 @@ void CardsSelectionBackground::getFromText()
 		}
 	}
 
+	file.close();
+}
+
+void CardsSelectionBackground::putInText()
+{
+	QFile file("playingCardStack.txt");
+
+	if (file.open(QFile::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+	{
+		QTextStream outPut(&file);
+
+		foreach(CardsUI *card, cardUILists)
+		{
+			outPut << card->operating_card->No;
+			outPut << "\n";
+		}
+	}
 	file.close();
 }
 

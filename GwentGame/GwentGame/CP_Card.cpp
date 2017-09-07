@@ -53,6 +53,35 @@ Card::Card():
 {
 }
 
+Card::Card(const Card &root_card)
+{
+
+	ID = root_card.ID;
+	No = root_card.No;
+	number = root_card.number;
+	explainText = root_card.explainText;
+	name = root_card.name;
+
+	genre = root_card.genre;
+	attack = root_card.attack;
+	skill = root_card.skill;
+	material = root_card.material;
+
+	isHero = root_card.isHero;
+	isFriend = root_card.isFriend;
+	isInGameCardsStack = root_card.isInGameCardsStack;
+	isPickerActive = root_card.isPickerActive;
+	isSelected = root_card.isSelected;
+	isFielded = root_card.isFielded;
+	isGarbaged = root_card.isGarbaged;
+
+	isWeatherControlled = root_card.isWeatherControlled;
+
+	card_height = root_card.card_height;
+	card_width = root_card.card_width;
+
+}
+
 Card::Card(int num)
 {
 	Init(num);
@@ -92,6 +121,8 @@ void Card::CreateLogic(int num)
 	isFielded = false;
 	isGarbaged = false;
 	isInGameCardsStack = false;
+	isFriend = true;
+	isWeatherControlled = 0;
 	number = 1;
 
 	int temp_num = 0;

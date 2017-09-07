@@ -20,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(cardsEditBackground->saveAndQuit_button, SIGNAL(clicked()), this, SLOT(toGameSelectionBackground()));
 
+	//联网后待修改
+	connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
+
 }
 
 MainWindow::~MainWindow()
@@ -29,6 +32,7 @@ MainWindow::~MainWindow()
 	delete gameSelectionBackground;
 	delete cardsSelectionBackground;
 	delete cardsEditBackground;
+	delete gamePlayingBackground;
 }
 
 void MainWindow::init()
@@ -40,6 +44,7 @@ void MainWindow::init()
 	gameSelectionBackground = new GameSelectionBackground(this);
 	cardsSelectionBackground = new CardsSelectionBackground(this);
 	cardsEditBackground = new CardsEditBackground(this);
+	gamePlayingBackground = new GamePlayingBackground(this);
 
 	this->setCentralWidget(BackgroundController);//将页面设置为中心窗口
 
@@ -48,6 +53,7 @@ void MainWindow::init()
 	BackgroundController->addWidget(gameSelectionBackground);
 	BackgroundController->addWidget(cardsSelectionBackground);
 	BackgroundController->addWidget(cardsEditBackground);
+	BackgroundController->addWidget(gamePlayingBackground);
 
 	BackgroundNo = 0;
 
@@ -82,6 +88,12 @@ void MainWindow::toCardsSelectionBackground()
 void MainWindow::toCardsEditBackground()
 {
 	BackgroundNo = 3;
+	emit changeBackgroundNo(BackgroundNo);
+}
+
+void MainWindow::toGamePlayingBackground()
+{
+	BackgroundNo = 4;
 	emit changeBackgroundNo(BackgroundNo);
 }
 

@@ -4,6 +4,7 @@
         <file>Resources/backgrounds/gameSelection_background.jpg</file>
         <file>Resources/backgrounds/cardsSelection_background.jpg</file>
         <file>Resources/backgrounds/cardsEdit_background.jpg</file>
+        <file>Resources/backgrounds/gamePlaying_background.jpg</file>
     </qresource>
     <qresource prefix="/buttons">
         <file>Resources/buttons/editCardsDeck_button.png</file>

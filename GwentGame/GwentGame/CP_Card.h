@@ -26,11 +26,14 @@ public:
 	int material;//卡牌材质（金、银、铜）
 	
 	bool isHero;//卡牌是否是英雄牌
+	bool isFriend;//卡牌是否是友方卡牌
 	bool isInGameCardsStack;//卡牌是否在游戏牌组中
 	bool isPickerActive;//卡牌能否被选择
 	bool isSelected;//卡牌是否被选择
 	bool isFielded;//卡牌是否在战场上
 	bool isGarbaged;//卡牌是否进入墓地
+
+	int isWeatherControlled;//卡牌受到天气的影响(0-无，1-蔽日浓雾，2-刺骨冰霜，3-倾盆大雨）
 
 	int card_width;//卡牌的宽度
 	int card_height;//卡牌的高度
@@ -39,6 +42,8 @@ public:
 	Card();
 	//根据所给卡牌信息（No）创建卡牌
 	Card(int num);
+	//拷贝构造函数
+	Card(const Card &root_card);
 
 	//卡牌的初始化
 	void Init(int num);

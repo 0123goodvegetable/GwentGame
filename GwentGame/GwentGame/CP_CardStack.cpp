@@ -1,21 +1,17 @@
-#include"CP_CardStack.h"
+/*#include"CP_CardStack.h"
 CardStack::CardStack()
 {
-	game_cardStack_num << 13010530;
+	CardStack:: game_cardStack.clear();
 }
 
-void CardStack::addGameCard(int No)
+void CardStack::addGameCard(Card &card)
 {
-	game_cardStack_num.append(No);
+	Card temp_card(card);
+	game_cardStack.append(temp_card);
 }
 
-void CardStack::deleteGameCard(int No)
+void CardStack::deleteGameCard(Card &card)
 {
-	for (int i = 0; i < game_cardStack_num.size(); i++)
-	{
-		if (game_cardStack_num.at(i) == No)
-		{
-			game_cardStack_num.removeAt(i);
-		}
-	}
-}
+	int i = game_cardStack.indexOf(card);
+	game_cardStack.removeAt(i);
+}*/

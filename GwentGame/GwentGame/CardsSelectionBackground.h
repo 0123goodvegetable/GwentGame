@@ -52,6 +52,7 @@ private:
 	void isReleased();//鼠标释放函数
 	void selectionChanged();//选择对象改变函数
 	void getFromText();//从文本文件中获取牌组信息
+	void putInText();//将牌组信息存储到文本文件中
 	void changeCard();//更换卡牌
 
 };
