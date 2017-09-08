@@ -26,8 +26,6 @@ public:
 private slots:
 	void updateBackground(int number);//刷新游戏界面进行更新
 
-	void updateGamePlayingBackgroundData() { gamePlayingBackground->getFromText(); }
-
 	void toBeginBackground();//将界面切换到开始界面
 	void toGameSelectionBackground();//将界面切换到游戏选择界面
 	void toCardsSelectionBackground();//将界面切换到游戏开始后卡牌选择界面

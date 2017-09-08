@@ -5,18 +5,18 @@
 #define max(a,b) a>b?a:b
 #define min(a,b) a<b?a:b
 
-PlayingLogic::PlayingLogic(QList<Card> &aim_stack)
+PlayingLogic::PlayingLogic(QList<CardsUI*> &aim_stack)
 {
 	//初始化牌组状态信息
 	for(int i=0;i<aim_stack.size();i++)
 	{
-		Card temp_card(aim_stack[i]);
+		CardsUI *temp_card = aim_stack[i];
 		cardStack.append(temp_card);
 	}
 
 }
 
-QList<Card> PlayingLogic::operateCard(Card &card)
+QList<CardsUI*> PlayingLogic::operateCard(Card &card)
 {
 	//对于卡牌不同的skill进行不同的响应
 	switch (card.skill)
@@ -124,21 +124,21 @@ void PlayingLogic::skill1()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No== allCards.Unseen_Elder_No)
+		if (cardStack.at(num)->operating_card->No== allCards.Unseen_Elder_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isFielded = true;
+	cardStack[num]->operating_card->isFielded = true;
 
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isSelected == true)
+		if (cardStack[i]->operating_card->isSelected == true)
 		{
-			cardStack[i].isGarbaged = true;//该卡牌被吞噬
-			cardStack[num].attack += cardStack[i].attack;//战斗力被暗影长者吸收
-			cardStack[i].isSelected = false;
+			cardStack[i]->operating_card->isGarbaged = true;//该卡牌被吞噬
+			cardStack[num]->operating_card->attack += cardStack[i]->operating_card->attack;//战斗力被暗影长者吸收
+			cardStack[i]->operating_card->isSelected = false;
 		}
 	}
 }
@@ -150,41 +150,41 @@ void PlayingLogic::skill2()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Bekker_Twister_Mirror_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Bekker_Twister_Mirror_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isGarbaged = true;
+	cardStack[num]->operating_card->isGarbaged = true;
 
 	//搜寻打出卡牌后的后续卡牌,交换战斗力
-	int max_num, min_num, max_attack = cardStack[0].attack, min_attack = cardStack[0].attack;
+	int max_num, min_num, max_attack = cardStack[0]->operating_card->attack, min_attack = cardStack[0]->operating_card->attack;
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isFielded==true)
+		if (cardStack[i]->operating_card->isFielded==true)
 		{
-			if (cardStack[i].attack > max_attack)
+			if (cardStack[i]->operating_card->attack > max_attack)
 			{
-				max_attack = cardStack[i].attack;
+				max_attack = cardStack[i]->operating_card->attack;
 				max_num = i;
 			}
-			else if (cardStack[i].attack < min_attack)
+			else if (cardStack[i]->operating_card->attack < min_attack)
 			{
-				min_attack = cardStack[i].attack;
+				min_attack = cardStack[i]->operating_card->attack;
 				min_num = i;
 			}
 		}
 	}
 
-	if (cardStack[max_num].attack <= 10)
+	if (cardStack[max_num]->operating_card->attack <= 10)
 	{
-		cardStack[min_num].attack += cardStack[max_num].attack;
-		cardStack[max_num].isGarbaged = true;
+		cardStack[min_num]->operating_card->attack += cardStack[max_num]->operating_card->attack;
+		cardStack[max_num]->operating_card->isGarbaged = true;
 	}
 	else
 	{
-		cardStack[min_num].attack += 10;
-		cardStack[max_num].attack -= 10;
+		cardStack[min_num]->operating_card->attack += 10;
+		cardStack[max_num]->operating_card->attack -= 10;
 	}
 
 }
@@ -196,20 +196,20 @@ void PlayingLogic::skill3()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Impenetrable_Fog_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Impenetrable_Fog_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isGarbaged = true;
+	cardStack[num]->operating_card->isGarbaged = true;
 
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isSelected == true)
+		if (cardStack[i]->operating_card->isSelected == true)
 		{
-			cardStack[i].isWeatherControlled = 1;
-			cardStack[i].isSelected = false;
+			cardStack[i]->operating_card->isWeatherControlled = 1;
+			cardStack[i]->operating_card->isSelected = false;
 		}
 	}
 }
@@ -221,20 +221,20 @@ void PlayingLogic::skill4()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Biting_Frost_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Biting_Frost_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isGarbaged = true;
+	cardStack[num]->operating_card->isGarbaged = true;
 
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isSelected == true)
+		if (cardStack[i]->operating_card->isSelected == true)
 		{
-			cardStack[i].isWeatherControlled = 2;
-			cardStack[i].isSelected = false;
+			cardStack[i]->operating_card->isWeatherControlled = 2;
+			cardStack[i]->operating_card->isSelected = false;
 		}
 	}
 }
@@ -246,12 +246,12 @@ void PlayingLogic::skill5()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Dagon_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Dagon_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isFielded = true;
+	cardStack[num]->operating_card->isFielded = true;
 }
 
 //6、*大狮鹫(待完成）
@@ -261,21 +261,21 @@ void PlayingLogic::skill6()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Archgriffin_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Archgriffin_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isFielded = true;
+	cardStack[num]->operating_card->isFielded = true;
 
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isFielded==true&&
-			cardStack[i].isFriend==true&&
-			cardStack[i].genre== cardStack[num].genre)
+		if (cardStack[i]->operating_card->isFielded==true&&
+			cardStack[i]->operating_card->isFriend==true&&
+			cardStack[i]->operating_card->genre== cardStack[num]->operating_card->genre)
 		{
-			cardStack[i].isWeatherControlled = 0;//清空天气影响
+			cardStack[i]->operating_card->isWeatherControlled = 0;//清空天气影响
 			
 		}
 	}
@@ -289,19 +289,19 @@ void PlayingLogic::skill7()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Ge_Els_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Ge_Els_No)
 		{
 			break;
 		}
 	}
-	cardStack[num].isFielded = true;
+	cardStack[num]->operating_card->isFielded = true;
 
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isSelected == true)
+		if (cardStack[i]->operating_card->isSelected == true)
 		{
-			cardStack[i].isFielded = true;//打出一张金色或者银色牌
+			cardStack[i]->operating_card->isFielded = true;//打出一张金色或者银色牌
 		}
 	}
 
@@ -314,7 +314,7 @@ void PlayingLogic::skill8()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Geralt_Igni_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Geralt_Igni_No)
 		{
 			break;
 		}
@@ -324,26 +324,26 @@ void PlayingLogic::skill8()
 	QList<int> record_num;
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isSelected == true)
+		if (cardStack[i]->operating_card->isSelected == true)
 		{
 			record_num.append(i);
 		}
 	}
 
 	int attack_all = 0;//卡牌总战力
-	int max_attack = cardStack[record_num[0]].attack;
+	int max_attack = cardStack[record_num[0]]->operating_card->attack;
 	for (int j = 0; j < record_num.size(); j++)
 	{
-		attack_all += cardStack[record_num[j]].attack;
-		max_attack = max(max_attack, cardStack[record_num[j]].attack);
+		attack_all += cardStack[record_num[j]]->operating_card->attack;
+		max_attack = max(max_attack, cardStack[record_num[j]]->operating_card->attack);
 	}
 	if (attack_all >= 25)
 	{
 		for (int j = 0; j < record_num.size(); j++)
 		{
-			if (cardStack[record_num[j]].attack == max_attack)
+			if (cardStack[record_num[j]]->operating_card->attack == max_attack)
 			{
-				cardStack[record_num[j]].isGarbaged = true;
+				cardStack[record_num[j]]->operating_card->isGarbaged = true;
 			}
 		}
 	}
@@ -356,7 +356,7 @@ void PlayingLogic::skill9()
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num).No == allCards.Caranthir_No)
+		if (cardStack.at(num)->operating_card->No == allCards.Caranthir_No)
 		{
 			break;
 		}
@@ -365,16 +365,17 @@ void PlayingLogic::skill9()
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isSelected == true)
+		if (cardStack[i]->operating_card->isSelected == true)
 		{
-			cardStack[i].genre = cardStack[num].genre;//将敌方单位移至同排
+			cardStack[i]->operating_card->genre = cardStack[num]->operating_card->genre;//将敌方单位移至同排
 		}
 	}
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i].isFriend == false&& cardStack[i].genre==cardStack[num].genre)
+		if (cardStack[i]->operating_card->isFriend == false&& 
+			cardStack[i]->operating_card->genre==cardStack[num]->operating_card->genre)
 		{
-			cardStack[i].isWeatherControlled = 2;//在该排降下刺骨冰霜
+			cardStack[i]->operating_card->isWeatherControlled = 2;//在该排降下刺骨冰霜
 		}
 	}
 }

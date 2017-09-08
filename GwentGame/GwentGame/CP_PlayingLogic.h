@@ -5,20 +5,21 @@
 #define CP_PLAYINGLOGIC_H
 #include"CP_Card.h"
 #include"CP_AllCards.h"
+#include"CardsUI.h"
 
 class PlayingLogic
 {
 public:
-	PlayingLogic(QList<Card> &aim_stack);
+	PlayingLogic(QList<CardsUI*> &aim_stack);
 	~PlayingLogic() {}
 
 	//对于卡牌进行操作（关键函数）
 	//参数：card：打出的卡牌
 	//返回值：卡牌发动技能之后的牌组信息
-	QList<Card> operateCard(Card &card);
+	QList<CardsUI*> operateCard(Card &card);
 	
 private:
-	QList<Card> cardStack;//用于储存卡牌的状态，将GamePlayingBackground中的卡牌状态进行更新
+	QList<CardsUI*> cardStack;//用于储存卡牌的状态，将GamePlayingBackground中的卡牌状态进行更新
 
 	AllCards allCards;
 

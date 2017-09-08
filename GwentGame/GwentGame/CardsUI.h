@@ -18,6 +18,7 @@ class CardsUI : public QObject, public QGraphicsPixmapItem
 public:
 	CardsUI();
 	CardsUI(int cardNo);
+	CardsUI(const CardsUI & card);
 
 	//Ðéº¯Êý
 	QRectF boundingRect() const;

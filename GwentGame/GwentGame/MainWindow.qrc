@@ -46,4 +46,7 @@
         <file alias="Arachas">Resources/card/261260382.png</file>
         <file alias="Arachas_Behemoth">Resources/card/272270682.png</file>
     </qresource>
+    <qresource prefix="/cursors">
+        <file>Resources/cursor/cursor1_icon.png</file>
+    </qresource>
 </RCC>

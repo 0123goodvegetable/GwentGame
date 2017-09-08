@@ -10,12 +10,13 @@
 #include <QDebug>
 #include<QFile>
 #include<QTextStream>
+#include<QCursor>
 
 //定义全局变量
 const qreal CARD_DIS = 80;//卡牌间距
 
 int SCREEN_WIDTH2 = 1800;//画面宽度
-int SCREEN_HEIGHT2 = 1000;//画面高度
+int SCREEN_HEIGHT2 = 960;//画面高度
 
 int CARD_WIDTH;//卡牌宽度
 int CARD_HEIGHT;//卡牌高度
@@ -34,14 +35,15 @@ int E_SIEGE_COLUMN_POS_Y;//敌方攻城栏y坐标
 
 int COLUMN_LENGTH;//卡牌栏长度
 
-
+//使用技能次数
+const int UNSEEN_ELDER_SKILL_TIMES = 2;
 
 GamePlayingBackground::GamePlayingBackground(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
 
-	//初始化所有全局变量
+	//初始化所有常量
 	updateCoordinate();
 
 	//初始化窗口
@@ -57,6 +59,8 @@ void GamePlayingBackground::init()
 	//初始化各个成员变量
 	Pressed = false;
 	operation = false;
+	isUsingSkill = false;
+	usingSkillTimes = 0;
 
 
 	//从文本中获取牌组
@@ -77,7 +81,7 @@ void GamePlayingBackground::init()
 		this, SLOT(isMoving(QPointF&)));
 
 	//建立释放技能的信号槽
-	connect(this, SIGNAL(toUseSkills()), this, SLOT(useSkills()));
+	connect(this, SIGNAL(toUseSkills(Card *)), this, SLOT(useSkills(Card *)));
 
 	CardsUI *temp_card;
 	QPointF pos;
@@ -88,7 +92,6 @@ void GamePlayingBackground::init()
 		pos = QPointF(COLUMN_POS_X + CARD_DIS * i, PREPARE_COLUMN_POS_Y);
 		temp_card->setPos(pos);
 
-		PlayingCard.append(*temp_card->operating_card);
 		cardUILists.append(temp_card);
 		cardUIPosLists.append(pos);
 		cardUIPixmapLists.append(temp_card->pixmap());
@@ -124,13 +127,12 @@ void GamePlayingBackground::init()
 void GamePlayingBackground::updateCoordinate()
 {
 
-
 	CARD_HEIGHT = SCREEN_HEIGHT2*0.123;
 	CARD_WIDTH = SCREEN_WIDTH2*0.06;
 
 	COLUMN_POS_X = 0.3*SCREEN_WIDTH2;
 
-	PREPARE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.84;
+	PREPARE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.87;
 
 	M_MELEE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.51;
 	M_ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT2*0.62;
@@ -145,7 +147,65 @@ void GamePlayingBackground::updateCoordinate()
 
 void GamePlayingBackground::updateStatus()
 {
+	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0;
+	foreach(CardsUI* card_temp, cardUILists)
+	{
+		if (card_temp->operating_card->isGarbaged == true)//卡牌进入坟墓
+		{
+			scene1->removeItem(card_temp);
+		}
+		else if(card_temp->operating_card->isFielded==false)//卡牌不在场上
+		{
+			card_temp->setPos(COLUMN_POS_X + num1*CARD_DIS, PREPARE_COLUMN_POS_Y);
+			num1++;
+		}
+		else if(card_temp->pos().y()==M_MELEE_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num2*CARD_DIS,M_MELEE_COLUMN_POS_Y);
+			num2++;
+		}
+		else if (card_temp->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num3*CARD_DIS, M_ARCHER_COLUMN_POS_Y);
+			num3++;
+		}
+		else if (card_temp->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num4*CARD_DIS, M_SIEGE_COLUMN_POS_Y);
+			num4++;
+		}
+		else if (card_temp->pos().y() == E_MELEE_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num5*CARD_DIS, E_MELEE_COLUMN_POS_Y);
+			num5++;
+		}
+		else if (card_temp->pos().y() == E_ARCHER_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num6*CARD_DIS, E_ARCHER_COLUMN_POS_Y);
+			num6++;
+		}
+		else if (card_temp->pos().y() == E_SIEGE_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num7*CARD_DIS, E_SIEGE_COLUMN_POS_Y);
+			num7++;
+		}
+	}
 
+	int i = 0;
+	foreach(CardsUI *card, cardUILists)
+	{
+		cardUIPosLists[i] = card->pos();
+		i++;
+	}
+}
+
+void GamePlayingBackground::updateStack(QList<CardsUI*> stack)
+{
+	cardUILists.clear();
+	foreach(CardsUI *card, stack)
+	{
+		cardUILists.append(card);
+	}
 }
 
 //槽函数，鼠标拖拽卡牌到牌场上
@@ -162,7 +222,6 @@ void GamePlayingBackground::isMoving(QPointF &pos)
 		pos_y >= E_SIEGE_COLUMN_POS_Y&&pos_y < PREPARE_COLUMN_POS_Y)//确保在操作牌且将其拖到牌场中
 	{
 		//设置卡牌状态为在场上
-		PlayingCard[num].isFielded = true;
 		cardUILists[num]->operating_card->isFielded = true;
 		//根据不同种类安放不同位置
 		switch (selected_card->operating_card->genre)
@@ -221,19 +280,32 @@ void GamePlayingBackground::isPressed()
 //若此时在操作一张卡牌，则释放技能
 void GamePlayingBackground::isReleased()
 {
-	if (operation==true)//正在操作一张牌
+	if (operation == true&&isUsingSkill==false)//正在操作一张牌
 	{
-		emit toUseSkills();
-		operation= false;
-	}
+		//更换光标图案
+		QCursor cursor;
+		QPixmap pixmap(":/cursors/Resources/cursor/cursor1_icon.png");
+		pixmap.scaled(30, 30);
+		cursor = QCursor(pixmap, -1, -1);
+		this->setCursor(cursor);
 
-	int i = 0;
-	foreach(QPointF card_pos, cardUIPosLists)
-	{
-		Q_UNUSED(card_pos);
-		cardUIPosLists[i] = cardUILists[i]->pos();
-		i++;
+		usingSkill_card = selected_card;
+		isUsingSkill = true;
+
+		updateStatus();
 	}
+	else if(operation == false && isUsingSkill ==true)
+	{
+		switch (usingSkill_card->operating_card->ID)
+		{
+		case 1:
+			if (usingSkillTimes<UNSEEN_ELDER_SKILL_TIMES)//使用两次技能。。写的方法比较麻烦
+			{
+				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+			}
+		}
+	}	
+
 
 }
 
@@ -256,11 +328,17 @@ void GamePlayingBackground::selectionChanged()
 			i++;
 		}
 
-		if (operation == false)//没有在操作卡牌
+		if (operation == false&&isUsingSkill==false)
 		{
-			selected_card = cardUILists[i];
+			selected_card = cardUILists[i];//选取操作卡牌
 			operation = true;
 		}
+		else if (isCardUIClicked() == true && isUsingSkill==true)//使用技能
+		{	
+			selected_card = cardUILists[i];
+			operation = false;	
+		}
+
 	}
 	else
 	{
@@ -268,11 +346,6 @@ void GamePlayingBackground::selectionChanged()
 	}
 }
 
-//槽函数，用于卡牌施放技能
-void GamePlayingBackground::useSkills()
-{
-
-}
 
 //判断cardUI接收的是否是单击信号。
 //判断依据是当前单击的cardUI对象的pos与存储在cardUIPosListsd的位置比较，相等则为单击。
@@ -363,4 +436,51 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 	SCREEN_HEIGHT2 = this->height();
 	updateCoordinate();
 
+}
+
+
+//槽函数，用于卡牌施放技能
+void GamePlayingBackground::useSkills(Card *card)
+{
+	switch (card->skill)
+	{
+	case 1://暗影长者
+		bool cardExist = false;
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->ID != 1 && 
+				//card->operating_card->isFielded == true &&
+				card->operating_card->ID != 1)
+			{
+				cardExist = true;
+				break;
+			}
+		}
+		//存在满足条件的卡牌
+		if (cardExist)
+		{
+			if (//selected_card->operating_card->isFielded == true &&
+				selected_card->operating_card->isFriend == true &&
+				selected_card->operating_card->ID != 1)//选取非自身的友军牌
+			{
+				int num = cardUILists.indexOf(selected_card);
+				cardUILists[num]->operating_card->isSelected = true;
+				Card card(allCards.Unseen_Elder_No);
+				conductor = new PlayingLogic(cardUILists);
+				updateStack(conductor->operateCard(card));
+				updateStatus();
+				delete conductor;
+				usingSkillTimes++;
+			}
+		}
+		//还原
+		if (usingSkillTimes == UNSEEN_ELDER_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+	}
 }

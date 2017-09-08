@@ -8,10 +8,12 @@
 #include <QPointF>
 #include<QResizeEvent>
 #include<QPushButton>
+#include<QMouseEvent>
 
 
 #include"CP_Card.h"
 #include"CP_PlayingLogic.h"
+#include"CP_AllCards.h"
 #include"CardsUI.h"
 #include"CardsScene.h"
 
@@ -30,14 +32,8 @@ public:
 	bool isCardUIClicked();//判断是否点击卡牌图片
 	void cardUISizeAdjust();//重新调整选牌界面坐标
 
-	QList<int> my_cardStackNo;//游戏中友方手牌信息
-
 signals:
-	void toUseSkills();//释放技能的信号
-
-public slots:
-	void getFromText();//从文本文件中获取牌组信息
-
+	void toUseSkills(Card *card);//释放技能的信号
 
 private:
 	Ui::GamePlayingBackground ui;
@@ -45,6 +41,7 @@ private:
 	void init();//初始化界面
 	void updateStatus();//更新游戏状态
 	void updateCoordinate();//更新游戏画面常量
+	void updateStack(QList<CardsUI *> stack);//更新牌组信息
 
 	QGraphicsView *view;
 	CardsScene *scene1;//正常游戏画面
@@ -52,14 +49,17 @@ private:
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
 	bool operation;//是否在某张卡牌的轮次中
+	bool isUsingSkill;//是否在使用技能阶段
+	int usingSkillTimes;//使用技能次数
+	PlayingLogic *conductor;//释放技能时的指挥
+	AllCards allCards;//所有卡牌信息
 
 	CardsUI  *selected_card;//当前选择的卡牌
+	CardsUI *usingSkill_card;//将要释放技能的卡牌
 	QList<CardsUI *> cardUILists;//卡牌图片列表
 	QList<QPointF> cardUIPosLists;//卡牌图片位置列表
 	QList<QPixmap> cardUIPixmapLists;//卡牌图片图像列表
-	QList<Card> PlayingCard;//排场上所有卡牌（用于更新界面）
-
-
+	QList<int> my_cardStackNo;//游戏中友方手牌信息
 
 	private slots:
 	void isMoving(QPointF &pos);//鼠标移动函数
@@ -67,6 +67,7 @@ private:
 	void isReleased();//鼠标释放函数
 	void selectionChanged();//选择对象改变函数
 	void putInText();//将牌组信息存储到文本文件中
-	void useSkills();//使用技能
+	void getFromText();//从文本文件中获取牌组信息
+	void useSkills(Card *card);//使用技能
 
 };

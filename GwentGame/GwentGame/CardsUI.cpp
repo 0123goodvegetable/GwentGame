@@ -21,6 +21,13 @@ CardsUI::CardsUI(int cardNo)
 	using_background = -1;
 }
 
+CardsUI::CardsUI(const CardsUI & card)
+{
+	operating_card = card.operating_card;
+
+	using_background = card.using_background;
+}
+
 QRectF CardsUI::boundingRect() const
 {
 	QRect rect = this->pixmap().rect();

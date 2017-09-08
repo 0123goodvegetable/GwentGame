@@ -81,12 +81,17 @@ void MainWindow::toGameSelectionBackground()
 
 void MainWindow::toCardsSelectionBackground()
 {
+	delete cardsSelectionBackground;
+	cardsSelectionBackground = new CardsSelectionBackground(this);
+	BackgroundController->insertWidget(2, cardsSelectionBackground);
+	connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
 	BackgroundNo = 2;
 	emit changeBackgroundNo(BackgroundNo);
 }
 
 void MainWindow::toCardsEditBackground()
 {
+
 	BackgroundNo = 3;
 	emit changeBackgroundNo(BackgroundNo);
 }
@@ -95,7 +100,7 @@ void MainWindow::toGamePlayingBackground()
 {
 	delete gamePlayingBackground;
 	gamePlayingBackground = new GamePlayingBackground(this);
-	BackgroundController->addWidget(gamePlayingBackground);
+	BackgroundController->insertWidget(4,gamePlayingBackground);
 	BackgroundNo = 4;
 	emit changeBackgroundNo(BackgroundNo);
 }
