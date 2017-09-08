@@ -23,6 +23,7 @@ void CardsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void CardsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+
 	releasePos = event->scenePos();//获取释放时光标的坐标
 	QGraphicsScene::mouseReleaseEvent(event);
 }

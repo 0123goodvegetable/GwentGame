@@ -17,15 +17,6 @@
     </qresource>
     <qresource prefix="/cards">
         <file alias="Unseen_Elder">Resources/card/013010530.png</file>
-        <file alias="Bekker_Twister_Mirror">Resources/card/025010091.png</file>
-        <file alias="Impenetrable_Fog">Resources/card/035020092.png</file>
-        <file alias="Biting_Frost">Resources/card/045030092.png</file>
-        <file alias="Dagon">Resources/card/053020630.png</file>
-        <file alias="Archgriffin">Resources/card/063030882.png</file>
-        <file alias="Ge_Els">Resources/card/073040180.png</file>
-        <file alias="Geralt_Igni">Resources/card/83050580.png</file>
-        <file alias="Caranthir">Resources/card/093060880.png</file>
-        <file alias="Wild_Hunt_Rider">Resources/card/103070882.png</file>
         <file alias="Crone_Whispess">Resources/card/112110681.png</file>
         <file alias="Crone_Weavess">Resources/card/122120681.png</file>
         <file alias="Crone_Brewess">Resources/card/132130881.png</file>
@@ -45,6 +36,15 @@
         <file alias="Raging_Wolf">Resources/card/160160182.png</file>
         <file alias="Arachas">Resources/card/261260382.png</file>
         <file alias="Arachas_Behemoth">Resources/card/272270682.png</file>
+        <file alias="Bekker_Twister_Mirror">Resources/card/025020091.png</file>
+        <file alias="Impenetrable_Fog">Resources/card/035030092.png</file>
+        <file alias="Biting_Frost">Resources/card/045040092.png</file>
+        <file alias="Dagon">Resources/card/053050630.png</file>
+        <file alias="Archgriffin">Resources/card/063060882.png</file>
+        <file alias="Ge_Els">Resources/card/073070180.png</file>
+        <file alias="Geralt_Igni">Resources/card/083080580.png</file>
+        <file alias="Caranthir">Resources/card/093090880.png</file>
+        <file alias="Wild_Hunt_Rider">Resources/card/103100882.png</file>
     </qresource>
     <qresource prefix="/cursors">
         <file>Resources/cursor/cursor1_icon.png</file>

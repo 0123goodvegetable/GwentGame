@@ -11,11 +11,11 @@ public:
 	~AllCards() {}
 
 int Unseen_Elder_No = 13010530;
- int Bekker_Twister_Mirror_No = 25010091;
- int Impenetrable_Fog_No = 35020092;
- int Biting_Frost_No = 45030092;
- int Dagon_No = 53020630;
- int Archgriffin_No = 63030882;
+ int Bekker_Twister_Mirror_No = 25020091;
+ int Impenetrable_Fog_No = 35030092;
+ int Biting_Frost_No = 45040092;
+ int Dagon_No = 53050630;
+ int Archgriffin_No = 63060882;
  int Ge_Els_No = 73070180;
  int Geralt_Igni_No = 83080580;
  int Caranthir_No = 93090880;

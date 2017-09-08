@@ -37,6 +37,7 @@ int COLUMN_LENGTH;//卡牌栏长度
 
 //使用技能次数
 const int UNSEEN_ELDER_SKILL_TIMES = 2;
+const int NORMAL_SKILL_TIMES = 1;
 
 GamePlayingBackground::GamePlayingBackground(QWidget *parent)
 	: QWidget(parent)
@@ -61,6 +62,13 @@ void GamePlayingBackground::init()
 	operation = false;
 	isUsingSkill = false;
 	usingSkillTimes = 0;
+
+	m_Melee_weather = 0;
+	m_Archer_weather = 0;
+	m_Siege_weather = 0;
+	e_Melee_weather = 0;
+	e_Archer_weather = 0;
+	e_Siege_weather = 0;
 
 
 	//从文本中获取牌组
@@ -105,14 +113,16 @@ void GamePlayingBackground::init()
 
 		//用于卡牌的点击
 		connect(cardUILists.at(i), SIGNAL(cardIsPressed()),
-			this, SLOT(isPressed()));
+			this, SLOT(CardisPressed()));
 		connect(cardUILists.at(i), SIGNAL(cardIsReleased()),
-			this, SLOT(isReleased()));
+			this, SLOT(CardisReleased()));
 
 		//向场景中添加部件
 		scene1->addItem(card_temp);
 		i++;
 	}
+
+	selected_card = cardUILists[0];//初始化
 
 	//调整卡牌尺寸
 	cardUISizeAdjust();
@@ -228,57 +238,69 @@ void GamePlayingBackground::isMoving(QPointF &pos)
 		{
 		case 0:
 			cardUILists[num]->setPos(pos_x, M_MELEE_COLUMN_POS_Y);
+			cardUILists[num]->operating_card->isWeatherControlled = m_Melee_weather;
 			break;
 		case 1:
 			cardUILists[num]->setPos(pos_x, M_ARCHER_COLUMN_POS_Y);
+			cardUILists[num]->operating_card->isWeatherControlled = m_Archer_weather;
+
 			break;
 		case 2:
 			cardUILists[num]->setPos(pos_x, M_SIEGE_COLUMN_POS_Y);
+			cardUILists[num]->operating_card->isWeatherControlled = m_Siege_weather;
 			break;
 		case 3:
 			if (pos_y < M_ARCHER_COLUMN_POS_Y)
 			{
 				cardUILists[num]->setPos(pos_x, M_MELEE_COLUMN_POS_Y);
+				cardUILists[num]->operating_card->isWeatherControlled = m_Melee_weather;
 			}
 			else if (pos_y >= M_ARCHER_COLUMN_POS_Y&&pos_y < M_SIEGE_COLUMN_POS_Y)
 			{
 				cardUILists[num]->setPos(pos_x, M_ARCHER_COLUMN_POS_Y);
+				cardUILists[num]->operating_card->isWeatherControlled = m_Archer_weather;
 			}
 			else
 			{
 				cardUILists[num]->setPos(pos_x, M_SIEGE_COLUMN_POS_Y);
+				cardUILists[num]->operating_card->isWeatherControlled = m_Siege_weather;
 			}
 			break;
 		case 4:
 			if (pos_y < E_ARCHER_COLUMN_POS_Y)
 			{
 				cardUILists[num]->setPos(pos_x, E_SIEGE_COLUMN_POS_Y);
+				cardUILists[num]->operating_card->isWeatherControlled = e_Siege_weather;
 			}
 			else if (pos_y >= E_ARCHER_COLUMN_POS_Y&&pos_y < E_MELEE_COLUMN_POS_Y)
 			{
 				cardUILists[num]->setPos(pos_x, E_ARCHER_COLUMN_POS_Y);
+				cardUILists[num]->operating_card->isWeatherControlled = e_Archer_weather;
 			}
 			else
 			{
 				cardUILists[num]->setPos(pos_x, E_MELEE_COLUMN_POS_Y);
+				cardUILists[num]->operating_card->isWeatherControlled = e_Melee_weather;
 			}
 			break;
 		case 5:
 			cardUILists[num]->operating_card->isGarbaged = true;
+			cardUILists[num]->operating_card->isFielded = false;
+			break;
 		}
 	}
 
 }
 
 //槽函数，当cardUI鼠标按下时执行，设置鼠标按下变量为真
-void GamePlayingBackground::isPressed()
+void GamePlayingBackground::CardisPressed()
 {
 	Pressed = true;
 }
 
 //槽函数，当cardUI鼠标释放时执行
 //若此时在操作一张卡牌，则释放技能
-void GamePlayingBackground::isReleased()
+void GamePlayingBackground::CardisReleased()
 {
 	if (operation == true&&isUsingSkill==false)//正在操作一张牌
 	{
@@ -292,21 +314,28 @@ void GamePlayingBackground::isReleased()
 		usingSkill_card = selected_card;
 		isUsingSkill = true;
 
+		switch (usingSkill_card->operating_card->ID)
+		{
+		case 2://贝克尔扭曲之镜,不需要选择对象
+			emit toUseSkills(usingSkill_card->operating_card);//使用技能
+			break;
+		}
+
 		updateStatus();
 	}
 	else if(operation == false && isUsingSkill ==true)
 	{
-		switch (usingSkill_card->operating_card->ID)
+		
+		if (usingSkill_card->operating_card->ID==1&&
+			usingSkillTimes<UNSEEN_ELDER_SKILL_TIMES)//使用两次技能。。写的方法比较麻烦
 		{
-		case 1:
-			if (usingSkillTimes<UNSEEN_ELDER_SKILL_TIMES)//使用两次技能。。写的方法比较麻烦
-			{
-				emit toUseSkills(usingSkill_card->operating_card);//使用技能
-			}
+			emit toUseSkills(usingSkill_card->operating_card);//使用技能
 		}
+		else
+		{
+			emit toUseSkills(usingSkill_card->operating_card);//使用技能
+		}		
 	}	
-
-
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
@@ -370,6 +399,7 @@ bool GamePlayingBackground::isCardUIClicked()
 
 void GamePlayingBackground::cardUISizeAdjust()
 {
+	//卡牌尺寸调整
 	quint16 i = 0;
 	foreach(CardsUI* card, cardUILists)
 	{
@@ -442,14 +472,14 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 //槽函数，用于卡牌施放技能
 void GamePlayingBackground::useSkills(Card *card)
 {
+	bool cardExist = false;///存在目标卡牌
 	switch (card->skill)
 	{
 	case 1://暗影长者
-		bool cardExist = false;
 		foreach(CardsUI *card, cardUILists)
 		{
-			if (card->operating_card->ID != 1 && 
-				card->operating_card->isFielded == true &&
+			if (card->operating_card->isFriend ==true && 
+				//card->operating_card->isFielded == true &&
 				card->operating_card->ID != 1)
 			{
 				cardExist = true;
@@ -459,7 +489,7 @@ void GamePlayingBackground::useSkills(Card *card)
 		//存在满足条件的卡牌
 		if (cardExist)
 		{
-			if (selected_card->operating_card->isFielded == true &&
+			if (//selected_card->operating_card->isFielded == true &&
 				selected_card->operating_card->isFriend == true &&
 				selected_card->operating_card->ID != 1)//选取非自身的友军牌
 			{
@@ -480,6 +510,133 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			cardExist = false;
+		}
+		break;
+
+	case 2://贝克尔扭曲之镜
+		conductor = new PlayingLogic(cardUILists);
+		updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+		updateStatus();
+		delete conductor;
+		//还原
+		setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+		usingSkillTimes = 0;
+		operation = false;
+		isUsingSkill = false;
+		break;
+
+	case 3://蔽日浓雾
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->isFriend == false &&
+				card->operating_card->isFielded == true)//在场上的敌方英雄
+			{
+				cardExist = true;
+				break;
+			}
+		}
+		//存在满足条件的卡牌
+		if (cardExist)
+		{
+			if (selected_card->operating_card->isFielded == true &&
+				selected_card->operating_card->isFriend == false )
+			{
+				//设置该排天气情况
+				if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
+				{
+					e_Melee_weather = 1;
+				}
+				else if (selected_card->pos().y() == E_ARCHER_COLUMN_POS_Y)
+				{
+					e_Archer_weather = 1;
+				}
+				else if (selected_card->pos().y() == E_SIEGE_COLUMN_POS_Y)
+				{
+					e_Siege_weather = 1;
+				}
+
+				int i = 0;
+				foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+				{
+					if (card->pos().y() == selected_card->pos().y() &&
+						card->operating_card->isFielded == true)
+					{
+						cardUILists[i]->operating_card->isSelected = true;
+					}
+					i++;
+				}
+				conductor = new PlayingLogic(cardUILists);
+				updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+				updateStatus();
+				delete conductor;
+				usingSkillTimes++;
+			}
+		}
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+			cardExist = false;
+		}
+		break;
+		
+	case 4://刺骨冰霜
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (//card->operating_card->isFriend == false &&
+				card->operating_card->isFielded == true)//在场上的敌方英雄
+			{
+				cardExist = true;
+				break;
+			}
+		}
+		//存在满足条件的卡牌
+		if (cardExist)
+		{
+			if (selected_card->operating_card->isFielded == true)//&&
+				//selected_card->operating_card->isFriend == true )
+			{
+				//设置该排天气情况
+				if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
+				{
+					e_Melee_weather = 2;
+				}
+				else if (selected_card->pos().y() == E_ARCHER_COLUMN_POS_Y)
+				{
+					e_Archer_weather = 2;
+				}
+				else if (selected_card->pos().y() == E_SIEGE_COLUMN_POS_Y)
+				{
+					e_Siege_weather = 2;
+				}
+
+				int i = 0;
+				foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+				{
+					if (card->pos().y() == selected_card->pos().y() &&
+						card->operating_card->isFielded == true)
+					{
+						cardUILists[i]->operating_card->isSelected = true;
+					}
+					i++;
+				}
+				conductor = new PlayingLogic(cardUILists);
+				updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+				updateStatus();
+				delete conductor;
+				usingSkillTimes++;
+			}
+		}
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+			cardExist = false;
 		}
 		break;
 	}

@@ -151,19 +151,19 @@ void  Card::AddName(int num)
 	case 13010530:
 		name = "Unseen_Elder";
 		break;
-	case 25010091:
+	case 25020091:
 		name = "Bekker_Twister_Mirror";
 		break;
-	case 35020092:
+	case 35030092:
 		name = "Impenetrable_Fog";
 		break;
-	case 45030092:
+	case 45040092:
 		name = "Biting_Frost";
 		break;
-	case 53020630:
+	case 53050630:
 		name = "Dagon";
 		break;
-	case 63030882:
+	case 63060882:
 		name = "Archgriffin";
 		break;
 	case 73070180:

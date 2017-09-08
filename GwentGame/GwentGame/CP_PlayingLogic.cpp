@@ -158,7 +158,7 @@ void PlayingLogic::skill2()
 	cardStack[num]->operating_card->isGarbaged = true;
 
 	//搜寻打出卡牌后的后续卡牌,交换战斗力
-	int max_num, min_num, max_attack = cardStack[0]->operating_card->attack, min_attack = cardStack[0]->operating_card->attack;
+	int max_num=0, min_num=0, max_attack = cardStack[0]->operating_card->attack, min_attack = cardStack[0]->operating_card->attack;
 	for (int i = 0; i < cardStack.size(); i++)
 	{
 		if (cardStack[i]->operating_card->isFielded==true)
