@@ -449,7 +449,7 @@ void GamePlayingBackground::useSkills(Card *card)
 		foreach(CardsUI *card, cardUILists)
 		{
 			if (card->operating_card->ID != 1 && 
-				//card->operating_card->isFielded == true &&
+				card->operating_card->isFielded == true &&
 				card->operating_card->ID != 1)
 			{
 				cardExist = true;
@@ -459,7 +459,7 @@ void GamePlayingBackground::useSkills(Card *card)
 		//存在满足条件的卡牌
 		if (cardExist)
 		{
-			if (//selected_card->operating_card->isFielded == true &&
+			if (selected_card->operating_card->isFielded == true &&
 				selected_card->operating_card->isFriend == true &&
 				selected_card->operating_card->ID != 1)//选取非自身的友军牌
 			{
