@@ -28,6 +28,8 @@ int Unseen_Elder_No = 13010590;
  int Thunderbolt_potion_No = 145140012;
  int Woodland_Spirit_No = 153150510;
  int Raging_Wolf_No = 160160112;
+ int Raging_Wolf2_No = 160160122;
+ int Raging_Wolf3_No = 160160132;
  int Roach_No = 173170411;
  int First_Light_No = 185180012;
  int Torrential_Rain_No = 195190012;
@@ -43,7 +45,7 @@ int Unseen_Elder_No = 13010590;
  int Commander_Horn = 295290011;
 
 
-	const int AllCardsNo[33] =
+	const int AllCardsNo[35] =
 	{	0,
 		Unseen_Elder_No,
 		Bekker_Twister_Mirror_No,
@@ -63,6 +65,8 @@ int Unseen_Elder_No = 13010590;
 		Thunderbolt_potion_No,
 		Woodland_Spirit_No,
 		Raging_Wolf_No,
+		Raging_Wolf2_No,
+		Raging_Wolf3_No,
 		Roach_No,
 		First_Light_No,
 		Torrential_Rain_No,

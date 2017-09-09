@@ -12,6 +12,9 @@
 #include<QTextStream>
 #include<QCursor>
 
+#define min(x,y) x<y?x:y//最小值
+#define max(x,y) x>y?x:y//最大值
+
 //定义全局变量
 const qreal CARD_DIS = 80;//卡牌间距
 
@@ -167,7 +170,7 @@ void GamePlayingBackground::updateCoordinate()
 
 void GamePlayingBackground::updateStatus()
 {
-	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0;
+	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0, i = 0;
 	foreach(CardsUI* card_temp, cardUILists)
 	{
 		if (card_temp->operating_card->isGarbaged == true)//卡牌进入坟墓
@@ -182,36 +185,43 @@ void GamePlayingBackground::updateStatus()
 		else if(card_temp->pos().y()==M_MELEE_COLUMN_POS_Y)
 		{
 			card_temp->setPos(COLUMN_POS_X + num2*CARD_DIS,M_MELEE_COLUMN_POS_Y);
+			cardUILists[i]->operating_card->isWeatherControlled = m_Melee_weather;
 			num2++;
 		}
 		else if (card_temp->pos().y() == M_ARCHER_COLUMN_POS_Y)
 		{
 			card_temp->setPos(COLUMN_POS_X + num3*CARD_DIS, M_ARCHER_COLUMN_POS_Y);
+			cardUILists[i]->operating_card->isWeatherControlled = m_Archer_weather;
 			num3++;
 		}
 		else if (card_temp->pos().y() == M_SIEGE_COLUMN_POS_Y)
 		{
 			card_temp->setPos(COLUMN_POS_X + num4*CARD_DIS, M_SIEGE_COLUMN_POS_Y);
+			cardUILists[i]->operating_card->isWeatherControlled = m_Siege_weather;
 			num4++;
 		}
 		else if (card_temp->pos().y() == E_MELEE_COLUMN_POS_Y)
 		{
 			card_temp->setPos(COLUMN_POS_X + num5*CARD_DIS, E_MELEE_COLUMN_POS_Y);
+			cardUILists[i]->operating_card->isWeatherControlled = e_Melee_weather;
 			num5++;
 		}
 		else if (card_temp->pos().y() == E_ARCHER_COLUMN_POS_Y)
 		{
 			card_temp->setPos(COLUMN_POS_X + num6*CARD_DIS, E_ARCHER_COLUMN_POS_Y);
+			cardUILists[i]->operating_card->isWeatherControlled = e_Archer_weather;
 			num6++;
 		}
 		else if (card_temp->pos().y() == E_SIEGE_COLUMN_POS_Y)
 		{
 			card_temp->setPos(COLUMN_POS_X + num7*CARD_DIS, E_SIEGE_COLUMN_POS_Y);
+			cardUILists[i]->operating_card->isWeatherControlled = e_Siege_weather;
 			num7++;
 		}
+		i++;
 	}
 
-	int i = 0;
+	i = 0;
 	foreach(CardsUI *card, cardUILists)
 	{
 		cardUIPosLists[i] = card->pos();
@@ -320,6 +330,8 @@ void GamePlayingBackground::CardisReleased()
 			pixmap.scaled(30, 30);
 			cursor = QCursor(pixmap, -1, -1);
 			this->setCursor(cursor);
+
+			updateStatus();
 
 			usingSkill_card = selected_card;
 			isUsingSkill = true;
@@ -557,9 +569,27 @@ void GamePlayingBackground::CardisReleased()
 					emit toUseSkills(usingSkill_card->operating_card);
 				}
 				break;
+			case 14://雷霆药水
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFielded == true)//在场上存在单位
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
+				break;
+			case 15://林妖
+				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+				break;
 			}
-
-			updateStatus();
 		}
 		else if (operation == false && isUsingSkill == true)
 		{
@@ -1435,6 +1465,101 @@ void GamePlayingBackground::useSkills(Card *card)
 				}
 			}
 		}
+		updateStatus();
+		usingSkillTimes++;
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+
+	case 14://雷霆药水
+		if (selected_card->operating_card->isFielded == true)
+		{
+			int left_x = COLUMN_POS_X-10, right_x = COLUMN_LENGTH + COLUMN_POS_X+10;
+			foreach(CardsUI *card, cardUILists)
+			{
+				if (card->pos().y() == selected_card->pos().y() &&
+					card->operating_card->isFielded == true)//同一排
+				{
+					if (card->pos().x() < selected_card->operating_card->pos().x())
+					{
+						left_x = max(left_x, card->pos().x());
+					}
+					if(card->pos().x() > selected_card->operating_card->pos().x())
+					{
+						right_x = min(right_x, card->pos().x());
+					}
+				}
+			}
+			i = 0;
+			foreach(CardsUI *card, cardUILists)//选中相邻卡牌
+			{
+				if (card->pos().y() == selected_card->pos().y() &&
+					card->operating_card->isFielded == true&&
+					(card->pos().x()==left_x|| card->pos().x()==right_x|| card->pos().x()==selected_card->pos().x()))//相邻卡牌
+				{
+					cardUILists[i]->operating_card->isSelected = true;
+				}
+				i++;
+			}
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(*usingSkill_card->operating_card, usingSkill_card->operating_card->number));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
+		}
+
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+
+	case 15://林妖
+		//生成三只狼
+		for (int j = 0; j < 3; j++)
+		{
+			temp_card = new CardsUI(allCards.Raging_Wolf_No);
+			pos = QPointF(COLUMN_POS_X, M_MELEE_COLUMN_POS_Y);
+			temp_card->setPos(pos);
+			cardUILists.append(temp_card);
+			cardUIPosLists.append(pos);
+			cardUIPixmapLists.append(temp_card->pixmap());
+			i = cardUILists.indexOf(temp_card);
+			cardUILists[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+			cardUILists[i]->using_background = 4;
+			//用于卡牌的点击
+			connect(cardUILists[i], SIGNAL(cardIsPressed()),
+				this, SLOT(CardisPressed()));
+			connect(cardUILists[i], SIGNAL(cardIsReleased()),
+				this, SLOT(CardisReleased()));
+			//向场景中添加部件
+			main_scene->addItem(cardUILists[i]);
+			cardUISizeAdjust();
+			//将卡牌添加到牌场上
+			cardUILists[i]->operating_card->isFielded = true;
+		}
+		//降下蔽日浓雾
+		if (usingSkill_card->pos().y() == M_MELEE_COLUMN_POS_Y)
+		{
+			e_Melee_weather = 1;
+		}
+		if (usingSkill_card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			e_Archer_weather = 1;
+		}
+		if (usingSkill_card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			e_Siege_weather = 1;
+		}
+
 		updateStatus();
 		usingSkillTimes++;
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)

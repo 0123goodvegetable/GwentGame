@@ -211,6 +211,12 @@ void  Card::AddName(int num)
 	case 160160112:
 		name = "Raging_Wolf";
 		break;
+	case 160160122:
+		name = "Raging_Wolf";
+		break;
+	case 160160132:
+		name = "Raging_Wolf";
+		break;
 	case 173170411:
 		name = "Roach";
 		break;

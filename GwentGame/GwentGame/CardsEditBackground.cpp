@@ -19,7 +19,7 @@
 
 //定义全局变量
 const qreal CARD_DIS = 150;//卡牌间距
-const int CARDS_NUM = 31;//所有卡牌数量
+const int CARDS_NUM = 33;//所有卡牌数量
 
 int SCREEN_WIDTH = 1800;//画面宽度
 int SCREEN_HEIGHT = 961;//画面高度

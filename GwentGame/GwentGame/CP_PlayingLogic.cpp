@@ -43,22 +43,14 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 		break;
 	//9、卡兰希尔不需要额外技能
 	//10、狂猎骑士不需要额外技能
-	/*
-	case 11:
-		skill11();
-		break;
-	case 12:
-		skill12();
-		break;
-	case 13:
-		skill13();
-		break;
+	//11、12、13老巫妪不需要额外技能
+
 	case 14:
-		skill14();
+		skill14(card_No);
 		break;
-	case 15:
-		skill15();
-		break;
+
+	//15、林妖不需要额外技能
+/*
 	case 16:
 		skill16();
 		break;
@@ -258,6 +250,21 @@ void PlayingLogic::skill8(int number)
 			{
 				cardStack[record_num[j]]->operating_card->isGarbaged = true;
 			}
+		}
+	}
+}
+
+//14、雷霆药水
+void PlayingLogic::skill14(int number)
+{
+	//搜寻打出卡牌后的后续卡牌
+	for (int i = 0; i < cardStack.size(); i++)
+	{
+		if (cardStack[i]->operating_card->isSelected == true)
+		{
+			cardStack[i]->operating_card->attack += 3;
+			cardStack[i]->operating_card->armer += 2;
+			cardStack[i]->operating_card->isSelected = false;
 		}
 	}
 }
