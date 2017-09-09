@@ -16,30 +16,30 @@ PlayingLogic::PlayingLogic(QList<CardsUI*> &aim_stack)
 
 }
 
-QList<CardsUI*> PlayingLogic::operateCard(Card &card)
+QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 {
 	//对于卡牌不同的skill进行不同的响应
 	switch (card.skill)
 	{
 	case 1:
-		skill1();
+		skill1(card_No);
 		break;
 	case 2:
-		skill2();
+		skill2(card_No);
 		break;
 	case 3:
-		skill3();
+		skill3(card_No);
 		break;
 	case 4:
-		skill4();
+		skill4(card_No);
 		break;
 	//5、不需要达冈技能
 	case 6:
-		skill6();
+		skill6(card_No);
 		break;
 	//7、盖尔不需要技能
 	case 8:
-		skill8();
+		skill8(card_No);
 		break;
 	//9、卡兰希尔不需要额外技能
 	//10、狂猎骑士不需要额外技能
@@ -111,13 +111,14 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card)
 *实现所有卡牌的技能
 */
 //1、暗影长者
-void PlayingLogic::skill1()
+void PlayingLogic::skill1(int number)
 {
 	//搜寻打出卡牌，设置其属性为在场上
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num)->operating_card->No== allCards.Unseen_Elder_No)
+		if (cardStack.at(num)->operating_card->skill== 1&&
+			cardStack.at(num)->operating_card->number==number)
 		{
 			break;
 		}
@@ -138,7 +139,7 @@ void PlayingLogic::skill1()
 }
 
 //2、贝克尔扭曲之镜
-void PlayingLogic::skill2()
+void PlayingLogic::skill2(int number)
 {
 
 	//搜寻打出卡牌后的后续卡牌,交换战斗力
@@ -174,7 +175,7 @@ void PlayingLogic::skill2()
 }
 
 //3、蔽日浓雾
-void PlayingLogic::skill3()
+void PlayingLogic::skill3(int number)
 {
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
@@ -188,7 +189,7 @@ void PlayingLogic::skill3()
 }
 
 //4、刺骨冰霜
-void PlayingLogic::skill4()
+void PlayingLogic::skill4(int number)
 {
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
@@ -203,7 +204,7 @@ void PlayingLogic::skill4()
 
 
 //6、大狮鹫
-void PlayingLogic::skill6()
+void PlayingLogic::skill6(int number)
 {
 
 	//搜寻打出卡牌后的后续卡牌
@@ -212,19 +213,21 @@ void PlayingLogic::skill6()
 		if (cardStack[i]->operating_card->isSelected==true)
 		{
 			cardStack[i]->operating_card->isWeatherControlled = 0;//清空天气影响
+			cardStack[i]->operating_card->isSelected = false;
 		}
 	}
 
 }
 
 //8、杰洛特：伊格尼法印
-void PlayingLogic::skill8()
+void PlayingLogic::skill8(int number)
 {
 	//搜寻打出卡牌，设置其属性为在场上
 	int num = 0;
 	for (num = 0; num < cardStack.size(); num++)
 	{
-		if (cardStack.at(num)->operating_card->No == allCards.Geralt_Igni_No)
+		if (cardStack.at(num)->operating_card->skill == 8&&
+			cardStack.at(num)->operating_card->number==number)
 		{
 			break;
 		}

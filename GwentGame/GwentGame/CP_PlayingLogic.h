@@ -16,7 +16,7 @@ public:
 	//对于卡牌进行操作（关键函数）
 	//参数：card：打出的卡牌
 	//返回值：卡牌发动技能之后的牌组信息
-	QList<CardsUI*> operateCard(Card &card);
+	QList<CardsUI*> operateCard(Card &card,int card_number);
 	
 private:
 	QList<CardsUI*> cardStack;//用于储存卡牌的状态，将GamePlayingBackground中的卡牌状态进行更新
@@ -24,12 +24,12 @@ private:
 	AllCards allCards;
 
 	//所有卡牌的技能函数
-	void skill1();
-	void skill2();
-	void skill3();
-	void skill4();
-	void skill6();
-	void skill8();
+	void skill1(int number);
+	void skill2(int number);
+	void skill3(int number);
+	void skill4(int number);
+	void skill6(int number);
+	void skill8(int number);
 /*
 	void skill11();
 	void skill12();

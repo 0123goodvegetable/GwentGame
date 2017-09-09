@@ -31,7 +31,7 @@
 			   遗愿：在随机排生成1只鹰身女妖幼崽。（鹰身女妖蛋）
 
 		第四、五位数字（de）记录卡牌攻击力
-		第六位数字（f）记录卡牌是否为英雄（f<5时是英雄）
+		第六位数字（f）记录卡牌是否为英雄（f=9时是英雄）否则其表示同种卡牌个数
 
 	当（a=3）时
 		第二、三位数字（bc）记录功能牌种类
@@ -140,10 +140,15 @@ void Card::CreateLogic(int num)
 	attack = num % 100;//卡牌战斗力
 
 	temp_num = (num / 10) % 10;
-	if (temp_num < 5)
+	if (temp_num ==9 )
 	{
 		isHero = true;
 	}//是否为英雄牌
+	else
+	{
+		isHero = false;
+		number = temp_num;
+	}
 
 	material = num % 10;//卡牌材质
 }
@@ -152,91 +157,97 @@ void  Card::AddName(int num)
 {
 	switch (num)
 	{
-	case 13010530:
+	case 13010590:
 		name = "Unseen_Elder";
 		break;
-	case 25020091:
+	case 25020011:
 		name = "Bekker_Twister_Mirror";
 		break;
-	case 35030092:
+	case 35030012:
 		name = "Impenetrable_Fog";
 		break;
-	case 45040092:
+	case 45040012:
 		name = "Biting_Frost";
 		break;
-	case 53050630:
+	case 53050690:
 		name = "Dagon";
 		break;
-	case 63060882:
+	case 63060812:
 		name = "Archgriffin";
 		break;
-	case 73070180:
+	case 63060822:
+		name = "Archgriffin";
+		break;
+	case 63060832:
+		name = "Archgriffin";
+		break;
+	case 73070110:
 		name = "Ge_Els";
 		break;
-	case 83080580:
+	case 83080510:
 		name = "Geralt_Igni";
 		break;
-	case 93090880:
+	case 93090810:
 		name = "Caranthir";
 		break;
-	case 103100882:
+	case 103100812:
 		name = "Wild_Hunt_Rider";
 		break;
-	case 112110681:
+	case 112110611:
 		name = "Crone_Whispess";
 		break;
-	case 122120681:
+	case 122120611:
 		name = "Crone_Weavess";
 		break;
-	case 132130881:
+	case 132130811:
 		name = "Crone_Brewess";
 		break;
-	case 145140092:
+	case 145140012:
 		name = "Thunderbolt_potion";
 		break;
-	case 153150580:
+	case 153150510:
 		name = "Woodland_Spirit";
 		break;
-	case 160160182:
+	case 160160112:
 		name = "Raging_Wolf";
 		break;
-	case 173170481:
+	case 173170411:
 		name = "Roach";
 		break;
-	case 185180092:
+	case 185180012:
 		name = "First_Light";
 		break;
-	case 195190092:
+	case 195190012:
 		name = "Torrential_Rain";
 		break;
-	case 203200582:
+	case 203200512:
 		name = "Celaeno_Harpy";
 		break;
-	case 215210092:
+	case 215210012:
 		name = "Lacerate";
 		break;
-	case 220220682:
+	case 220220612:
 		name = "Earth_Elemental";
 		break;
-	case 234231281:
+	case 234231211:
 		name = "Frightener";
 		break;
-	case 243240682:
+	case 243240612:
 		name = "Vran_Warrior";
 		break;
-	case 253250482:
+	case 253250412:
 		name = "Foglet";
 		break;
-	case 261260382:
+	case 261260312:
 		name = "Arachas";
 		break;
-	case 272270682:
+	case 272270612:
 		name = "Arachas_Behemoth";
 		break;
-	case 283280182:
+	case 283280112:
 		name = "Harpy_Egg";
 		break;
-	case 295290091:
+	case 295290011:
 		name = "Commander_Horn";
 		break;
 	}

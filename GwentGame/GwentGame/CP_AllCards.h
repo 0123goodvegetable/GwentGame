@@ -10,38 +10,40 @@ public:
 	AllCards() {}
 	~AllCards() {}
 
-int Unseen_Elder_No = 13010530;
- int Bekker_Twister_Mirror_No = 25020091;
- int Impenetrable_Fog_No = 35030092;
- int Biting_Frost_No = 45040092;
- int Dagon_No = 53050630;
- int Archgriffin_No = 63060882;
- int Ge_Els_No = 73070180;
- int Geralt_Igni_No = 83080580;
- int Caranthir_No = 93090880;
- int Wild_Hunt_Rider_No = 103100882;
- int Crone_Whispess_No = 112110681;
- int Crone_Weavess_No = 122120681;
- int Crone_Brewess_No = 132130881;
- int Thunderbolt_potion_No = 145140092;
- int Woodland_Spirit_No = 153150580;
- int Raging_Wolf_No = 160160182;
- int Roach_No = 173170481;
- int First_Light_No = 185180092;
- int Torrential_Rain_No = 195190092;
- int Celaeno_Harpy_No = 203200582;
- int Lacerate_No = 215210092;
- int Earth_Elemental_No = 220220682;
- int Frightener_No = 234231281;
- int Vran_Warrior_No = 243240682;
- int Foglet_No = 253250482;
- int Arachas_No = 261260382;
- int Arachas_Behemoth_No = 272270682;
- int Harpy_Egg_No = 283280182;
- int Commander_Horn = 295290091;
+int Unseen_Elder_No = 13010590;
+ int Bekker_Twister_Mirror_No = 25020011;
+ int Impenetrable_Fog_No = 35030012;
+ int Biting_Frost_No = 45040012;
+ int Dagon_No = 53050690;
+ int Archgriffin_No = 63060812;
+ int Archgriffin2_No = 63060822;
+ int Archgriffin3_No = 63060832;
+ int Ge_Els_No = 73070110;
+ int Geralt_Igni_No = 83080510;
+ int Caranthir_No = 93090810;
+ int Wild_Hunt_Rider_No = 103100812;
+ int Crone_Whispess_No = 112110611;
+ int Crone_Weavess_No = 122120611;
+ int Crone_Brewess_No = 132130811;
+ int Thunderbolt_potion_No = 145140012;
+ int Woodland_Spirit_No = 153150510;
+ int Raging_Wolf_No = 160160112;
+ int Roach_No = 173170411;
+ int First_Light_No = 185180012;
+ int Torrential_Rain_No = 195190012;
+ int Celaeno_Harpy_No = 203200512;
+ int Lacerate_No = 215210012;
+ int Earth_Elemental_No = 220220612;
+ int Frightener_No = 234231211;
+ int Vran_Warrior_No = 243240612;
+ int Foglet_No = 253250412;
+ int Arachas_No = 261260312;
+ int Arachas_Behemoth_No = 272270612;
+ int Harpy_Egg_No = 283280112;
+ int Commander_Horn = 295290011;
 
 
-	const int AllCardsNo[31] =
+	const int AllCardsNo[33] =
 	{	0,
 		Unseen_Elder_No,
 		Bekker_Twister_Mirror_No,
@@ -49,6 +51,8 @@ int Unseen_Elder_No = 13010530;
 		Biting_Frost_No,
 		Dagon_No,
 		Archgriffin_No,
+		Archgriffin2_No,
+		Archgriffin3_No,
 		Ge_Els_No,
 		Geralt_Igni_No,
 		Caranthir_No,

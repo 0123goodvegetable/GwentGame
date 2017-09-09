@@ -19,7 +19,7 @@
 
 //定义全局变量
 const qreal CARD_DIS = 150;//卡牌间距
-const int CARDS_NUM = 29;//所有卡牌数量
+const int CARDS_NUM = 31;//所有卡牌数量
 
 int SCREEN_WIDTH = 1800;//画面宽度
 int SCREEN_HEIGHT = 961;//画面高度
@@ -184,8 +184,6 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 	int i = 0;
 	if (Pressed)
 	{
-		//找到未选择卡组中第一张与最后一张牌,控制卡牌拖拽范围(待完成）
-
 
 		//进行卡牌拖拽(首先判断卡牌在哪一栏）
 		if (selected_card->operating_card->isInGameCardsStack == false)
