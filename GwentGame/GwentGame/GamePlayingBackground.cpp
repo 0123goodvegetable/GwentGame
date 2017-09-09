@@ -323,20 +323,150 @@ void GamePlayingBackground::CardisReleased()
 
 			usingSkill_card = selected_card;
 			isUsingSkill = true;
+			cardExist = false;
 
 			switch (usingSkill_card->operating_card->ID)
 			{
+			case 1://暗影长者
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == true &&
+						card->operating_card->isFielded == true &&
+						card->operating_card->ID != 1)
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
+				break;
 			case 2://贝克尔扭曲之镜,不需要选择对象
 				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+				break;
+			case 3://蔽日浓雾
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == false &&
+						card->operating_card->isFielded == true)//在场上的敌方英雄
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
+				break;
+			case 4://刺骨冰霜
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == false &&
+						card->operating_card->isFielded == true)//在场上的敌方英雄
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
 				break;
 			case 5://达冈,不需要选择对象
 				useChooseScene(usingSkill_card);//选取要使用的天气牌
 				break;
 			case 6://大狮鹫
-				useChooseScene(usingSkill_card);//选取要置入对方墓地的卡牌
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == true &&
+						card->operating_card->isGarbaged == true&&
+						card->operating_card->genre!=5)//在墓地的我方英雄
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == true)
+				{
+					useChooseScene(usingSkill_card);//选取要置入对方墓地的卡牌
+				}
+				else
+				{
+					operation = false;
+					isUsingSkill = true;
+					CardisReleased();
+				}
 				break;
 			case 7://盖尔
 				useChooseScene(usingSkill_card);//选取一张金卡或银卡
+				break;
+			case 8://杰洛特：伊格尼法印
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == false &&
+						card->operating_card->isFielded == true)//在场上的敌方英雄
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
+				break;
+			case 9://卡兰希尔
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == false &&
+						card->operating_card->isFielded == true)//在场上的敌方英雄
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
+				break;
+			case 10://狂猎骑士
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == false &&
+						card->operating_card->isFielded == true&&
+						card->operating_card->isWeatherControlled==2)//在场上的敌方英雄
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+					usingSkillTimes = 0;
+					operation = false;
+					isUsingSkill = false;
+				}
 				break;
 			}
 
@@ -348,7 +478,25 @@ void GamePlayingBackground::CardisReleased()
 			if (usingSkill_card->operating_card->ID == 1 &&
 				usingSkillTimes<UNSEEN_ELDER_SKILL_TIMES)//使用两次技能。。写的方法比较麻烦
 			{
-				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+				cardExist = false;//再次检索
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->isFriend == true &&
+						card->operating_card->isFielded == true &&
+						card->operating_card->ID != 1)
+					{
+						cardExist = true;
+						break;
+					}
+				}
+				if (cardExist == false)
+				{
+					usingSkillTimes++;
+				}
+				else
+				{
+					emit toUseSkills(usingSkill_card->operating_card);//使用技能
+				}			
 			}
 			else
 			{
@@ -650,37 +798,28 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 void GamePlayingBackground::useSkills(Card *card)
 {
 	int i;
-	bool cardExist = false;///存在目标卡牌
+	QPointF pos;
+	CardsUI* temp_card;
 	switch (card->skill)
 	{
 	case 1://暗影长者
-		foreach(CardsUI *card, cardUILists)
-		{
-			if (card->operating_card->isFriend ==true && 
-				//card->operating_card->isFielded == true &&
-				card->operating_card->ID != 1)
-			{
-				cardExist = true;
-				break;
-			}
-		}
+
 		//存在满足条件的卡牌
-		if (cardExist)
+		if (selected_card->operating_card->isFielded == true &&
+			selected_card->operating_card->isFriend == true &&
+			selected_card->operating_card->ID != 1)//选取非自身的友军牌
 		{
-			if (//selected_card->operating_card->isFielded == true &&
-				selected_card->operating_card->isFriend == true &&
-				selected_card->operating_card->ID != 1)//选取非自身的友军牌
-			{
-				int num = cardUILists.indexOf(selected_card);
-				cardUILists[num]->operating_card->isSelected = true;
-				Card card(allCards.Unseen_Elder_No);
-				conductor = new PlayingLogic(cardUILists);
-				updateStack(conductor->operateCard(card));
-				updateStatus();
-				delete conductor;
-				usingSkillTimes++;
-			}
+			int num = cardUILists.indexOf(selected_card);
+			cardUILists[num]->operating_card->isSelected = true;
+			Card card(allCards.Unseen_Elder_No);
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(card));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
+			CardisReleased();
 		}
+	
 		//还原
 		if (usingSkillTimes == UNSEEN_ELDER_SKILL_TIMES)
 		{
@@ -688,7 +827,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
-			cardExist = false;
+
 		}
 		break;
 
@@ -705,116 +844,93 @@ void GamePlayingBackground::useSkills(Card *card)
 		break;
 
 	case 3://蔽日浓雾
-		foreach(CardsUI *card, cardUILists)
-		{
-			if (card->operating_card->isFriend == false &&
-				card->operating_card->isFielded == true)//在场上的敌方英雄
-			{
-				cardExist = true;
-				break;
-			}
-		}
 		//存在满足条件的卡牌
-		if (cardExist)
+		if (selected_card->operating_card->isFielded == true&&
+			selected_card->operating_card->isFriend == false )
 		{
-			if (selected_card->operating_card->isFielded == true&&
-				selected_card->operating_card->isFriend == false )
+			//设置该排天气情况
+			if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
 			{
-				//设置该排天气情况
-				if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
-				{
-					e_Melee_weather = 1;
-				}
-				else if (selected_card->pos().y() == E_ARCHER_COLUMN_POS_Y)
-				{
-					e_Archer_weather = 1;
-				}
-				else if (selected_card->pos().y() == E_SIEGE_COLUMN_POS_Y)
-				{
-					e_Siege_weather = 1;
-				}
-
+				e_Melee_weather = 1;
+			}
+			else if (selected_card->pos().y() == E_ARCHER_COLUMN_POS_Y)
+			{
+				e_Archer_weather = 1;
+			}
+			else if (selected_card->pos().y() == E_SIEGE_COLUMN_POS_Y)
+			{
+				e_Siege_weather = 1;
+			}
 				int i = 0;
-				foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
-				{
-					if (card->pos().y() == selected_card->pos().y() &&
-						card->operating_card->isFielded == true)
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == selected_card->pos().y() &&
+					card->operating_card->isFielded == true)
 					{
 						cardUILists[i]->operating_card->isSelected = true;
 					}
 					i++;
-				}
-				conductor = new PlayingLogic(cardUILists);
-				updateStack(conductor->operateCard(*usingSkill_card->operating_card));
-				updateStatus();
-				delete conductor;
-				usingSkillTimes++;
 			}
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
 		}
+
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)
 		{
 			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
-			cardExist = false;
 		}
 		break;
 		
 	case 4://刺骨冰霜
-		foreach(CardsUI *card, cardUILists)
-		{
-			if (card->operating_card->isFriend == false &&
-				card->operating_card->isFielded == true)//在场上的敌方英雄
-			{
-				cardExist = true;
-				break;
-			}
-		}
-		//存在满足条件的卡牌
-		if (cardExist)
-		{
-			if (selected_card->operating_card->isFielded == true&&
-				selected_card->operating_card->isFriend == true )
-			{
-				//设置该排天气情况
-				if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
-				{
-					e_Melee_weather = 2;
-				}
-				else if (selected_card->pos().y() == E_ARCHER_COLUMN_POS_Y)
-				{
-					e_Archer_weather = 2;
-				}
-				else if (selected_card->pos().y() == E_SIEGE_COLUMN_POS_Y)
-				{
-					e_Siege_weather = 2;
-				}
 
-				int i = 0;
-				foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
-				{
-					if (card->pos().y() == selected_card->pos().y() &&
-						card->operating_card->isFielded == true)
-					{
-						cardUILists[i]->operating_card->isSelected = true;
-					}
-					i++;
-				}
-				conductor = new PlayingLogic(cardUILists);
-				updateStack(conductor->operateCard(*usingSkill_card->operating_card));
-				updateStatus();
-				delete conductor;
-				usingSkillTimes++;
+		//存在满足条件的卡牌
+		if (selected_card->operating_card->isFielded == true&&
+			selected_card->operating_card->isFriend == true )
+		{
+			//设置该排天气情况
+			if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
+			{
+				e_Melee_weather = 2;
 			}
+			else if (selected_card->pos().y() == E_ARCHER_COLUMN_POS_Y)
+			{
+				e_Archer_weather = 2;
+			}
+			else if (selected_card->pos().y() == E_SIEGE_COLUMN_POS_Y)
+			{
+				e_Siege_weather = 2;
+			}
+
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == selected_card->pos().y() &&
+					card->operating_card->isFielded == true)
+				{
+					cardUILists[i]->operating_card->isSelected = true;
+				}
+				i++;
+			}
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
 		}
+
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)
 		{
 			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
-			cardExist = false;
+
 		}
 		break;
 
@@ -853,17 +969,24 @@ void GamePlayingBackground::useSkills(Card *card)
 		updateStatus();
 		delete conductor;
 		//将一张卡牌移至对方墓地
-		i = 0;
-		foreach(CardsUI *card, cardUILists)
+		if (cardExist == true)
 		{
-			if (card->operating_card->ID==
-				selected_card->operating_card->ID)
+			i = 0;
+			foreach(CardsUI *card, cardUILists)
 			{
-				cardUILists[i]->operating_card->isFriend = false;
-				usingSkillTimes++;
-				break;
+				if (card->operating_card->ID ==
+					selected_card->operating_card->ID)
+				{
+					cardUILists[i]->operating_card->isFriend = false;
+					usingSkillTimes++;
+					break;
+				}
+				i++;
 			}
-			i++;
+		}
+		else
+		{
+			usingSkillTimes++;
 		}
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)
 		{
@@ -878,46 +1001,46 @@ void GamePlayingBackground::useSkills(Card *card)
 
 	case 7://盖尔
 		//将选中的牌插入牌组中
-		CardsUI* temp_card = new CardsUI(selected_card->operating_card->No);
-		QPointF pos = QPointF(COLUMN_POS_X , PREPARE_COLUMN_POS_Y);
+		temp_card = new CardsUI(selected_card->operating_card->No);
+		pos = QPointF(COLUMN_POS_X , PREPARE_COLUMN_POS_Y);
 		temp_card->setPos(pos);
 		cardUILists.append(temp_card);
 		cardUIPosLists.append(pos);
 		cardUIPixmapLists.append(temp_card->pixmap());
-		int No = cardUILists.indexOf(temp_card);
-		cardUILists[No]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-		cardUILists[No]->using_background = 4;
+		i = cardUILists.indexOf(temp_card);
+		cardUILists[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+		cardUILists[i]->using_background = 4;
 		//用于卡牌的点击
-		connect(cardUILists[No], SIGNAL(cardIsPressed()),
+		connect(cardUILists[i], SIGNAL(cardIsPressed()),
 			this, SLOT(CardisPressed()));
-		connect(cardUILists[No], SIGNAL(cardIsReleased()),
+		connect(cardUILists[i], SIGNAL(cardIsReleased()),
 			this, SLOT(CardisReleased()));
 		//向场景中添加部件
-		main_scene->addItem(cardUILists[No]);
+		main_scene->addItem(cardUILists[i]);
 		cardUISizeAdjust();
 
 		//将卡牌添加到牌场上
-		cardUILists[No]->operating_card->isFielded = true;
-		switch (cardUILists[No]->operating_card->genre)
+		cardUILists[i]->operating_card->isFielded = true;
+		switch (cardUILists[i]->operating_card->genre)
 		{
 		case 0:
-			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_MELEE_COLUMN_POS_Y);
+			cardUILists[i]->setPos(cardUILists[i]->pos().x(), M_MELEE_COLUMN_POS_Y);
 			break;
 		case 1:
-			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_ARCHER_COLUMN_POS_Y);
+			cardUILists[i]->setPos(cardUILists[i]->pos().x(), M_ARCHER_COLUMN_POS_Y);
 			break;
 		case 2:
-			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_SIEGE_COLUMN_POS_Y);
+			cardUILists[i]->setPos(cardUILists[i]->pos().x(), M_SIEGE_COLUMN_POS_Y);
 			break;
 		case 3:
-			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_ARCHER_COLUMN_POS_Y);
+			cardUILists[i]->setPos(cardUILists[i]->pos().x(), M_ARCHER_COLUMN_POS_Y);
 			break;
 		case 4:
-			cardUILists[No]->setPos(cardUILists[No]->pos().x(), E_ARCHER_COLUMN_POS_Y);
+			cardUILists[i]->setPos(cardUILists[i]->pos().x(), E_ARCHER_COLUMN_POS_Y);
 			break;
 		case 5:
-			cardUILists[No]->operating_card->isGarbaged = true;
-			cardUILists[No]->operating_card->isFielded = false;
+			cardUILists[i]->operating_card->isGarbaged = true;
+			cardUILists[i]->operating_card->isFielded = false;
 			break;
 		}
 		updateStatus();
@@ -928,10 +1051,136 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = true;
 			useMainScene = true;
-			usingSkill_card = cardUILists[No];
+			usingSkill_card = cardUILists[i];
 			view->setScene(main_scene);
 			CardisReleased();
 		}
+		break;
+
+	case 8://杰洛特：伊格尼法印
+		if (selected_card->operating_card->isFielded == true &&
+			selected_card->operating_card->isFriend == false)
+		{
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == selected_card->pos().y() &&
+					card->operating_card->isFielded == true)
+				{
+					cardUILists[i]->operating_card->isSelected = true;
+				}
+				i++;
+			}
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
+		}
+	
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+
+	case 9://卡兰希尔
+		//存在满足条件的卡牌
+		if (selected_card->operating_card->isFielded == true &&
+			selected_card->operating_card->isFriend == false)
+		{
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->operating_card->ID == selected_card->operating_card->ID)
+				{
+					break;
+				}
+				i++;
+			}
+			if (usingSkill_card->pos().y() == M_MELEE_COLUMN_POS_Y)
+			{
+				cardUILists[i]->setPos(cardUILists[i]->pos().x(), E_MELEE_COLUMN_POS_Y);
+				e_Melee_weather = 2;
+			}
+			else if (usingSkill_card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+			{
+				cardUILists[i]->setPos(cardUILists[i]->pos().x(), E_ARCHER_COLUMN_POS_Y);
+				e_Archer_weather = 2;
+			}
+			else
+			{
+				cardUILists[i]->setPos(cardUILists[i]->pos().x(), E_SIEGE_COLUMN_POS_Y);
+				e_Siege_weather = 2;
+			}
+			i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == selected_card->pos().y() &&
+					card->operating_card->isFielded == true)
+				{
+					cardUILists[i]->operating_card->isSelected = true;
+				}
+				i++;
+			}
+			Card temp_card(allCards.Biting_Frost_No);//降下刺骨冰霜
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(temp_card));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
+		}
+
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+
+	case 10://狂猎骑士
+			//存在满足条件的卡牌
+		if (selected_card->operating_card->isFielded == true &&
+			selected_card->operating_card->isFriend == false &&
+			selected_card->operating_card->isWeatherControlled == 2)
+		{
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == selected_card->pos().y())
+				{
+					cardUILists[i]->operating_card->isWeatherControlled = 4;
+				}
+				i++;
+			}
+			if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
+			{
+				e_Melee_weather = 4;
+			}
+			else if (selected_card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+			{
+				e_Archer_weather = 4;
+			}
+			else
+			{
+				e_Siege_weather = 4;
+			}
+			usingSkillTimes++;
+		}
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+
 	}
 
 }

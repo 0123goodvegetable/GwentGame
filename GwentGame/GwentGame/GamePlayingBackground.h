@@ -53,6 +53,7 @@ private:
 	bool useMainScene;//使用主界面
 	bool operation;//是否在某张卡牌的轮次中
 	bool isUsingSkill;//是否在使用技能阶段
+	bool cardExist;//存在要选取的卡牌
 	int usingSkillTimes;//使用技能次数
 	PlayingLogic *conductor;//释放技能时的指挥
 	AllCards allCards;//所有卡牌信息

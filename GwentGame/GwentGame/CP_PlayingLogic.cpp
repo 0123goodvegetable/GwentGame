@@ -41,12 +41,9 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card)
 	case 8:
 		skill8();
 		break;
-	case 9:
-		skill9();
-		break;
-	/*case 10:
-		skill10();
-		break;
+	//9、卡兰希尔不需要额外技能
+	//10、狂猎骑士不需要额外技能
+	/*
 	case 11:
 		skill11();
 		break;
@@ -135,6 +132,7 @@ void PlayingLogic::skill1()
 			cardStack[i]->operating_card->isGarbaged = true;//该卡牌被吞噬
 			cardStack[num]->operating_card->attack += cardStack[i]->operating_card->attack;//战斗力被暗影长者吸收
 			cardStack[i]->operating_card->isSelected = false;
+			cardStack[i]->operating_card->isFielded = false;
 		}
 	}
 }
@@ -257,37 +255,6 @@ void PlayingLogic::skill8()
 			{
 				cardStack[record_num[j]]->operating_card->isGarbaged = true;
 			}
-		}
-	}
-}
-
-//9、卡兰希尔
-void PlayingLogic::skill9()
-{
-	//搜寻打出卡牌，设置其属性为在场上
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Caranthir_No)
-		{
-			break;
-		}
-	}
-
-	//搜寻打出卡牌后的后续卡牌
-	for (int i = 0; i < cardStack.size(); i++)
-	{
-		if (cardStack[i]->operating_card->isSelected == true)
-		{
-			cardStack[i]->operating_card->genre = cardStack[num]->operating_card->genre;//将敌方单位移至同排
-		}
-	}
-	for (int i = 0; i < cardStack.size(); i++)
-	{
-		if (cardStack[i]->operating_card->isFriend == false&& 
-			cardStack[i]->operating_card->genre==cardStack[num]->operating_card->genre)
-		{
-			cardStack[i]->operating_card->isWeatherControlled = 2;//在该排降下刺骨冰霜
 		}
 	}
 }

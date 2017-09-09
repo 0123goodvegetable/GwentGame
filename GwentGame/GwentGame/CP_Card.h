@@ -35,7 +35,7 @@ public:
 	bool isFielded;//卡牌是否在战场上
 	bool isGarbaged;//卡牌是否进入墓地
 
-	int isWeatherControlled;//卡牌受到天气的影响(0-无，1-蔽日浓雾，2-刺骨冰霜，3-倾盆大雨）
+	int isWeatherControlled;//卡牌受到天气的影响(0-无，1-蔽日浓雾，2-刺骨冰霜，3-倾盆大雨，4-伤害+1的刺骨冰霜）
 
 	int card_width;//卡牌的宽度
 	int card_height;//卡牌的高度

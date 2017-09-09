@@ -30,8 +30,7 @@ private:
 	void skill4();
 	void skill6();
 	void skill8();
-	void skill9();
-	/*void skill10();
+/*
 	void skill11();
 	void skill12();
 	void skill13();
