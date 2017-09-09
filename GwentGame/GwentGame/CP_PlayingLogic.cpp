@@ -33,9 +33,7 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card)
 	case 4:
 		skill4();
 		break;
-	case 5:
-		skill5();
-		break;
+	//5、不需要达冈技能
 	case 6:
 		skill6();
 		break;
@@ -146,16 +144,6 @@ void PlayingLogic::skill1()
 //2、贝克尔扭曲之镜
 void PlayingLogic::skill2()
 {
-	//搜寻打出卡牌，设置其属性为在墓地
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Bekker_Twister_Mirror_No)
-		{
-			break;
-		}
-	}
-	cardStack[num]->operating_card->isGarbaged = true;
 
 	//搜寻打出卡牌后的后续卡牌,交换战斗力
 	int max_num=0, min_num=0, max_attack = cardStack[0]->operating_card->attack, min_attack = cardStack[0]->operating_card->attack;
@@ -192,17 +180,6 @@ void PlayingLogic::skill2()
 //3、蔽日浓雾
 void PlayingLogic::skill3()
 {
-	//搜寻打出卡牌，设置其属性为在墓地
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Impenetrable_Fog_No)
-		{
-			break;
-		}
-	}
-	cardStack[num]->operating_card->isGarbaged = true;
-
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
@@ -217,17 +194,6 @@ void PlayingLogic::skill3()
 //4、刺骨冰霜
 void PlayingLogic::skill4()
 {
-	//搜寻打出卡牌，设置其属性为在墓地
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Biting_Frost_No)
-		{
-			break;
-		}
-	}
-	cardStack[num]->operating_card->isGarbaged = true;
-
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
@@ -239,20 +205,6 @@ void PlayingLogic::skill4()
 	}
 }
 
-//5、*达冈(待完成）
-void PlayingLogic::skill5()
-{
-	//搜寻打出卡牌，设置其属性为在场上
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Dagon_No)
-		{
-			break;
-		}
-	}
-	cardStack[num]->operating_card->isFielded = true;
-}
 
 //6、*大狮鹫(待完成）
 void PlayingLogic::skill6()

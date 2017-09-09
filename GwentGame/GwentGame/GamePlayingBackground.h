@@ -43,11 +43,14 @@ private:
 	void updateCoordinate();//更新游戏画面常量
 	void updateStack(QList<CardsUI *> stack);//更新牌组信息
 
+	void useChooseScene(CardsUI *root_card);//根据root_card设置场景
+
 	QGraphicsView *view;
-	CardsScene *scene1;//正常游戏画面
-	CardsScene *scene2;//卡牌操作游戏画面
+	CardsScene *main_scene;//正常游戏画面
+	CardsScene *choose_scene;//卡牌操作游戏画面
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
+	bool useMainScene;//使用主界面
 	bool operation;//是否在某张卡牌的轮次中
 	bool isUsingSkill;//是否在使用技能阶段
 	int usingSkillTimes;//使用技能次数

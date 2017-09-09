@@ -66,6 +66,7 @@ Card::Card(const Card &root_card)
 	attack = root_card.attack;
 	skill = root_card.skill;
 	material = root_card.material;
+	armer = root_card.armer;
 
 	isHero = root_card.isHero;
 	isFriend = root_card.isFriend;
@@ -74,6 +75,7 @@ Card::Card(const Card &root_card)
 	isSelected = root_card.isSelected;
 	isFielded = root_card.isFielded;
 	isGarbaged = root_card.isGarbaged;
+	isShield = root_card.isShield;
 
 	isWeatherControlled = root_card.isWeatherControlled;
 
@@ -122,6 +124,8 @@ void Card::CreateLogic(int num)
 	isGarbaged = false;
 	isInGameCardsStack = false;
 	isFriend = true;
+	isShield = false;
+	armer = 0;
 	isWeatherControlled = 0;
 	number = 1;
 

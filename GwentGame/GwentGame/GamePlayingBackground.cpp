@@ -15,6 +15,9 @@
 //定义全局变量
 const qreal CARD_DIS = 80;//卡牌间距
 
+const qreal CHOOSE_CARD_DIS = 300;
+const qreal CHOOSE_CARD_HEIGHT = 400;
+
 int SCREEN_WIDTH2 = 1800;//画面宽度
 int SCREEN_HEIGHT2 = 960;//画面高度
 
@@ -62,6 +65,7 @@ void GamePlayingBackground::init()
 	operation = false;
 	isUsingSkill = false;
 	usingSkillTimes = 0;
+	useMainScene = true;
 
 	m_Melee_weather = 0;
 	m_Archer_weather = 0;
@@ -75,17 +79,17 @@ void GamePlayingBackground::init()
 	getFromText();
 
 	view = new QGraphicsView(this);
-	scene1 = new CardsScene();
-	scene2 = new CardsScene();
+	main_scene = new CardsScene();
+	choose_scene = new CardsScene();
 
 	//设置窗口属性（没有滚动条）
 	view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	//建立图像移动的信号槽(游戏主界面）
-	connect(scene1, SIGNAL(selectionChanged()),
+	connect(main_scene, SIGNAL(selectionChanged()),
 		this, SLOT(selectionChanged()));
-	connect(scene1, SIGNAL(isMoving(QPointF&)),
+	connect(main_scene, SIGNAL(isMoving(QPointF&)),
 		this, SLOT(isMoving(QPointF&)));
 
 	//建立释放技能的信号槽
@@ -118,7 +122,7 @@ void GamePlayingBackground::init()
 			this, SLOT(CardisReleased()));
 
 		//向场景中添加部件
-		scene1->addItem(card_temp);
+		main_scene->addItem(card_temp);
 		i++;
 	}
 
@@ -128,7 +132,7 @@ void GamePlayingBackground::init()
 	cardUISizeAdjust();
 
 	//设置视口view的属性
-	view->setScene(scene1);//初始化为游戏主界面
+	view->setScene(main_scene);//初始化为游戏主界面
 	view->setRenderHints(QPainter::Antialiasing);
 	view->setContextMenuPolicy(Qt::NoContextMenu);
 
@@ -162,7 +166,7 @@ void GamePlayingBackground::updateStatus()
 	{
 		if (card_temp->operating_card->isGarbaged == true)//卡牌进入坟墓
 		{
-			scene1->removeItem(card_temp);
+			main_scene->removeItem(card_temp);
 		}
 		else if(card_temp->operating_card->isFielded==false)//卡牌不在场上
 		{
@@ -302,77 +306,102 @@ void GamePlayingBackground::CardisPressed()
 //若此时在操作一张卡牌，则释放技能
 void GamePlayingBackground::CardisReleased()
 {
-	if (operation == true&&isUsingSkill==false)//正在操作一张牌
-	{
-		//更换光标图案
-		QCursor cursor;
-		QPixmap pixmap(":/cursors/Resources/cursor/cursor1_icon.png");
-		pixmap.scaled(30, 30);
-		cursor = QCursor(pixmap, -1, -1);
-		this->setCursor(cursor);
-
-		usingSkill_card = selected_card;
-		isUsingSkill = true;
-
-		switch (usingSkill_card->operating_card->ID)
+		if (operation == true && isUsingSkill == false)//正在操作一张牌
 		{
-		case 2://贝克尔扭曲之镜,不需要选择对象
-			emit toUseSkills(usingSkill_card->operating_card);//使用技能
-			break;
+			//更换光标图案
+			QCursor cursor;
+			QPixmap pixmap(":/cursors/Resources/cursor/cursor1_icon.png");
+			pixmap.scaled(30, 30);
+			cursor = QCursor(pixmap, -1, -1);
+			this->setCursor(cursor);
+
+			usingSkill_card = selected_card;
+			isUsingSkill = true;
+
+			switch (usingSkill_card->operating_card->ID)
+			{
+			case 2://贝克尔扭曲之镜,不需要选择对象
+				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+				break;
+			case 5://达冈,不需要选择对象
+				//emit toUseSkills(usingSkill_card->operating_card);//使用技能
+				useChooseScene(usingSkill_card);
+				break;
+			}
+
+			updateStatus();
+		}
+		else if (operation == false && isUsingSkill == true)
+		{
+
+			if (usingSkill_card->operating_card->ID == 1 &&
+				usingSkillTimes<UNSEEN_ELDER_SKILL_TIMES)//使用两次技能。。写的方法比较麻烦
+			{
+				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+			}
+			else
+			{
+				emit toUseSkills(usingSkill_card->operating_card);//使用技能
+			}
 		}
 
-		updateStatus();
-	}
-	else if(operation == false && isUsingSkill ==true)
-	{
-		
-		if (usingSkill_card->operating_card->ID==1&&
-			usingSkillTimes<UNSEEN_ELDER_SKILL_TIMES)//使用两次技能。。写的方法比较麻烦
-		{
-			emit toUseSkills(usingSkill_card->operating_card);//使用技能
-		}
-		else
-		{
-			emit toUseSkills(usingSkill_card->operating_card);//使用技能
-		}		
-	}	
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
 void GamePlayingBackground::selectionChanged()
 {
-	int i = 0;
-
-	QList<QGraphicsItem *> items = scene1->selectedItems();
-	if (items.count() == 1)
+	if (useMainScene)
 	{
-		//当前所选择的UI图标的坐标
-		QPointF pos = items.first()->pos();
+		int i = 0;
+		QList<QGraphicsItem *> items = main_scene->selectedItems();
+		if (items.count() == 1)
+		{
+			//当前所选择的UI图标的坐标
+			QPointF pos = items.first()->pos();
+			CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
+
+			foreach(CardsUI* card, cardUILists)
+			{
+				if (card == card_temp)
+					break;
+				i++;
+			}
+
+			if (i > cardUILists.size())
+			{
+				return;
+			}
+
+			if (operation == false && isUsingSkill == false)
+			{
+				selected_card = cardUILists[i];//选取操作卡牌
+				operation = true;
+			}
+			else if (isCardUIClicked() == true && isUsingSkill == true)//使用技能
+			{
+				selected_card = cardUILists[i];
+				operation = false;
+			}
+
+		}
+		else
+		{
+			return;
+		}
+	}
+	else if(useMainScene==false)
+	{
+		QList<QGraphicsItem *> items = choose_scene->selectedItems();
 		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
-
-		foreach(CardsUI* card, cardUILists)
+	
+		if (isUsingSkill == true)
 		{
-			if (card == card_temp)
-				break;
-			i++;
-		}
-
-		if (operation == false&&isUsingSkill==false)
-		{
-			selected_card = cardUILists[i];//选取操作卡牌
-			operation = true;
-		}
-		else if (isCardUIClicked() == true && isUsingSkill==true)//使用技能
-		{	
-			selected_card = cardUILists[i];
-			operation = false;	
+			selected_card = card_temp;
+			operation = false;
 		}
 
 	}
-	else
-	{
-		return;
-	}
+
 }
 
 
@@ -382,19 +411,23 @@ void GamePlayingBackground::selectionChanged()
 bool GamePlayingBackground::isCardUIClicked()
 {
 	int i = -1;
-	QList<QGraphicsItem *> items = scene1->selectedItems();
-
-	if (items.count() == 1)
+	if (useMainScene)
 	{
-		QPointF pos = items.first()->pos();
-		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
-		i = cardUILists.indexOf(card_temp);
-		if (pos == cardUIPosLists.at(i))
+		QList<QGraphicsItem *> items = main_scene->selectedItems();
+
+		if (items.count() == 1)
 		{
-			return true;
+			QPointF pos = items.first()->pos();
+			CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
+			i = cardUILists.indexOf(card_temp);
+			if (pos == cardUIPosLists.at(i))
+			{
+				return true;
+			}
 		}
 	}
 	return false;
+
 }
 
 void GamePlayingBackground::cardUISizeAdjust()
@@ -446,6 +479,48 @@ void GamePlayingBackground::putInText()
 	file.close();
 }
 
+void GamePlayingBackground::useChooseScene(CardsUI *root_card)
+{
+	choose_scene->clear();
+	useMainScene = false;
+	switch (root_card->operating_card->ID)
+	{
+	case 5://达冈
+		CardsUI *temp_card[3];
+		QPointF pos;
+		//设置卡牌
+		int No[3] = { allCards.Biting_Frost_No,allCards.Impenetrable_Fog_No,allCards.Torrential_Rain_No };
+		for (int i = 0; i < 3; i++)
+		{
+			temp_card[i] = new CardsUI(No[i]);
+			pos = QPointF(400 + CHOOSE_CARD_DIS * i, 200);
+			temp_card[i]->setPos(pos);
+			temp_card[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+			temp_card[i]->using_background = 4;
+
+			//用于卡牌的点击
+			connect(temp_card[i], SIGNAL(cardIsPressed()),
+				this, SLOT(CardisPressed()));
+			connect(temp_card[i], SIGNAL(cardIsReleased()),
+				this, SLOT(CardisReleased()));
+
+			//向场景中添加部件
+			choose_scene->addItem(temp_card[i]);
+
+			QPixmap pixmap = temp_card[i]->pixmap();
+			pixmap = pixmap.scaled(CHOOSE_CARD_HEIGHT*0.85, CHOOSE_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			temp_card[i]->setPixmap(pixmap);
+		}
+		break;
+
+	}
+	//建立图像移动的信号槽(游戏主界面）
+	connect(choose_scene, SIGNAL(selectionChanged()),
+		this, SLOT(selectionChanged()));
+	view->setScene(choose_scene);
+
+}
+
 void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 {
 	//添加背景
@@ -458,7 +533,7 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 	view->setPalette(palette);
 
 	//调整画面的大小
-	scene1->setSceneRect(geometry().x(), geometry().y(),
+	main_scene->setSceneRect(geometry().x(), geometry().y(),
 		geometry().width(), geometry().height());
 
 	//更新全局变量
@@ -539,7 +614,7 @@ void GamePlayingBackground::useSkills(Card *card)
 		//存在满足条件的卡牌
 		if (cardExist)
 		{
-			if (selected_card->operating_card->isFielded == true &&
+			if (selected_card->operating_card->isFielded == true&&
 				selected_card->operating_card->isFriend == false )
 			{
 				//设置该排天气情况
@@ -586,7 +661,7 @@ void GamePlayingBackground::useSkills(Card *card)
 	case 4://刺骨冰霜
 		foreach(CardsUI *card, cardUILists)
 		{
-			if (//card->operating_card->isFriend == false &&
+			if (card->operating_card->isFriend == false &&
 				card->operating_card->isFielded == true)//在场上的敌方英雄
 			{
 				cardExist = true;
@@ -596,8 +671,8 @@ void GamePlayingBackground::useSkills(Card *card)
 		//存在满足条件的卡牌
 		if (cardExist)
 		{
-			if (selected_card->operating_card->isFielded == true)//&&
-				//selected_card->operating_card->isFriend == true )
+			if (selected_card->operating_card->isFielded == true&&
+				selected_card->operating_card->isFriend == true )
 			{
 				//设置该排天气情况
 				if (selected_card->pos().y() == E_MELEE_COLUMN_POS_Y)
@@ -639,5 +714,25 @@ void GamePlayingBackground::useSkills(Card *card)
 			cardExist = false;
 		}
 		break;
+
+	case 5://达冈
+		//恢复原设定
+		if (selected_card->operating_card->ID != usingSkill_card->operating_card->ID)
+		{
+			usingSkillTimes++;
+		}
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			isUsingSkill = false;
+			usingSkillTimes = 0;
+			operation = true;
+			useMainScene = true;
+			usingSkill_card = selected_card;
+			view->setScene(main_scene);
+			CardisReleased();
+		}		
+		break;
+
 	}
+
 }

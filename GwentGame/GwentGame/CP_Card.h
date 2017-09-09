@@ -22,10 +22,12 @@ public:
 
 	int genre;//卡牌种类（近战、远程、攻城、我方任意、敌方任意、功能牌）
 	int attack;//卡牌的攻击力
+	int armer;//卡牌护甲
 	int skill;//卡牌技能（功能牌为其功能）
 	int material;//卡牌材质（金、银、铜）
 	
 	bool isHero;//卡牌是否是英雄牌
+	bool isShield;//卡牌是否有护盾
 	bool isFriend;//卡牌是否是友方卡牌
 	bool isInGameCardsStack;//卡牌是否在游戏牌组中
 	bool isPickerActive;//卡牌能否被选择
