@@ -37,9 +37,7 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card)
 	case 6:
 		skill6();
 		break;
-	case 7:
-		skill7();
-		break;
+	//7、盖尔不需要技能
 	case 8:
 		skill8();
 		break;
@@ -206,54 +204,16 @@ void PlayingLogic::skill4()
 }
 
 
-//6、*大狮鹫(待完成）
+//6、大狮鹫
 void PlayingLogic::skill6()
 {
-	//搜寻打出卡牌，设置其属性为在场上
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Archgriffin_No)
-		{
-			break;
-		}
-	}
-	cardStack[num]->operating_card->isFielded = true;
 
 	//搜寻打出卡牌后的后续卡牌
 	for (int i = 0; i < cardStack.size(); i++)
 	{
-		if (cardStack[i]->operating_card->isFielded==true&&
-			cardStack[i]->operating_card->isFriend==true&&
-			cardStack[i]->operating_card->genre== cardStack[num]->operating_card->genre)
+		if (cardStack[i]->operating_card->isSelected==true)
 		{
 			cardStack[i]->operating_card->isWeatherControlled = 0;//清空天气影响
-			
-		}
-	}
-
-}
-
-//7、盖尔
-void PlayingLogic::skill7()
-{
-	//搜寻打出卡牌，设置其属性为在场上
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->No == allCards.Ge_Els_No)
-		{
-			break;
-		}
-	}
-	cardStack[num]->operating_card->isFielded = true;
-
-	//搜寻打出卡牌后的后续卡牌
-	for (int i = 0; i < cardStack.size(); i++)
-	{
-		if (cardStack[i]->operating_card->isSelected == true)
-		{
-			cardStack[i]->operating_card->isFielded = true;//打出一张金色或者银色牌
 		}
 	}
 

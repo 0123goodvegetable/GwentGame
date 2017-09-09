@@ -15,8 +15,8 @@
 //定义全局变量
 const qreal CARD_DIS = 80;//卡牌间距
 
-const qreal CHOOSE_CARD_DIS = 300;
-const qreal CHOOSE_CARD_HEIGHT = 400;
+const qreal CHOOSE_CARD_DIS = 250;
+const qreal CHOOSE_CARD_HEIGHT = 300;
 
 int SCREEN_WIDTH2 = 1800;//画面宽度
 int SCREEN_HEIGHT2 = 960;//画面高度
@@ -107,6 +107,12 @@ void GamePlayingBackground::init()
 		cardUILists.append(temp_card);
 		cardUIPosLists.append(pos);
 		cardUIPixmapLists.append(temp_card->pixmap());
+	}
+
+	for (int i = 0; i < all_cardStackNo.size(); i++)
+	{
+		temp_card = new CardsUI(all_cardStackNo.at(i));
+		allCardUILists.append(temp_card);
 	}
 
 	int i = 0;
@@ -324,8 +330,13 @@ void GamePlayingBackground::CardisReleased()
 				emit toUseSkills(usingSkill_card->operating_card);//使用技能
 				break;
 			case 5://达冈,不需要选择对象
-				//emit toUseSkills(usingSkill_card->operating_card);//使用技能
-				useChooseScene(usingSkill_card);
+				useChooseScene(usingSkill_card);//选取要使用的天气牌
+				break;
+			case 6://大狮鹫
+				useChooseScene(usingSkill_card);//选取要置入对方墓地的卡牌
+				break;
+			case 7://盖尔
+				useChooseScene(usingSkill_card);//选取一张金卡或银卡
 				break;
 			}
 
@@ -446,11 +457,11 @@ void GamePlayingBackground::cardUISizeAdjust()
 
 void GamePlayingBackground::getFromText()
 {
-	QFile file("playingCardStack.txt");
+	QFile file1("playingCardStack.txt");
 
-	if (file.open(QFile::ReadOnly))
+	if (file1.open(QFile::ReadOnly))
 	{
-		QTextStream inPut(&file);
+		QTextStream inPut(&file1);
 		QString temp_No;
 		while (!inPut.atEnd())
 		{
@@ -459,7 +470,22 @@ void GamePlayingBackground::getFromText()
 		}
 	}
 
-	file.close();
+	file1.close();
+
+	QFile file2("gameCardStack.txt");
+
+	if (file2.open(QFile::ReadOnly))
+	{
+		QTextStream inPut(&file2);
+		QString temp_No;
+		while (!inPut.atEnd())
+		{
+			temp_No = inPut.readLine();
+			all_cardStackNo.append(temp_No.toInt());
+		}
+	}
+
+	file2.close();
 }
 
 void GamePlayingBackground::putInText()
@@ -483,36 +509,112 @@ void GamePlayingBackground::useChooseScene(CardsUI *root_card)
 {
 	choose_scene->clear();
 	useMainScene = false;
+	int i;
+
+	QPointF pos;
+	int No[3] = { allCards.Biting_Frost_No,allCards.Impenetrable_Fog_No,allCards.Torrential_Rain_No };//三张天气牌信息
+	QList<CardsUI *>garbaged_card;//墓地中的牌
 	switch (root_card->operating_card->ID)
 	{
 	case 5://达冈
-		CardsUI *temp_card[3];
-		QPointF pos;
+		CardsUI *weather_card[3];
 		//设置卡牌
-		int No[3] = { allCards.Biting_Frost_No,allCards.Impenetrable_Fog_No,allCards.Torrential_Rain_No };
 		for (int i = 0; i < 3; i++)
 		{
-			temp_card[i] = new CardsUI(No[i]);
-			pos = QPointF(400 + CHOOSE_CARD_DIS * i, 200);
-			temp_card[i]->setPos(pos);
-			temp_card[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-			temp_card[i]->using_background = 4;
+			weather_card[i] = new CardsUI(No[i]);
+			pos = QPointF(300 + CHOOSE_CARD_DIS * i, 200);
+			weather_card[i]->setPos(pos);
+			weather_card[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+			weather_card[i]->using_background = 4;
 
 			//用于卡牌的点击
-			connect(temp_card[i], SIGNAL(cardIsPressed()),
+			connect(weather_card[i], SIGNAL(cardIsPressed()),
 				this, SLOT(CardisPressed()));
-			connect(temp_card[i], SIGNAL(cardIsReleased()),
+			connect(weather_card[i], SIGNAL(cardIsReleased()),
 				this, SLOT(CardisReleased()));
 
 			//向场景中添加部件
-			choose_scene->addItem(temp_card[i]);
+			choose_scene->addItem(weather_card[i]);
 
-			QPixmap pixmap = temp_card[i]->pixmap();
+			QPixmap pixmap = weather_card[i]->pixmap();
 			pixmap = pixmap.scaled(CHOOSE_CARD_HEIGHT*0.85, CHOOSE_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-			temp_card[i]->setPixmap(pixmap);
+			weather_card[i]->setPixmap(pixmap);
 		}
 		break;
 
+	case 6://大狮鹫
+		CardsUI *tempcard1;
+		i = 0;
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->isGarbaged == true &&
+				card->operating_card->isFriend == true&&
+				card->operating_card->genre!=5)
+			{
+				tempcard1 = new CardsUI(card->operating_card->No);
+				pos = QPointF(CHOOSE_CARD_DIS * i, 200);
+				tempcard1->setPos(pos);
+				garbaged_card.append(tempcard1);
+				i++;
+			}
+		}
+		for(i=0;i<garbaged_card.size();i++)
+		{
+
+			garbaged_card[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+			garbaged_card[i]->using_background = 4;
+			//用于卡牌的点击
+			connect(garbaged_card[i], SIGNAL(cardIsPressed()),
+				this, SLOT(CardisPressed()));
+			connect(garbaged_card[i], SIGNAL(cardIsReleased()),
+				this, SLOT(CardisReleased()));
+			//向场景中添加部件
+			choose_scene->addItem(garbaged_card[i]);
+
+			QPixmap pixmap = garbaged_card[i]->pixmap();
+			pixmap = pixmap.scaled(CHOOSE_CARD_HEIGHT*0.85, CHOOSE_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			garbaged_card[i]->setPixmap(pixmap);
+			
+		}
+		break;
+
+	case 7://盖尔
+		CardsUI *two_cards[2];
+		int j = 0, num = 0;
+		for (int i = 0; i < 2; i++)
+		{
+			 while (true)
+			{
+				 if((allCardUILists[j]->operating_card->material==0||
+					 allCardUILists[j]->operating_card->material == 1)&&
+					 !my_cardStackNo.contains(all_cardStackNo[j]))//是金卡或银卡且不在现有手牌中
+				 {
+					 num = all_cardStackNo[j];
+					 j++;
+					 break;
+				 }
+				 j++;
+			}
+			two_cards[i] = new CardsUI(num);
+			pos = QPointF(300 + CHOOSE_CARD_DIS * i, 200);
+			two_cards[i]->setPos(pos);
+			two_cards[i]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+			two_cards[i]->using_background = 4;
+
+			//用于卡牌的点击
+			connect(two_cards[i], SIGNAL(cardIsPressed()),
+				this, SLOT(CardisPressed()));
+			connect(two_cards[i], SIGNAL(cardIsReleased()),
+				this, SLOT(CardisReleased()));
+
+			//向场景中添加部件
+			choose_scene->addItem(two_cards[i]);
+
+			QPixmap pixmap = two_cards[i]->pixmap();
+			pixmap = pixmap.scaled(CHOOSE_CARD_HEIGHT*0.85, CHOOSE_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			two_cards[i]->setPixmap(pixmap);
+		}
+		break;
 	}
 	//建立图像移动的信号槽(游戏主界面）
 	connect(choose_scene, SIGNAL(selectionChanged()),
@@ -547,6 +649,7 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 //槽函数，用于卡牌施放技能
 void GamePlayingBackground::useSkills(Card *card)
 {
+	int i;
 	bool cardExist = false;///存在目标卡牌
 	switch (card->skill)
 	{
@@ -733,6 +836,102 @@ void GamePlayingBackground::useSkills(Card *card)
 		}		
 		break;
 
+	case 6://大狮鹫
+		//清除天气效果
+		i = 0;
+		foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+		{
+			if (card->pos().y() == usingSkill_card->pos().y() &&
+				card->operating_card->isFielded == true)
+			{
+				cardUILists[i]->operating_card->isSelected = true;
+			}
+			i++;
+		}
+		conductor = new PlayingLogic(cardUILists);
+		updateStack(conductor->operateCard(*usingSkill_card->operating_card));
+		updateStatus();
+		delete conductor;
+		//将一张卡牌移至对方墓地
+		i = 0;
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->ID==
+				selected_card->operating_card->ID)
+			{
+				cardUILists[i]->operating_card->isFriend = false;
+				usingSkillTimes++;
+				break;
+			}
+			i++;
+		}
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			isUsingSkill = false;
+			usingSkillTimes = 0;
+			operation = false;
+			useMainScene = true;
+			view->setScene(main_scene);
+		}
+		break;
+
+	case 7://盖尔
+		//将选中的牌插入牌组中
+		CardsUI* temp_card = new CardsUI(selected_card->operating_card->No);
+		QPointF pos = QPointF(COLUMN_POS_X , PREPARE_COLUMN_POS_Y);
+		temp_card->setPos(pos);
+		cardUILists.append(temp_card);
+		cardUIPosLists.append(pos);
+		cardUIPixmapLists.append(temp_card->pixmap());
+		int No = cardUILists.indexOf(temp_card);
+		cardUILists[No]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+		cardUILists[No]->using_background = 4;
+		//用于卡牌的点击
+		connect(cardUILists[No], SIGNAL(cardIsPressed()),
+			this, SLOT(CardisPressed()));
+		connect(cardUILists[No], SIGNAL(cardIsReleased()),
+			this, SLOT(CardisReleased()));
+		//向场景中添加部件
+		main_scene->addItem(cardUILists[No]);
+		cardUISizeAdjust();
+
+		//将卡牌添加到牌场上
+		cardUILists[No]->operating_card->isFielded = true;
+		switch (cardUILists[No]->operating_card->genre)
+		{
+		case 0:
+			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_MELEE_COLUMN_POS_Y);
+			break;
+		case 1:
+			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_ARCHER_COLUMN_POS_Y);
+			break;
+		case 2:
+			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_SIEGE_COLUMN_POS_Y);
+			break;
+		case 3:
+			cardUILists[No]->setPos(cardUILists[No]->pos().x(), M_ARCHER_COLUMN_POS_Y);
+			break;
+		case 4:
+			cardUILists[No]->setPos(cardUILists[No]->pos().x(), E_ARCHER_COLUMN_POS_Y);
+			break;
+		case 5:
+			cardUILists[No]->operating_card->isGarbaged = true;
+			cardUILists[No]->operating_card->isFielded = false;
+			break;
+		}
+		updateStatus();
+		usingSkillTimes++;
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			isUsingSkill = false;
+			usingSkillTimes = 0;
+			operation = true;
+			useMainScene = true;
+			usingSkill_card = cardUILists[No];
+			view->setScene(main_scene);
+			CardisReleased();
+		}
 	}
 
 }

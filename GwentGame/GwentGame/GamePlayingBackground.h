@@ -67,10 +67,12 @@ private:
 
 	CardsUI  *selected_card;//当前选择的卡牌
 	CardsUI *usingSkill_card;//将要释放技能的卡牌
-	QList<CardsUI *> cardUILists;//卡牌图片列表
+	QList<CardsUI *> cardUILists;//所有在场上卡牌图片列表
+	QList<CardsUI *> allCardUILists;//我方牌组中所有卡牌列表
 	QList<QPointF> cardUIPosLists;//卡牌图片位置列表
 	QList<QPixmap> cardUIPixmapLists;//卡牌图片图像列表
 	QList<int> my_cardStackNo;//游戏中友方手牌信息
+	QList<int> all_cardStackNo;//所有牌组中卡牌信息
 
 	private slots:
 	void isMoving(QPointF &pos);//鼠标移动函数

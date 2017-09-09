@@ -29,7 +29,6 @@ private:
 	void skill3();
 	void skill4();
 	void skill6();
-	void skill7();
 	void skill8();
 	void skill9();
 	/*void skill10();
