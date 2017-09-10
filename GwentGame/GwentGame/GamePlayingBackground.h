@@ -51,10 +51,12 @@ private:
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
 	bool useMainScene;//使用主界面
-	bool operation;//是否在某张卡牌的轮次中
+	bool operation;//是否在某张卡牌的移动中
 	bool isUsingSkill;//是否在使用技能阶段
 	bool cardExist;//存在要选取的卡牌
 	int usingSkillTimes;//使用技能次数
+	bool isGoldCardOut;//打出一张金色牌（萝卜技能）
+
 	PlayingLogic *conductor;//释放技能时的指挥
 	AllCards allCards;//所有卡牌信息
 	QPoint cursor_point;//光标坐标
@@ -83,5 +85,7 @@ private:
 	void putInText();//将牌组信息存储到文本文件中
 	void getFromText();//从文本文件中获取牌组信息
 	void useSkills(Card *card);//使用技能
+	void whetherUseActiveSkill();//判断是否可以发动主动技能
+	void whetherUseFollowSkill();//判断是否可以发出被动技能
 
 };

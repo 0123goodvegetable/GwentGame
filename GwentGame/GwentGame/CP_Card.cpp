@@ -137,7 +137,7 @@ void Card::CreateLogic(int num)
 	skill = temp_num % 100;//卡牌技能
 
 	temp_num = num / 100;
-	attack = num % 100;//卡牌战斗力
+	attack = temp_num % 100;//卡牌战斗力
 
 	temp_num = (num / 10) % 10;
 	if (temp_num ==9 )
@@ -218,6 +218,12 @@ void  Card::AddName(int num)
 		name = "Raging_Wolf";
 		break;
 	case 173170411:
+		name = "Roach";
+		break;
+	case 173170421:
+		name = "Roach";
+		break;
+	case 173170431:
 		name = "Roach";
 		break;
 	case 185180012:

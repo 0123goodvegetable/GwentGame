@@ -54,6 +54,32 @@ void CardsUI::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 							Qt::AlignCenter,
 							operating_card->name);
 	}
+
+	if (using_background == 4)
+	{
+		QPen pen(Qt::white);
+		painter->setPen(pen);
+		painter->setRenderHint(QPainter::Antialiasing);
+		QFont font("Verdana", 6, QFont::DemiBold);
+		painter->setFont(font);
+		QString index;
+		if (operating_card->isShield)//ÓÐ»¤¶Ü
+		{
+			index = "attack:" + QString::number(operating_card->attack) + "\n"
+				+ "armer:" + QString::number(operating_card->armer) + "\n"
+				+ "shield:1";
+		}
+		else
+		{
+			index = "attack:" + QString::number(operating_card->attack) + "\n"
+				+ "armer:" + QString::number(operating_card->armer) + "\n"
+				+ "shield:0";
+		}
+		
+		painter->drawText(QRectF(0,0,70, 50),
+			Qt::AlignCenter,
+			index);
+	}
 	
 
 }

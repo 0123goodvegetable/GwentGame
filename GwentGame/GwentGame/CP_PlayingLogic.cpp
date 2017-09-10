@@ -50,23 +50,21 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 		break;
 
 	//15、林妖不需要额外技能
+	//16、暴怒的狼无技能
+	case 19:
+		skill19(card_No);
+		break;
+	//20、赛尔伊诺鹰身女妖不需要额外技能
+	case 21:
+		skill21(card_No);
+		break;
+
 /*
-	case 16:
-		skill16();
-		break;
-	case 17:
-		skill17();
-		break;
+
 	case 18:
 		skill18();
 		break;
-	case 19:
-		skill19();
-		break;
-	case 20:
-		skill20();
-		break;
-	case 21:
+
 		skill21();
 		break;
 	case 22:
@@ -264,6 +262,35 @@ void PlayingLogic::skill14(int number)
 		{
 			cardStack[i]->operating_card->attack += 3;
 			cardStack[i]->operating_card->armer += 2;
+			cardStack[i]->operating_card->isSelected = false;
+		}
+	}
+}
+
+//19、倾盆大雨
+void PlayingLogic::skill19(int number)
+{
+	//搜寻打出卡牌后的后续卡牌
+	for (int i = 0; i < cardStack.size(); i++)
+	{
+		if (cardStack[i]->operating_card->isSelected == true)
+		{
+			cardStack[i]->operating_card->isWeatherControlled = 3;
+			cardStack[i]->operating_card->isSelected = false;
+		}
+	}
+}
+
+
+//21\撕裂
+void PlayingLogic::skill21(int number)
+{
+	//搜寻打出卡牌后的后续卡牌
+	for (int i = 0; i < cardStack.size(); i++)
+	{
+		if (cardStack[i]->operating_card->isSelected == true)
+		{
+			cardStack[i]->operating_card->attack -= 3;
 			cardStack[i]->operating_card->isSelected = false;
 		}
 	}
