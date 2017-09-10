@@ -34,6 +34,7 @@ public:
 	bool isSelected;//卡牌是否被选择
 	bool isFielded;//卡牌是否在战场上
 	bool isGarbaged;//卡牌是否进入墓地
+	bool isUseFollowSkill;//卡牌使用过被动技能
 
 	int isWeatherControlled;//卡牌受到天气的影响(0-无，1-蔽日浓雾，2-刺骨冰霜，3-倾盆大雨，4-伤害+1的刺骨冰霜）
 

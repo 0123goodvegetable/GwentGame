@@ -76,6 +76,7 @@ Card::Card(const Card &root_card)
 	isFielded = root_card.isFielded;
 	isGarbaged = root_card.isGarbaged;
 	isShield = root_card.isShield;
+	isUseFollowSkill = root_card.isUseFollowSkill;
 
 	isWeatherControlled = root_card.isWeatherControlled;
 
@@ -125,6 +126,7 @@ void Card::CreateLogic(int num)
 	isInGameCardsStack = false;
 	isFriend = true;
 	isShield = false;
+	isUseFollowSkill = false;
 	armer = 0;
 	isWeatherControlled = 0;
 	number = 1;
@@ -135,6 +137,11 @@ void Card::CreateLogic(int num)
 
 	temp_num = num / 10000;
 	skill = temp_num % 100;//卡牌技能
+	if (skill == 22)//土元素有护盾
+	{
+		isShield = true;
+	}
+
 
 	temp_num = num / 100;
 	attack = temp_num % 100;//卡牌战斗力
@@ -253,6 +260,12 @@ void  Card::AddName(int num)
 	case 261260312:
 		name = "Arachas";
 		break;
+	case 261260322:
+		name = "Arachas";
+		break;
+	case 261260332:
+		name = "Arachas";
+		break;
 	case 272270612:
 		name = "Arachas_Behemoth";
 		break;
@@ -261,6 +274,9 @@ void  Card::AddName(int num)
 		break;
 	case 295290011:
 		name = "Commander_Horn";
+		break;
+	case 300300212:
+		name = "Lesser_Earth_Elemental";
 		break;
 	}
 }

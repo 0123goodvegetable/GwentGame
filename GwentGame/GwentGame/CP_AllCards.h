@@ -42,12 +42,14 @@ int Unseen_Elder_No = 13010590;
  int Vran_Warrior_No = 243240612;
  int Foglet_No = 253250412;
  int Arachas_No = 261260312;
+ int Arachas2_No = 261260322;
+ int Arachas3_No = 261260332;
  int Arachas_Behemoth_No = 272270612;
  int Harpy_Egg_No = 283280112;
- int Commander_Horn = 295290011;
+ int Commander_Horn_No = 295290011;
+ int Lesser_Earth_Elemental_No = 300300212;
 
-
-	const int AllCardsNo[37] =
+	const int AllCardsNo[39] =
 	{	0,
 		Unseen_Elder_No,
 		Bekker_Twister_Mirror_No,
@@ -81,9 +83,11 @@ int Unseen_Elder_No = 13010590;
 		Vran_Warrior_No,
 		Foglet_No,
 		Arachas_No,
+		Arachas2_No,
+		Arachas3_No,
 		Arachas_Behemoth_No,
 		Harpy_Egg_No,
-		Commander_Horn };
+		Commander_Horn_No };
 
 };
 

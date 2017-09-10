@@ -19,7 +19,7 @@
 
 //定义全局变量
 const qreal CARD_DIS = 150;//卡牌间距
-const int CARDS_NUM = 35;//所有卡牌数量
+const int CARDS_NUM = 37;//所有卡牌数量
 
 int SCREEN_WIDTH = 1800;//画面宽度
 int SCREEN_HEIGHT = 961;//画面高度
@@ -198,12 +198,26 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 				i++;
 			}
 		}
-		else
+		else if(selected_card->operating_card->isInGameCardsStack == true&&
+			(selected_card->operating_card->genre==1|| selected_card->operating_card->genre == 3|| selected_card->operating_card->genre == 4))
 		{
 			foreach(CardsUI* card_temp, cardUILists)
 			{
 				if (card_temp->operating_card->isInGameCardsStack == true&&
-					card_temp->operating_card->genre== selected_card->operating_card->genre)
+					(card_temp->operating_card->genre== 1|| card_temp->operating_card->genre == 3|| card_temp->operating_card->genre == 4))
+				{
+					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
+						cardUIPosLists.at(i).y());
+				}
+				i++;
+			}
+		}
+		else
+		{
+			foreach(CardsUI* card_temp, cardUILists)
+			{
+				if (card_temp->operating_card->isInGameCardsStack == true &&
+					card_temp->operating_card->genre == selected_card->operating_card->genre)
 				{
 					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
 						cardUIPosLists.at(i).y());

@@ -35,11 +35,8 @@ private:
 	void skill21(int number);
 	/*
 	void skill18();
-	void skill22();
-	void skill23();
 	void skill24();
 	void skill25();
-	void skill26();
 	void skill27();
 	void skill28();
 	void skill29();*/

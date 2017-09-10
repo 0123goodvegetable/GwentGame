@@ -58,6 +58,9 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 	case 21:
 		skill21(card_No);
 		break;
+	//22、土元素不需要额外技能
+	//23、畏惧者不需要额外技能
+	//26、蟹蜘蛛不需要额外技能
 
 /*
 
@@ -282,7 +285,7 @@ void PlayingLogic::skill19(int number)
 }
 
 
-//21\撕裂
+//21撕裂
 void PlayingLogic::skill21(int number)
 {
 	//搜寻打出卡牌后的后续卡牌
