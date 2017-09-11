@@ -1035,6 +1035,23 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			emit toUseSkills(usingSkill_card->operating_card);
 		}
 		break;
+	case 29://指挥号角
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->isFielded == true)//在场上有卡牌
+			{
+				cardExist = true;
+				break;
+			}
+		}
+		if (cardExist == false)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
 	}
 }
 
@@ -2043,6 +2060,43 @@ void GamePlayingBackground::useSkills(Card *card)
 		}
 		updateStatus();
 		usingSkillTimes++;
+		if (usingSkillTimes == NORMAL_SKILL_TIMES)
+		{
+			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
+			usingSkillTimes = 0;
+			operation = false;
+			isUsingSkill = false;
+		}
+		break;
+
+	case 29://指挥号角
+		if (selected_card->operating_card->isFielded == true)
+		{
+			for (int num = 0; num < 5; num++)
+			{
+				i = 0;
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->pos().y() == selected_card->pos().y() &&
+						card->operating_card->isFielded == true&&
+						card->pos().x()>=selected_card->pos().x())//选中卡牌右侧五张卡牌
+					{
+						cardUILists[i]->operating_card->isSelected = true;
+					}
+					i++;
+				}
+				if (i >= cardUILists.size())
+				{
+					break;
+				}
+			}
+			conductor = new PlayingLogic(cardUILists);
+			updateStack(conductor->operateCard(*usingSkill_card->operating_card, usingSkill_card->operating_card->number));
+			updateStatus();
+			delete conductor;
+			usingSkillTimes++;
+		}
+
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)
 		{
 			setCursor(QCursor(Qt::ArrowCursor));//恢复原光标

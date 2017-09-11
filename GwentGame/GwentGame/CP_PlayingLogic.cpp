@@ -61,6 +61,9 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 	//22、土元素不需要额外技能
 	//23、畏惧者不需要额外技能
 	//26、蟹蜘蛛不需要额外技能
+	case 29:
+		skill29(card_No);
+		break;
 
 /*
 
@@ -91,9 +94,7 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 	case 28:
 		skill28();
 		break;
-	case 29:
-		skill29();
-		break;*/
+*/
 	}
 
 	//返回改变后的牌组状态
@@ -285,7 +286,7 @@ void PlayingLogic::skill19(int number)
 }
 
 
-//21撕裂
+//21、撕裂
 void PlayingLogic::skill21(int number)
 {
 	//搜寻打出卡牌后的后续卡牌
@@ -294,6 +295,20 @@ void PlayingLogic::skill21(int number)
 		if (cardStack[i]->operating_card->isSelected == true)
 		{
 			cardStack[i]->operating_card->attack -= 3;
+			cardStack[i]->operating_card->isSelected = false;
+		}
+	}
+}
+
+//29、指挥号角
+void PlayingLogic::skill29(int number)
+{
+	//搜寻打出卡牌后的后续卡牌
+	for (int i = 0; i < cardStack.size(); i++)
+	{
+		if (cardStack[i]->operating_card->isSelected == true)
+		{
+			cardStack[i]->operating_card->attack += 4;
 			cardStack[i]->operating_card->isSelected = false;
 		}
 	}

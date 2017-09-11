@@ -14,11 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 
-	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), this, SLOT(toCardsSelectionBackground()));
+	connect(gameSelectionBackground->playWithAI_button, SIGNAL(clicked()), this, SLOT(toCardsSelectionBackground()));
 
 	connect(gameSelectionBackground->editCardsDeck_button, SIGNAL(clicked()), this, SLOT(toCardsEditBackground()));
 
 	connect(cardsEditBackground->saveAndQuit_button, SIGNAL(clicked()), this, SLOT(toGameSelectionBackground()));
+
+	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), this, SLOT(toNetConnectionBackground()));
 
 	//联网后待修改
 	connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
@@ -27,12 +29,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-	delete BackgroundController;	
+	/*delete BackgroundController;	
 	delete beginBackground;
 	delete gameSelectionBackground;
 	delete cardsSelectionBackground;
 	delete cardsEditBackground;
-	delete gamePlayingBackground;
+	delete gamePlayingBackground;*/
 }
 
 void MainWindow::init()
@@ -45,6 +47,7 @@ void MainWindow::init()
 	cardsSelectionBackground = new CardsSelectionBackground(this);
 	cardsEditBackground = new CardsEditBackground(this);
 	gamePlayingBackground = new GamePlayingBackground(this);
+	netConnectionBackground = new NetConnectionBackground(this);
 
 	this->setCentralWidget(BackgroundController);//将页面设置为中心窗口
 
@@ -54,6 +57,7 @@ void MainWindow::init()
 	BackgroundController->addWidget(cardsSelectionBackground);
 	BackgroundController->addWidget(cardsEditBackground);
 	BackgroundController->addWidget(gamePlayingBackground);
+	BackgroundController->addWidget(netConnectionBackground);
 
 	BackgroundNo = 0;
 
@@ -102,6 +106,13 @@ void MainWindow::toGamePlayingBackground()
 	gamePlayingBackground = new GamePlayingBackground(this);
 	BackgroundController->insertWidget(4,gamePlayingBackground);
 	BackgroundNo = 4;
+	emit changeBackgroundNo(BackgroundNo);
+}
+
+void MainWindow::toNetConnectionBackground()
+{
+
+	BackgroundNo = 5;
 	emit changeBackgroundNo(BackgroundNo);
 }
 
