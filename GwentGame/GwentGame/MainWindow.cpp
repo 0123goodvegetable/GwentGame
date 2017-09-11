@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 
+#define max(a,b) a>b?a:b
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -15,21 +17,38 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 
 	//按钮与屏幕切换信号槽
-	connect(gameSelectionBackground->playWithAI_button, SIGNAL(clicked()), this, SLOT(toCardsSelectionBackground()));
-	connect(gameSelectionBackground->editCardsDeck_button, SIGNAL(clicked()), this, SLOT(toCardsEditBackground()));
-	connect(cardsEditBackground->saveAndQuit_button, SIGNAL(clicked()), this, SLOT(toGameSelectionBackground()));
-	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), this, SLOT(toNetConnectionBackground()));
+	connect(gameSelectionBackground->playWithAI_button, SIGNAL(clicked()), 
+		this, SLOT(toCardsSelectionBackground()));
+	connect(gameSelectionBackground->editCardsDeck_button, SIGNAL(clicked()), 
+		this, SLOT(toCardsEditBackground()));
+	connect(cardsEditBackground->saveAndQuit_button, SIGNAL(clicked()), 
+		this, SLOT(toGameSelectionBackground()));
+	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), 
+		this, SLOT(toNetConnectionBackground()));
+
+	connect(cardsSelectionBackground->cardsSelectionFinished_button, &QPushButton::clicked,
+		myClient, &MyClient::MeReady);
+	connect(cardsSelectionBackground->cardsSelectionFinished_button, &QPushButton::clicked,
+		myServer, &MyServer::MeReady);
 
 	//网络连接与屏幕切换信号槽
-	connect(myServer, &MyServer::changeBackground, this, &MainWindow::toCardsSelectionBackground);
-	connect(myClient, &MyClient::changeBackground, this, &MainWindow::toCardsSelectionBackground);
+	connect(myServer, &MyServer::changeBackground, 
+		this, &MainWindow::toCardsSelectionBackground);
+	connect(myClient, &MyClient::changeBackground, 
+		this, &MainWindow::toCardsSelectionBackground);
+	connect(myServer, &MyServer::toPlayBackground,
+		this, &MainWindow::toGamePlayingBackground);
+	connect(myClient, &MyClient::toPlayBackground,
+		this, &MainWindow::toGamePlayingBackground);
 	
 	//进行网络连接
-	connect(netConnectionBackground, &NetConnectionBackground::connectToClient, myServer, &MyServer::startlisten);
-	connect(netConnectionBackground, &NetConnectionBackground::connectToServer, myClient, &MyClient::tryToConnect);
+	connect(netConnectionBackground, &NetConnectionBackground::connectToClient, 
+		myServer, &MyServer::startlisten);
+	connect(netConnectionBackground, &NetConnectionBackground::connectToServer, 
+		myClient, &MyClient::tryToConnect);
 
 	//联网后待修改
-	connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
+	//connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
 
 }
 
@@ -50,7 +69,7 @@ void MainWindow::init()
 
 	beginBackground = new BeginBackground(this);
 	gameSelectionBackground = new GameSelectionBackground(this);
-	cardsSelectionBackground = new CardsSelectionBackground(this);
+	cardsSelectionBackground = new CardsSelectionBackground(max(myClient->turn, myServer->turn),this);
 	cardsEditBackground = new CardsEditBackground(this);
 	gamePlayingBackground = new GamePlayingBackground(this);
 	netConnectionBackground = new NetConnectionBackground(this);
@@ -97,9 +116,19 @@ void MainWindow::toGameSelectionBackground()
 void MainWindow::toCardsSelectionBackground()
 {
 	delete cardsSelectionBackground;
-	cardsSelectionBackground = new CardsSelectionBackground(this);
+	cardsSelectionBackground = new CardsSelectionBackground(max(myClient->turn, myServer->turn),this);
 	BackgroundController->insertWidget(2, cardsSelectionBackground);
-	connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
+
+	if (myClient->isChoosed == true)
+	{
+		connect(cardsSelectionBackground->cardsSelectionFinished_button, &QPushButton::clicked,
+			myClient, &MyClient::MeReady);
+	}
+	if (myServer->isChoosed == true)
+	{
+		connect(cardsSelectionBackground->cardsSelectionFinished_button, &QPushButton::clicked,
+			myServer, &MyServer::MeReady);
+	}
 	BackgroundNo = 2;
 	emit changeBackgroundNo(BackgroundNo);
 }

@@ -22,8 +22,9 @@ const qreal CARD_DIS = 300;//卡牌间距
 const qreal CARD_STA = 100;//第一张卡牌开始时的位置
 int   SCREEN_SIZE = 2000;//窗口宽度
 
-CardsSelectionBackground::CardsSelectionBackground(QWidget *parent)
-	: QWidget(parent)
+CardsSelectionBackground::CardsSelectionBackground(int turn,QWidget *parent)
+	: QWidget(parent),
+	my_turn(turn)
 {
 	ui.setupUi(this);
 
@@ -45,6 +46,20 @@ void CardsSelectionBackground::init()
 	view = new QGraphicsView(this);
 	scene = new CardsScene();
 	cardsSelectionFinished_button = new QPushButton(this);
+	cardsToAdjust_number = 0;
+
+	if (my_turn == 1)
+	{
+		cardsToAdjust_number = 3;
+	}
+	if (my_turn == 2)
+	{
+		cardsToAdjust_number = 2;
+	}
+	if (my_turn == 3)
+	{
+		cardsToAdjust_number = 1;
+	}
 
 	//初始化按钮图标
 	QIcon cardsSelectionFinished_button_icon;
@@ -220,39 +235,44 @@ void CardsSelectionBackground::changeCard()
 		}
 	}
 
-	CardsUI *temp_card;
+	if (cardsToAdjust_number > 0)
+	{
+		CardsUI *temp_card;
 
-	srand((unsigned)time(NULL));
-	int n = (rand() % cardStackNo.size());
-	temp_card = new CardsUI(cardStackNo.at(n));
-	temp_card->setPos(cardUILists[No]->pos());
-	cardStackNo.removeAt(n);
+		srand((unsigned)time(NULL));
+		int n = (rand() % cardStackNo.size());
+		temp_card = new CardsUI(cardStackNo.at(n));
+		temp_card->setPos(cardUILists[No]->pos());
+		cardStackNo.removeAt(n);
 
-	//去掉原来的牌
-	scene->removeItem(cardUILists[No]);
-	cardUILists.removeAt(No);
-	cardUIPosLists.removeAt(No);
-	cardUIPixmapLists.removeAt(No);
+		//去掉原来的牌
+		scene->removeItem(cardUILists[No]);
+		cardUILists.removeAt(No);
+		cardUIPosLists.removeAt(No);
+		cardUIPixmapLists.removeAt(No);
 
-	//插入新牌
-	cardUIPosLists.insert(No,temp_card->pos());
-	cardUIPixmapLists.insert(No,temp_card->pixmap());
-	cardUILists.insert(No, temp_card);
+		//插入新牌
+		cardUIPosLists.insert(No, temp_card->pos());
+		cardUIPixmapLists.insert(No, temp_card->pixmap());
+		cardUILists.insert(No, temp_card);
 
-	putInText();
+		putInText();
 
-	//设置新牌的参数
-	cardUILists[No]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-	cardUILists[No]->using_background = 2;
+		//设置新牌的参数
+		cardUILists[No]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+		cardUILists[No]->using_background = 2;
 
-	//用于卡牌的点击
-	connect(cardUILists[No], SIGNAL(cardIsPressed()),
-		this, SLOT(isPressed()));
-	connect(cardUILists[No], SIGNAL(cardIsReleased()),
-		this, SLOT(isReleased()));
+		//用于卡牌的点击
+		connect(cardUILists[No], SIGNAL(cardIsPressed()),
+			this, SLOT(isPressed()));
+		connect(cardUILists[No], SIGNAL(cardIsReleased()),
+			this, SLOT(isReleased()));
 
-	//将新牌插入场景
-	scene->addItem(cardUILists[No]);
+		//将新牌插入场景
+		scene->addItem(cardUILists[No]);
+
+		cardsToAdjust_number--;
+	}
 
 	cardUISizeAdjust();
 
@@ -328,7 +348,7 @@ void CardsSelectionBackground::getFromText()
 
 void CardsSelectionBackground::putInText()
 {
-	QFile file("playingCardStack.txt");
+	QFile file("my_playingCardStack.txt");
 
 	if (file.open(QFile::WriteOnly | QIODevice::Truncate | QIODevice::Text))
 	{

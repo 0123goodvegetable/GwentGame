@@ -490,7 +490,7 @@ void GamePlayingBackground::cardUISizeAdjust()
 
 void GamePlayingBackground::getFromText()
 {
-	QFile file1("playingCardStack.txt");
+	QFile file1("my_playingCardStack.txt");
 
 	if (file1.open(QFile::ReadOnly))
 	{
@@ -523,7 +523,7 @@ void GamePlayingBackground::getFromText()
 
 void GamePlayingBackground::putInText()
 {
-	QFile file("playingCardStack.txt");
+	QFile file("my_playingCardStack.txt");
 
 	if (file.open(QFile::WriteOnly | QIODevice::Truncate | QIODevice::Text))
 	{

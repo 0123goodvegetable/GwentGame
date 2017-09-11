@@ -17,7 +17,7 @@ class CardsSelectionBackground : public QWidget
 	Q_OBJECT
 
 public:
-	CardsSelectionBackground(QWidget *parent = Q_NULLPTR);
+	CardsSelectionBackground(int turn = 0,QWidget *parent = Q_NULLPTR);
 	~CardsSelectionBackground();
 
 	void resizeEvent(QResizeEvent*event);//画面调整事件
@@ -45,6 +45,9 @@ private:
 	QList<QPointF> cardUIPosLists;//卡牌图片位置列表
 	QList<QPixmap> cardUIPixmapLists;//卡牌图片图像列表
 	QList<int> cardStackNo;//可选择的牌组
+
+	int my_turn;//轮次
+	int cardsToAdjust_number;//可以调整的卡牌数
 
 	private slots:
 	void isMoving(QPointF &pos);//鼠标移动函数
