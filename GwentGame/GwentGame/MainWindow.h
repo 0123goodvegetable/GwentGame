@@ -12,10 +12,16 @@
 #include"CardsEditBackground.h"
 #include"GamePlayingBackground.h"
 #include"NetConnectionBackground.h"
+//网络连接相关头文件
+#include"CP_MyServer.h"
+#include"CP_MyClient.h"
 
 #include<QStackedWidget>
 #include<QKeyEvent>
 
+class MyServer;
+class MyClient;
+class NetConnectionBackground;
 
 class MainWindow : public QMainWindow
 {
@@ -47,6 +53,10 @@ private:
 	Ui::MainWindowClass ui;
 	void init();//初始化各项数据
 
+	/*public slots:
+	void chooseServer();//选择服务端
+	void chooseClient();//选择客户端*/
+
 	QStackedWidget *BackgroundController;//控制界面的转换
 	int BackgroundNo;//所选界面的编号（开始界面-0，游戏选择界面-1，卡牌选择界面-2，牌组编辑界面-3，游戏主界面-4，网络连接界面-5）
 	
@@ -56,4 +66,9 @@ private:
 	CardsEditBackground *cardsEditBackground;//创建牌组编辑界面
 	GamePlayingBackground *gamePlayingBackground;//创建游戏主界面界面
 	NetConnectionBackground *netConnectionBackground;//创建网络连接界面
+
+	bool isServer;//该程序是服务端
+	bool isClient;//该程序是客户端
+	MyServer *myServer;//服务端
+	MyClient *myClient;//客户端
 };

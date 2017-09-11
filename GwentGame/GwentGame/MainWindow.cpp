@@ -14,13 +14,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 
+	//按钮与屏幕切换信号槽
 	connect(gameSelectionBackground->playWithAI_button, SIGNAL(clicked()), this, SLOT(toCardsSelectionBackground()));
-
 	connect(gameSelectionBackground->editCardsDeck_button, SIGNAL(clicked()), this, SLOT(toCardsEditBackground()));
-
 	connect(cardsEditBackground->saveAndQuit_button, SIGNAL(clicked()), this, SLOT(toGameSelectionBackground()));
-
 	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), this, SLOT(toNetConnectionBackground()));
+
+	//网络连接与屏幕切换信号槽
+	connect(myServer, &MyServer::changeBackground, this, &MainWindow::toCardsSelectionBackground);
+	connect(myClient, &MyClient::changeBackground, this, &MainWindow::toCardsSelectionBackground);
+	
+	//进行网络连接
+	connect(netConnectionBackground, &NetConnectionBackground::connectToClient, myServer, &MyServer::startlisten);
+	connect(netConnectionBackground, &NetConnectionBackground::connectToServer, myClient, &MyClient::tryToConnect);
 
 	//联网后待修改
 	connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
@@ -48,6 +54,11 @@ void MainWindow::init()
 	cardsEditBackground = new CardsEditBackground(this);
 	gamePlayingBackground = new GamePlayingBackground(this);
 	netConnectionBackground = new NetConnectionBackground(this);
+
+	isServer = false;
+	isClient = false;
+	myServer = new MyServer();
+	myClient = new MyClient();
 
 	this->setCentralWidget(BackgroundController);//将页面设置为中心窗口
 
