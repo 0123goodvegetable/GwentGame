@@ -160,6 +160,7 @@ void MyClient::receiveFile()
 		if (fileName == "all_playingCardStack.txt")
 		{
 			emit receiveFinished();
+			emit changeTurn();
 		}
 
 		//≥ı ºªØ
@@ -167,6 +168,7 @@ void MyClient::receiveFile()
 		bytesReceived = 0;
 		fileName = "0";
 		fileNameSize = 0;
+
 	}
 
 }

@@ -10,6 +10,7 @@
 #include<QPushButton>
 #include<QMouseEvent>
 #include<QStringList>
+#include<QLabel>
 
 
 #include"CP_Card.h"
@@ -36,6 +37,7 @@ public:
 	public slots:
 	void putInEnemyText();//将我方数据存入文件进行传送
 	void getFromEnemyText();//从文件中获取敌方信息
+	void changeMyTurn();//到了我方轮次
 
 signals:
 	void toUseSkills(Card *card);//释放技能的信号
@@ -55,8 +57,10 @@ private:
 	QGraphicsView *view;
 	CardsScene *main_scene;//正常游戏画面
 	CardsScene *choose_scene;//卡牌操作游戏画面
+	QLabel *turnTextLabel;//显示轮次的文本
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
+	bool my_turn;//我方轮次
 	bool useMainScene;//使用主界面
 	bool operation;//是否在某张卡牌的移动中
 	bool isUsingSkill;//是否在使用技能阶段

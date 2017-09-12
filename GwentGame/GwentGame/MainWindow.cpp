@@ -151,6 +151,8 @@ void MainWindow::toGamePlayingBackground()
 			myClient, &MyClient::sendFile);
 		connect(myClient, &MyClient::receiveFinished,
 			gamePlayingBackground, &GamePlayingBackground::getFromEnemyText);
+		connect(myClient, &MyClient::changeTurn,
+			gamePlayingBackground, &GamePlayingBackground::changeMyTurn);
 	}
 	if (myServer->isChoosed == true)
 	{
@@ -158,6 +160,17 @@ void MainWindow::toGamePlayingBackground()
 			myServer, &MyServer::sendFile);
 		connect(myServer, &MyServer::receiveFinished,
 			gamePlayingBackground, &GamePlayingBackground::getFromEnemyText);
+		connect(myServer, &MyServer::changeTurn,
+			gamePlayingBackground, &GamePlayingBackground::changeMyTurn);
+	}
+	srand((unsigned)time(NULL));
+	if (rand() % 100 < 50)
+	{
+		emit myServer->changeTurn();
+	}
+	else
+	{
+		emit myClient->changeTurn();
 	}
 	BackgroundNo = 4;
 	emit changeBackgroundNo(BackgroundNo);

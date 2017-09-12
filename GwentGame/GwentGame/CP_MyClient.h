@@ -35,6 +35,7 @@ signals:
 	void toKnowMeReady();
 	void toKnowEnemyReady();
 	void receiveFinished();//文件接收完成
+	void changeTurn();//改变选手
 
 private:
 	//发出信息

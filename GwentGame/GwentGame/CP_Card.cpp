@@ -272,6 +272,9 @@ void  Card::AddName(int num)
 	case 283280112:
 		name = "Harpy_Egg";
 		break;
+	case 283280122:
+		name = "Harpy_Egg";
+		break;
 	case 295290011:
 		name = "Commander_Horn";
 		break;

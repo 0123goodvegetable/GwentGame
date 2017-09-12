@@ -46,10 +46,11 @@ int Unseen_Elder_No = 13010590;
  int Arachas3_No = 261260332;
  int Arachas_Behemoth_No = 272270612;
  int Harpy_Egg_No = 283280112;
+ int Harpy_Egg2_No = 283280122;
  int Commander_Horn_No = 295290011;
  int Lesser_Earth_Elemental_No = 300300212;
 
-	const int AllCardsNo[39] =
+	const int AllCardsNo[40] =
 	{	0,
 		Unseen_Elder_No,
 		Bekker_Twister_Mirror_No,
@@ -87,6 +88,7 @@ int Unseen_Elder_No = 13010590;
 		Arachas3_No,
 		Arachas_Behemoth_No,
 		Harpy_Egg_No,
+		Harpy_Egg2_No,
 		Commander_Horn_No };
 
 };

@@ -73,6 +73,7 @@ void GamePlayingBackground::init()
 	usingSkillTimes = 0;
 	useMainScene = true;
 	isGoldCardOut = false;
+	my_turn = false;
 
 	m_Melee_weather = 0;
 	m_Archer_weather = 0;
@@ -88,6 +89,7 @@ void GamePlayingBackground::init()
 	view = new QGraphicsView(this);
 	main_scene = new CardsScene();
 	choose_scene = new CardsScene();
+	turnTextLabel = new QLabel(this);
 
 	//设置窗口属性（没有滚动条）
 	view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -140,16 +142,237 @@ void GamePlayingBackground::init()
 	}
 
 	selected_card = cardUILists[0];//初始化
-	putInEnemyText();
 
 	//调整卡牌尺寸
 	cardUISizeAdjust();
+
+	//添加文本 
+	if (my_turn == true)
+	{
+		turnTextLabel->setText(tr("My Turn!"));
+	}
+	else
+	{
+		turnTextLabel->setText(tr("Not My Turn!"));
+	}
+	QFont font;
+	font.setPixelSize(30); // 像素大小 
+	turnTextLabel->setFont(font);
+	QPalette palette;
+	palette.setColor(QPalette::WindowText, Qt::white);
+	turnTextLabel->setPalette(palette);
+	turnTextLabel->setGeometry(100, 430, 200, 50);
 
 	//设置视口view的属性
 	view->setScene(main_scene);//初始化为游戏主界面
 	view->setRenderHints(QPainter::Antialiasing);
 	view->setContextMenuPolicy(Qt::NoContextMenu);
 
+}
+
+void GamePlayingBackground::changeMyTurn()
+{
+	 my_turn = true; 
+	 turnTextLabel->setText(tr("My Turn!")); 
+
+	 //检测是否有受天气影响的卡牌
+	 if (m_Melee_weather == 1)//近战排有蔽日浓雾
+	 {
+		 int num = -1,max_attack = 0;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_MELEE_COLUMN_POS_Y&&
+				 card->operating_card->attack > max_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 2;
+		 }
+	 }
+	 if (m_Archer_weather == 1)//远程排有蔽日浓雾
+	 {
+		 int num = -1,max_attack = 0;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_ARCHER_COLUMN_POS_Y&&
+				 card->operating_card->attack > max_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 2;
+		 }
+	 }
+	 if (m_Siege_weather == 1)//攻城排有蔽日浓雾
+	 {
+		 int num = -1,max_attack = 0;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_SIEGE_COLUMN_POS_Y&&
+				 card->operating_card->attack > max_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 2;
+		 }
+	 }
+
+	 if (m_Melee_weather == 2)//近战排有刺骨冰霜
+	 {
+		 int num = -1,min_attack = 100;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_MELEE_COLUMN_POS_Y&&
+				 card->operating_card->attack < min_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 2;
+		 }
+	 }
+	 if (m_Archer_weather == 2)//远程排有刺骨冰霜
+	 {
+		 int num = -1,min_attack = 100;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_ARCHER_COLUMN_POS_Y&&
+				 card->operating_card->attack < min_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 2;
+		 }
+	 }
+	 if (m_Siege_weather == 2)//攻城排有刺骨冰霜
+	 {
+		 int num = -1,min_attack = 100;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_SIEGE_COLUMN_POS_Y&&
+				 card->operating_card->attack < min_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 2;
+		 }
+	 }
+
+	 if (m_Melee_weather == 3)//近战排有倾盆大雨
+	 {
+		 int num = 2;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_MELEE_COLUMN_POS_Y)
+			 {
+				 cardUILists[cardUILists.indexOf(card)]->operating_card->attack--;
+			 }
+			 num--;
+			 if (num <= 0)
+			 {
+				 break;
+			 }
+		 }
+	 }
+	 if (m_Archer_weather == 3)//远程排有倾盆大雨
+	 {
+		 int num = 2;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+			 {
+				 cardUILists[cardUILists.indexOf(card)]->operating_card->attack--;
+			 }
+			 num--;
+			 if (num <= 0)
+			 {
+				 break;
+			 }
+		 }
+	 }
+	 if (m_Siege_weather == 3)//攻城排有倾盆大雨
+	 {
+		 int num = 2;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+			 {
+				 cardUILists[cardUILists.indexOf(card)]->operating_card->attack--;
+			 }
+			 num--;
+			 if (num <= 0)
+			 {
+				 break;
+			 }
+		 }
+	 }
+
+	 if (m_Melee_weather == 4)//近战排有加强版刺骨冰霜（狂猎骑士技能）
+	 {
+		 int num = -1,min_attack = 100;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_MELEE_COLUMN_POS_Y&&
+				 card->operating_card->attack < min_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 3;
+		 }
+	 }
+	 if (m_Archer_weather == 4)//远程排有加强版刺骨冰霜（狂猎骑士技能）
+	 {
+		 int num = -1,min_attack = 100;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_ARCHER_COLUMN_POS_Y&&
+				 card->operating_card->attack < min_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 3;
+		 }
+	 }
+	 if (m_Siege_weather == 4)//攻城排有加强版刺骨冰霜（狂猎骑士技能）
+	 {
+		 int num = -1,min_attack = 100;
+		 foreach(CardsUI *card, cardUILists)
+		 {
+			 if (card->pos().y() == M_SIEGE_COLUMN_POS_Y&&
+				 card->operating_card->attack < min_attack)
+			 {
+				 num = cardUILists.indexOf(card);
+			 }
+		 }
+		 if (num != -1)
+		 {
+			 cardUILists[num]->operating_card->attack -= 3;
+		 }
+	 }
+
+	 updateStatus();
 }
 
 void GamePlayingBackground::updateCoordinate()
@@ -168,7 +391,7 @@ void GamePlayingBackground::updateCoordinate()
 	M_SIEGE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.73;
 
 	E_MELEE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.37;
-	E_ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT2*0.26;
+	E_ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT2*0.265;
 	E_SIEGE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.16;
 
 	COLUMN_LENGTH = SCREEN_WIDTH2*0.414;
@@ -262,74 +485,78 @@ void GamePlayingBackground::updateStack(QList<CardsUI*> stack)
 //槽函数，鼠标拖拽卡牌到牌场上
 void GamePlayingBackground::isMoving(QPointF &pos)
 {
-	int num = cardUILists.indexOf(selected_card);
-	int pos_x, pos_y;
-	pos_x = cardUIPosLists[num].x() + pos.x();
-	pos_y = cardUIPosLists[num].y() + pos.y();
-
-
-	if (Pressed == true && operation == true &&
-		pos_x >= COLUMN_POS_X&&pos_x <= COLUMN_POS_X + COLUMN_LENGTH&&
-		pos_y >= E_SIEGE_COLUMN_POS_Y&&pos_y < PREPARE_COLUMN_POS_Y)//确保在操作牌且将其拖到牌场中
+	if (my_turn == true)//是我的回合
 	{
-		//设置卡牌状态为在场上
-		cardUILists[num]->operating_card->isFielded = true;
-		//根据不同种类安放不同位置
-		switch (selected_card->operating_card->genre)
-		{
-		case 0:
-			cardUILists[num]->setPos(pos_x, M_MELEE_COLUMN_POS_Y);
-			cardUILists[num]->operating_card->isWeatherControlled = m_Melee_weather;
-			break;
-		case 1:
-			cardUILists[num]->setPos(pos_x, M_ARCHER_COLUMN_POS_Y);
-			cardUILists[num]->operating_card->isWeatherControlled = m_Archer_weather;
+		int num = cardUILists.indexOf(selected_card);
+		int pos_x, pos_y;
+		pos_x = cardUIPosLists[num].x() + pos.x();
+		pos_y = cardUIPosLists[num].y() + pos.y();
 
-			break;
-		case 2:
-			cardUILists[num]->setPos(pos_x, M_SIEGE_COLUMN_POS_Y);
-			cardUILists[num]->operating_card->isWeatherControlled = m_Siege_weather;
-			break;
-		case 3:
-			if (pos_y < M_ARCHER_COLUMN_POS_Y)
+
+		if (Pressed == true && operation == true && cardUILists[num]->operating_card->isFriend == true &&
+			pos_x >= COLUMN_POS_X&&pos_x <= COLUMN_POS_X + COLUMN_LENGTH&&
+			pos_y >= E_SIEGE_COLUMN_POS_Y&&pos_y < PREPARE_COLUMN_POS_Y)//确保在操作牌且将其拖到牌场中
+		{
+			//设置卡牌状态为在场上
+			cardUILists[num]->operating_card->isFielded = true;
+			//根据不同种类安放不同位置
+			switch (selected_card->operating_card->genre)
 			{
+			case 0:
 				cardUILists[num]->setPos(pos_x, M_MELEE_COLUMN_POS_Y);
 				cardUILists[num]->operating_card->isWeatherControlled = m_Melee_weather;
-			}
-			else if (pos_y >= M_ARCHER_COLUMN_POS_Y&&pos_y < M_SIEGE_COLUMN_POS_Y)
-			{
+				break;
+			case 1:
 				cardUILists[num]->setPos(pos_x, M_ARCHER_COLUMN_POS_Y);
 				cardUILists[num]->operating_card->isWeatherControlled = m_Archer_weather;
-			}
-			else
-			{
+
+				break;
+			case 2:
 				cardUILists[num]->setPos(pos_x, M_SIEGE_COLUMN_POS_Y);
 				cardUILists[num]->operating_card->isWeatherControlled = m_Siege_weather;
+				break;
+			case 3:
+				if (pos_y < M_ARCHER_COLUMN_POS_Y)
+				{
+					cardUILists[num]->setPos(pos_x, M_MELEE_COLUMN_POS_Y);
+					cardUILists[num]->operating_card->isWeatherControlled = m_Melee_weather;
+				}
+				else if (pos_y >= M_ARCHER_COLUMN_POS_Y&&pos_y < M_SIEGE_COLUMN_POS_Y)
+				{
+					cardUILists[num]->setPos(pos_x, M_ARCHER_COLUMN_POS_Y);
+					cardUILists[num]->operating_card->isWeatherControlled = m_Archer_weather;
+				}
+				else
+				{
+					cardUILists[num]->setPos(pos_x, M_SIEGE_COLUMN_POS_Y);
+					cardUILists[num]->operating_card->isWeatherControlled = m_Siege_weather;
+				}
+				break;
+			case 4:
+				if (pos_y < E_ARCHER_COLUMN_POS_Y)
+				{
+					cardUILists[num]->setPos(pos_x, E_SIEGE_COLUMN_POS_Y);
+					cardUILists[num]->operating_card->isWeatherControlled = e_Siege_weather;
+				}
+				else if (pos_y >= E_ARCHER_COLUMN_POS_Y&&pos_y < E_MELEE_COLUMN_POS_Y)
+				{
+					cardUILists[num]->setPos(pos_x, E_ARCHER_COLUMN_POS_Y);
+					cardUILists[num]->operating_card->isWeatherControlled = e_Archer_weather;
+				}
+				else
+				{
+					cardUILists[num]->setPos(pos_x, E_MELEE_COLUMN_POS_Y);
+					cardUILists[num]->operating_card->isWeatherControlled = e_Melee_weather;
+				}
+				break;
+			case 5:
+				cardUILists[num]->operating_card->isGarbaged = true;
+				cardUILists[num]->operating_card->isFielded = false;
+				break;
 			}
-			break;
-		case 4:
-			if (pos_y < E_ARCHER_COLUMN_POS_Y)
-			{
-				cardUILists[num]->setPos(pos_x, E_SIEGE_COLUMN_POS_Y);
-				cardUILists[num]->operating_card->isWeatherControlled = e_Siege_weather;
-			}
-			else if (pos_y >= E_ARCHER_COLUMN_POS_Y&&pos_y < E_MELEE_COLUMN_POS_Y)
-			{
-				cardUILists[num]->setPos(pos_x, E_ARCHER_COLUMN_POS_Y);
-				cardUILists[num]->operating_card->isWeatherControlled = e_Archer_weather;
-			}
-			else
-			{
-				cardUILists[num]->setPos(pos_x, E_MELEE_COLUMN_POS_Y);
-				cardUILists[num]->operating_card->isWeatherControlled = e_Melee_weather;
-			}
-			break;
-		case 5:
-			cardUILists[num]->operating_card->isGarbaged = true;
-			cardUILists[num]->operating_card->isFielded = false;
-			break;
 		}
 	}
+
 
 }
 
@@ -343,6 +570,8 @@ void GamePlayingBackground::CardisPressed()
 //若此时在操作一张卡牌，则释放技能
 void GamePlayingBackground::CardisReleased()
 {
+	if (my_turn == true)
+	{
 		if (operation == true && isUsingSkill == false)//正在操作一张牌
 		{
 			//更换光标图案
@@ -384,79 +613,83 @@ void GamePlayingBackground::CardisReleased()
 				else
 				{
 					emit toUseSkills(usingSkill_card->operating_card);//使用技能
-				}			
+				}
 			}
 			else
 			{
 				emit toUseSkills(usingSkill_card->operating_card);//使用技能
 			}
 		}
-		
-		whetherUseFollowSkill();
 
-		view->viewport()->update();//立即重绘
+		whetherUseFollowSkill();
+	}
+
+	view->viewport()->update();//立即重绘
 
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
 void GamePlayingBackground::selectionChanged()
 {
-	if (useMainScene)
+	if (my_turn == true)
 	{
-		int i = 0;
-		QList<QGraphicsItem *> items = main_scene->selectedItems();
-		if (items.count() == 1)
+		if (useMainScene)
 		{
-			//当前所选择的UI图标的坐标
-			QPointF pos = items.first()->pos();
-			CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
-
-			foreach(CardsUI* card, cardUILists)
+			int i = 0;
+			QList<QGraphicsItem *> items = main_scene->selectedItems();
+			if (items.count() == 1)
 			{
-				if (card == card_temp)
-					break;
-				i++;
-			}
+				//当前所选择的UI图标的坐标
+				QPointF pos = items.first()->pos();
+				CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
 
-			if (i > cardUILists.size())
+				foreach(CardsUI* card, cardUILists)
+				{
+					if (card == card_temp)
+						break;
+					i++;
+				}
+
+				if (i > cardUILists.size())
+				{
+					return;
+				}
+
+				if (operation == false && isUsingSkill == false &&
+					cardUILists[i]->operating_card->isFielded == false)
+				{
+					selected_card = cardUILists[i];//选取操作卡牌
+					operation = true;
+					if (selected_card->operating_card->material == 0 &&
+						selected_card->operating_card->isHero == false)
+					{
+						isGoldCardOut = true;
+					}
+				}
+				else if (isCardUIClicked() == true && isUsingSkill == true)//使用技能
+				{
+					selected_card = cardUILists[i];
+					operation = false;
+				}
+
+			}
+			else
 			{
 				return;
 			}
+		}
+		else if (useMainScene == false)
+		{
+			QList<QGraphicsItem *> items = choose_scene->selectedItems();
+			CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
 
-			if (operation == false && isUsingSkill == false&&
-				cardUILists[i]->operating_card->isFielded==false)
+			if (isUsingSkill == true)
 			{
-				selected_card = cardUILists[i];//选取操作卡牌
-				operation = true;
-				if (selected_card->operating_card->material == 0 &&
-					selected_card->operating_card->isHero == false)
-				{
-					isGoldCardOut = true;
-				}
-			}
-			else if (isCardUIClicked() == true && isUsingSkill == true)//使用技能
-			{
-				selected_card = cardUILists[i];
+				selected_card = card_temp;
 				operation = false;
 			}
 
 		}
-		else
-		{
-			return;
-		}
-	}
-	else if(useMainScene==false)
-	{
-		QList<QGraphicsItem *> items = choose_scene->selectedItems();
-		CardsUI* card_temp = dynamic_cast<CardsUI*>(items.first());
-	
-		if (isUsingSkill == true)
-		{
-			selected_card = card_temp;
-			operation = false;
-		}
-
 	}
 
 }
@@ -610,6 +843,10 @@ void GamePlayingBackground::putInEnemyText()
 	file.close();
 
 	emit toSendFile("all_playingCardStack.txt");
+
+	my_turn = false;
+
+	turnTextLabel->setText(tr("Not My Turn!"));
 }
 
 void GamePlayingBackground::getFromEnemyText()
@@ -717,12 +954,93 @@ void GamePlayingBackground::getFromEnemyText()
 					cardUILists[i]->setPos(COLUMN_POS_X, temp_position);
 				}
 
-				updateStatus();
 			}
 
 		}
 	}
 	file.close();
+	foreach(CardsUI *card, cardUILists)//更改每一排的天气设定
+	{
+		if (card->operating_card->isWeatherControlled == 1 &&
+			card->pos().y() == M_MELEE_COLUMN_POS_Y)
+		{
+			//近战排蔽日浓雾
+			m_Melee_weather = 1;
+		}
+		if (card->operating_card->isWeatherControlled == 1 &&
+			card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			//远程排蔽日浓雾
+			m_Archer_weather = 1;
+		}
+		if (card->operating_card->isWeatherControlled == 1 &&
+			card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			//攻城排蔽日浓雾
+			m_Siege_weather = 1;
+		}
+
+		if (card->operating_card->isWeatherControlled == 2 &&
+			card->pos().y() == M_MELEE_COLUMN_POS_Y)
+		{
+			//近战排刺骨冰霜
+			m_Melee_weather = 2;
+		}
+		if (card->operating_card->isWeatherControlled == 2 &&
+			card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			//远程排刺骨冰霜
+			m_Archer_weather = 2;
+		}
+		if (card->operating_card->isWeatherControlled == 2 &&
+			card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			//攻城排刺骨冰霜
+			m_Siege_weather = 2;
+		}
+
+		if (card->operating_card->isWeatherControlled == 3 &&
+			card->pos().y() == M_MELEE_COLUMN_POS_Y)
+		{
+			//近战排倾盆大雨
+			m_Melee_weather = 3;
+		}
+		if (card->operating_card->isWeatherControlled == 3 &&
+			card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			//远程排倾盆大雨
+			m_Archer_weather = 1;
+		}
+		if (card->operating_card->isWeatherControlled == 3 &&
+			card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			//攻城排倾盆大雨
+			m_Siege_weather = 1;
+		}
+
+		if (card->operating_card->isWeatherControlled == 4 &&
+			card->pos().y() == M_MELEE_COLUMN_POS_Y)
+		{
+			//近战排强化版刺骨冰霜
+			m_Melee_weather = 4;
+		}
+		if (card->operating_card->isWeatherControlled == 4 &&
+			card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			//远程排强化版刺骨冰霜
+			m_Archer_weather = 4;
+		}
+		if (card->operating_card->isWeatherControlled == 4 &&
+			card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			//攻城排强化版刺骨冰霜
+			m_Siege_weather = 4;
+		}
+
+	}
+
+	updateStatus();
+
 	view->viewport()->update();//立即重绘
 
 }
@@ -891,6 +1209,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 2://贝克尔扭曲之镜,不需要选择对象
@@ -912,6 +1231,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 4://刺骨冰霜
@@ -930,6 +1250,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 5://达冈,不需要选择对象
@@ -980,6 +1301,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			useMainScene = true;
+			putInEnemyText();
 		}
 		break;
 	case 8://杰洛特：伊格尼法印
@@ -998,6 +1320,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 9://卡兰希尔
@@ -1016,6 +1339,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 10://狂猎骑士
@@ -1035,6 +1359,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 11://老巫妪：呢喃婆
@@ -1053,6 +1378,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		else
 		{
@@ -1075,6 +1401,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		else
 		{
@@ -1097,6 +1424,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		else
 		{
@@ -1118,6 +1446,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 15://林妖
@@ -1153,6 +1482,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 20://赛尔伊诺鹰身女妖
@@ -1173,6 +1503,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	case 22://土元素，无主动技能
@@ -1186,10 +1517,6 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 		num = 0;
 		foreach(CardsUI *card, cardUILists)
 		{
-			if (card->operating_card->No == usingSkill_card->operating_card->No)
-			{
-				cardUILists[num]->operating_card->isFriend = false;
-			}
 			if (card->operating_card->isFriend == false &&
 				card->operating_card->isFielded == true &&
 				card->operating_card->No!=usingSkill_card->operating_card->No)//对家英雄
@@ -1221,6 +1548,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		else
 		{
@@ -1242,6 +1570,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	}
@@ -2077,7 +2406,14 @@ void GamePlayingBackground::useSkills(Card *card)
 		//生成两个鹰身女妖蛋
 		for (int j = 0; j < 2; j++)
 		{
-			temp_card = new CardsUI(allCards.Harpy_Egg_No);
+			if (j == 0)
+			{
+				temp_card = new CardsUI(allCards.Harpy_Egg_No);
+			}
+			else
+			{
+				temp_card = new CardsUI(allCards.Harpy_Egg2_No);
+			}
 			pos = QPointF(COLUMN_POS_X, usingSkill_card->pos().y());
 			temp_card->setPos(pos);
 			cardUILists.insert(cardUILists.indexOf(usingSkill_card) ,temp_card);
@@ -2228,6 +2564,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			isUsingSkill = false;
 			usingSkillTimes = 0;
 			operation = false;
+			cardUILists[cardUILists.indexOf(usingSkill_card)]->operating_card->isFriend = false;
 			putInEnemyText();
 		}
 		break;

@@ -18,6 +18,8 @@
 
 #include<QStackedWidget>
 #include<QKeyEvent>
+#include <stdlib.h> 
+#include <time.h>
 
 class MyServer;
 class MyClient;

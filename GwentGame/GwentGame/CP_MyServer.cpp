@@ -112,6 +112,7 @@ void MyServer::updateWriteProgress(qint64 numBytes)
 		totalWriteBytes = 0;
 		bytesWritten = 0;
 		bytesToWrite = 0;
+
 	}
 }
 
@@ -168,6 +169,7 @@ void MyServer::receiveFile()
 		if (fileName == "all_playingCardStack.txt")
 		{
 			emit receiveFinished();
+			emit changeTurn();
 		}
 
 		//≥ı ºªØ
