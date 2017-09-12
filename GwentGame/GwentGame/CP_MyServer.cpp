@@ -59,6 +59,11 @@ void MyServer::displayError(QAbstractSocket::SocketError) //错误处理
 
 void MyServer::sendFile(QString filename)
 {
+	//进行初始化
+	totalWriteBytes = 0;
+	bytesWritten = 0;
+	bytesToWrite = 0;
+
 	fileToWrite = new QFile(filename);
 	if (!fileToWrite->open(QFile::ReadOnly))
 	{
@@ -103,11 +108,16 @@ void MyServer::updateWriteProgress(qint64 numBytes)
 	if (bytesWritten == totalWriteBytes) //发送完毕
 	{
 		fileToWrite->close();
+		//进行初始化
+		totalWriteBytes = 0;
+		bytesWritten = 0;
+		bytesToWrite = 0;
 	}
 }
 
 void MyServer::receiveFile()
 {
+
 	QDataStream in(tcpServerConnection);
 	in.setVersion(QDataStream::Qt_4_6);
 	if (bytesReceived <= sizeof(qint64) * 2)
@@ -135,7 +145,7 @@ void MyServer::receiveFile()
 		}
 		else return;
 	}
-	if (bytesReceived < totalWriteBytes)
+	if (bytesReceived < totalReadBytes)
 	{
 		//如果接收的数据小于总数据，那么写入文件
 		bytesReceived += tcpServerConnection->bytesAvailable();
@@ -144,18 +154,29 @@ void MyServer::receiveFile()
 		inBlock.resize(0);
 	}
 
-	if (bytesReceived == totalWriteBytes)
+	if (bytesReceived == totalReadBytes)
 	{
 		//接收数据完成时
 		fileToRead->close();
+
+		//如果文件名是ready.txt，则开始游戏
+		if (fileName == "ready.txt")
+		{
+			emit toKnowEnemyReady();
+		}
+
+		if (fileName == "all_playingCardStack.txt")
+		{
+			emit receiveFinished();
+		}
+
+		//初始化
+		totalReadBytes = 0;
+		bytesReceived = 0;
+		fileName = "0";
+		fileNameSize = 0;
 	}
 
-
-	//如果文件名是ready.txt，则开始游戏
-	if (fileName == "ready.txt")
-	{
-		emit toKnowEnemyReady();
-	}
 }
 
 void MyServer::EnemyReady()

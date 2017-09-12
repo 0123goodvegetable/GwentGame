@@ -8,6 +8,7 @@
 #include <QPointF>
 #include<QResizeEvent>
 #include<QPushButton>
+#include<QLabel>
 
 #include"CardsScene.h"
 #include"CardsUI.h"
@@ -38,6 +39,7 @@ private:
 
 	QGraphicsView *view;
 	CardsScene *scene;
+	QLabel *textLabel;//显示文本
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
 

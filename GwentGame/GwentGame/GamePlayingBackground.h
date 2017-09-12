@@ -9,6 +9,7 @@
 #include<QResizeEvent>
 #include<QPushButton>
 #include<QMouseEvent>
+#include<QStringList>
 
 
 #include"CP_Card.h"
@@ -32,8 +33,14 @@ public:
 	bool isCardUIClicked();//判断是否点击卡牌图片
 	void cardUISizeAdjust();//重新调整选牌界面坐标
 
+	public slots:
+	void putInEnemyText();//将我方数据存入文件进行传送
+	void getFromEnemyText();//从文件中获取敌方信息
+
 signals:
 	void toUseSkills(Card *card);//释放技能的信号
+
+	void toSendFile(QString filename);//将存储我方数据的文件传输到另一边
 
 private:
 	Ui::GamePlayingBackground ui;

@@ -22,6 +22,7 @@
 class MyServer;
 class MyClient;
 class NetConnectionBackground;
+class GamePlayingBackground;
 
 class MainWindow : public QMainWindow
 {

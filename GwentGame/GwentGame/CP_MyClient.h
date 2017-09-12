@@ -34,6 +34,7 @@ signals:
 	void toPlayBackground();//开始游戏
 	void toKnowMeReady();
 	void toKnowEnemyReady();
+	void receiveFinished();//文件接收完成
 
 private:
 	//发出信息

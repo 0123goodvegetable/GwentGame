@@ -145,6 +145,20 @@ void MainWindow::toGamePlayingBackground()
 	delete gamePlayingBackground;
 	gamePlayingBackground = new GamePlayingBackground(this);
 	BackgroundController->insertWidget(4,gamePlayingBackground);
+	if (myClient->isChoosed == true)
+	{
+		connect(gamePlayingBackground, &GamePlayingBackground::toSendFile,
+			myClient, &MyClient::sendFile);
+		connect(myClient, &MyClient::receiveFinished,
+			gamePlayingBackground, &GamePlayingBackground::getFromEnemyText);
+	}
+	if (myServer->isChoosed == true)
+	{
+		connect(gamePlayingBackground, &GamePlayingBackground::toSendFile,
+			myServer, &MyServer::sendFile);
+		connect(myServer, &MyServer::receiveFinished,
+			gamePlayingBackground, &GamePlayingBackground::getFromEnemyText);
+	}
 	BackgroundNo = 4;
 	emit changeBackgroundNo(BackgroundNo);
 }

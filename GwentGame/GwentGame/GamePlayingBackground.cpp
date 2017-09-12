@@ -32,6 +32,7 @@ int CARD_HEIGHT;//卡牌高度
 int COLUMN_POS_X;//卡牌栏x坐标
 
 int PREPARE_COLUMN_POS_Y;//未打出牌所在卡牌栏y坐标
+int E_PREPARE_COLUMN_POS_Y;//敌方未打出的牌
 
 int M_MELEE_COLUMN_POS_Y;//我方近战栏y坐标
 int M_ARCHER_COLUMN_POS_Y;//我方远程栏y坐标
@@ -159,6 +160,7 @@ void GamePlayingBackground::updateCoordinate()
 	COLUMN_POS_X = 0.3*SCREEN_WIDTH2;
 
 	PREPARE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.87;
+	E_PREPARE_COLUMN_POS_Y = 0;
 
 	M_MELEE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.51;
 	M_ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT2*0.62;
@@ -173,7 +175,7 @@ void GamePlayingBackground::updateCoordinate()
 
 void GamePlayingBackground::updateStatus()
 {
-	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0, i = 0;
+	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0, num8 = 0, i = 0;
 	foreach(CardsUI* card_temp, cardUILists)
 	{
 		if (card_temp->operating_card->isGarbaged == true)//卡牌进入坟墓
@@ -226,6 +228,11 @@ void GamePlayingBackground::updateStatus()
 			card_temp->setPos(COLUMN_POS_X + num7*CARD_DIS, E_SIEGE_COLUMN_POS_Y);
 			cardUILists[i]->operating_card->isWeatherControlled = e_Siege_weather;
 			num7++;
+		}
+		else if (card_temp->pos().y() == E_PREPARE_COLUMN_POS_Y)
+		{
+			card_temp->setPos(COLUMN_POS_X + num8*CARD_DIS, E_PREPARE_COLUMN_POS_Y);
+			num8++;
 		}
 		i++;
 	}
@@ -383,6 +390,8 @@ void GamePlayingBackground::CardisReleased()
 		whetherUseFollowSkill();
 		view->viewport()->update();//立即重绘
 
+		putInEnemyText();
+
 }
 
 //槽函数，当scene的selectedItem变化时，发送同名信号到此槽
@@ -536,6 +545,176 @@ void GamePlayingBackground::putInText()
 		}
 	}
 	file.close();
+}
+
+void GamePlayingBackground::putInEnemyText()
+{
+	QFile file("all_playingCardStack.txt");
+
+	//传输信息顺序：
+	//No-number-attack-armer-isShield-isFriend-isFielded-isGarbaged-isUseFollowSkill-isWeatherControlled-position
+	
+	
+	if (file.open(QFile::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+	{
+		QTextStream outPut(&file);
+
+		foreach(CardsUI *card, cardUILists)
+		{
+			QString data = QString::number(card->operating_card->No) + "_" + QString::number(card->operating_card->number) + "_" + QString::number(card->operating_card->attack) 
+				+ "_" + QString::number(card->operating_card->armer) + "_" +QString::number(card->operating_card->isShield) + "_" + QString::number(1 - card->operating_card->isFriend) 
+				+ "_" + QString::number(card->operating_card->isFielded) + "_" + QString::number(card->operating_card->isGarbaged)
+				+ "_" +	QString::number(card->operating_card->isUseFollowSkill) + "_" + QString::number(card->operating_card->isWeatherControlled);
+			//确定卡牌坐标信息
+			QString position;
+			if (card->pos().y() == PREPARE_COLUMN_POS_Y)
+			{
+				position = QString::number(E_PREPARE_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == M_MELEE_COLUMN_POS_Y)
+			{
+				position = QString::number(E_MELEE_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+			{
+				position = QString::number(E_ARCHER_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+			{
+				position = QString::number(E_SIEGE_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == E_MELEE_COLUMN_POS_Y)
+			{
+				position = QString::number(M_MELEE_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == E_ARCHER_COLUMN_POS_Y)
+			{
+				position = QString::number(M_ARCHER_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == E_SIEGE_COLUMN_POS_Y)
+			{
+				position = QString::number(M_SIEGE_COLUMN_POS_Y);
+			}
+			if (card->pos().y() == E_PREPARE_COLUMN_POS_Y)
+			{
+				position = QString::number(PREPARE_COLUMN_POS_Y);
+			}
+			outPut << data + "_" + position;
+			outPut << "\n";
+		}
+	}
+	file.close();
+
+	emit toSendFile("all_playingCardStack.txt");
+}
+
+void GamePlayingBackground::getFromEnemyText()
+{
+	QFile file("all_playingCardStack.txt");
+
+	if (file.open(QFile::ReadOnly))
+	{
+		QTextStream inPut(&file);
+		QString line;//读取一行的数据
+		QStringList lineData;//每一行进行数据分析
+		//No - number - attack - armer - isShield - isFriend - isFielded - isGarbaged - isUseFollowSkill - isWeatherControlled - position
+		int temp_No = 0;
+		int temp_number = 0;
+		int temp_attack = 0;
+		int temp_armer = 0;
+		bool temp_isShield = false;
+		bool temp_isFriend = false;
+		bool temp_isFielded = false;
+		bool temp_isGarbaged = false;
+		bool temp_isUseFollowSkill = false;
+		int temp_isWeatherControlled = 0;
+		int temp_position = 0;
+		CardsUI *temp_card;
+		QPointF pos;
+		int num = 0;
+
+		while (!inPut.atEnd())
+		{
+			line = inPut.readLine();
+			lineData = line.split('_');
+			if (lineData.size() != 0)
+			{
+				temp_No = lineData[0].toInt();
+				temp_number = lineData[1].toInt();
+				temp_attack = lineData[2].toInt();
+				temp_armer = lineData[3].toInt();
+				temp_isShield = lineData[4].toInt();
+				temp_isFriend = lineData[5].toInt();
+				temp_isFielded = lineData[6].toInt();
+				temp_isGarbaged = lineData[7].toInt();
+				temp_isUseFollowSkill = lineData[8].toInt();
+				temp_isWeatherControlled = lineData[9].toInt();
+				temp_position = lineData[10].toInt();
+
+				//更新牌组信息
+				int i = 0;
+				foreach(CardsUI *card, cardUILists)
+				{
+					if (card->operating_card->No == temp_No)
+					{
+						break;
+					}
+					i++;
+				}
+
+				if (i >= cardUILists.size())//如果卡牌不在牌组中，需要添加卡牌
+				{
+					temp_card = new CardsUI(temp_No);
+					pos = QPointF(COLUMN_POS_X, temp_position);
+					temp_card->setPos(pos);
+
+					cardUILists.append(temp_card);
+					cardUIPosLists.append(pos);
+					cardUIPixmapLists.append(temp_card->pixmap());
+
+					num = cardUILists.indexOf(temp_card);
+					cardUILists[num]->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+					cardUILists[num]->using_background = 4;
+					//用于卡牌的点击
+					connect(cardUILists[num], SIGNAL(cardIsPressed()),
+						this, SLOT(CardisPressed()));
+					connect(cardUILists[num], SIGNAL(cardIsReleased()),
+						this, SLOT(CardisReleased()));
+					//向场景中添加部件
+					main_scene->addItem(cardUILists[num]);
+					cardUISizeAdjust();
+
+					//更新卡牌信息
+					cardUILists[num]->operating_card->number = temp_number;
+					cardUILists[num]->operating_card->attack = temp_attack;
+					cardUILists[num]->operating_card->armer = temp_armer;
+					cardUILists[num]->operating_card->isShield = temp_isShield;
+					cardUILists[num]->operating_card->isFriend = temp_isFriend;
+					cardUILists[num]->operating_card->isFielded = temp_isFielded;
+					cardUILists[num]->operating_card->isGarbaged = temp_isGarbaged;
+					cardUILists[num]->operating_card->isUseFollowSkill = temp_isUseFollowSkill;
+					cardUILists[num]->operating_card->isWeatherControlled = temp_isWeatherControlled;
+				}
+				else
+				{
+					//更新卡牌信息
+					cardUILists[i]->operating_card->number = temp_number;
+					cardUILists[i]->operating_card->attack = temp_attack;
+					cardUILists[i]->operating_card->armer = temp_armer;
+					cardUILists[i]->operating_card->isShield = temp_isShield;
+					cardUILists[i]->operating_card->isFriend = temp_isFriend;
+					cardUILists[i]->operating_card->isFielded = temp_isFielded;
+					cardUILists[i]->operating_card->isGarbaged = temp_isGarbaged;
+					cardUILists[i]->operating_card->isUseFollowSkill = temp_isUseFollowSkill;
+					cardUILists[i]->operating_card->isWeatherControlled = temp_isWeatherControlled;
+				}
+			}
+
+		}
+	}
+	file.close();
+
+	updateStatus();
 }
 
 void GamePlayingBackground::useChooseScene(CardsUI *root_card)

@@ -46,7 +46,8 @@ void CardsSelectionBackground::init()
 	view = new QGraphicsView(this);
 	scene = new CardsScene();
 	cardsSelectionFinished_button = new QPushButton(this);
-	cardsToAdjust_number = 0;
+	textLabel = new QLabel(this);
+	cardsToAdjust_number = 3;
 
 	if (my_turn == 1)
 	{
@@ -124,6 +125,16 @@ void CardsSelectionBackground::init()
 		i++;
 	}
 
+	//添加文本 
+	textLabel->setText(tr("remain times to use: %1/3 ").arg(cardsToAdjust_number));
+	QFont font;
+	font.setPixelSize(30); // 像素大小 
+	textLabel->setFont(font);
+	QPalette palette;
+	palette.setColor(QPalette::WindowText, Qt::white);
+	textLabel->setPalette(palette);
+	textLabel->setGeometry(750, 110, 400, 50);
+
 	//重新计算UI尺寸
 	cardUISizeAdjust();
 
@@ -173,7 +184,7 @@ void CardsSelectionBackground::isPressed()
 //应当设置标志位，让UI图片停止对鼠标拖动事件的响应
 void CardsSelectionBackground::isReleased()
 {
-	if (isCardUIClicked())
+	if (isCardUIClicked()&&cardsToAdjust_number>0)
 	{
 		emit toChange();
 	}
@@ -272,6 +283,8 @@ void CardsSelectionBackground::changeCard()
 		scene->addItem(cardUILists[No]);
 
 		cardsToAdjust_number--;
+
+		textLabel->setText(tr("remain times to use: %1/3 ").arg(cardsToAdjust_number));
 	}
 
 	cardUISizeAdjust();
