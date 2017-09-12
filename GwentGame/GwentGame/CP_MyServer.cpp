@@ -41,8 +41,12 @@ void MyServer::acceptConnection()
 		this,SLOT(displayError(QAbstractSocket::SocketError)));
 	connect(tcpServerConnection, &QAbstractSocket::disconnected, 
 		tcpServerConnection, &QObject::deleteLater);
+	connect(tcpServerConnection, SIGNAL(bytesWritten(qint64)),
+		this, SLOT(updateWriteProgress(qint64)));
+	/*connect(tcpServerConnection, SIGNAL(readyRead()),
+		this, SLOT(receiveFile()));*/
 	connect(tcpServerConnection, SIGNAL(readyRead()),
-		this, SLOT(receiveFile()));
+		this, SLOT(receiveFile()), Qt::DirectConnection);
 	connect(this, SIGNAL(toKnowEnemyReady()),
 		this, SLOT(EnemyReady()));
 
@@ -59,10 +63,6 @@ void MyServer::displayError(QAbstractSocket::SocketError) //错误处理
 
 void MyServer::sendFile(QString filename)
 {
-	//进行初始化
-	totalWriteBytes = 0;
-	bytesWritten = 0;
-	bytesToWrite = 0;
 
 	fileToWrite = new QFile(filename);
 	if (!fileToWrite->open(QFile::ReadOnly))

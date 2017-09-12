@@ -37,8 +37,8 @@ void MyClient::tryToConnect(QString ID, int host)
 	tcpClientConnection->connectToHost(ID,host);//连接
 	isChoosed = true;
 
-	connect(tcpClientConnection,SIGNAL(readyRead()),
-		this,SLOT(receiveFile()));
+	connect(tcpClientConnection,&QTcpSocket::readyRead,
+		this,&MyClient::receiveFile, Qt::DirectConnection);
 }
 
 void MyClient::successToConnection()
@@ -109,10 +109,6 @@ void MyClient::updateWriteProgress(qint64 numBytes)
 
 void MyClient::receiveFile()
 {
-	totalReadBytes = 0;
-	bytesReceived = 0;
-	fileName = "0";  //存放文件名
-	fileNameSize = 0;
 
 	QDataStream in(tcpClientConnection);
 	in.setVersion(QDataStream::Qt_4_6);

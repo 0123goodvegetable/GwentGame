@@ -140,6 +140,7 @@ void GamePlayingBackground::init()
 	}
 
 	selected_card = cardUILists[0];//初始化
+	putInEnemyText();
 
 	//调整卡牌尺寸
 	cardUISizeAdjust();
@@ -160,7 +161,7 @@ void GamePlayingBackground::updateCoordinate()
 	COLUMN_POS_X = 0.3*SCREEN_WIDTH2;
 
 	PREPARE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.87;
-	E_PREPARE_COLUMN_POS_Y = 0;
+	E_PREPARE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.01;
 
 	M_MELEE_COLUMN_POS_Y = SCREEN_HEIGHT2*0.51;
 	M_ARCHER_COLUMN_POS_Y = SCREEN_HEIGHT2*0.62;
@@ -190,8 +191,16 @@ void GamePlayingBackground::updateStatus()
 		}
 		else if(card_temp->operating_card->isFielded==false)//卡牌不在场上
 		{
-			card_temp->setPos(COLUMN_POS_X + num1*CARD_DIS, PREPARE_COLUMN_POS_Y);
-			num1++;
+			if (card_temp->operating_card->isFriend == true)
+			{
+				card_temp->setPos(COLUMN_POS_X + num1*CARD_DIS, PREPARE_COLUMN_POS_Y);
+				num1++;
+			}
+			else
+			{
+				card_temp->setPos(COLUMN_POS_X + num8*CARD_DIS, E_PREPARE_COLUMN_POS_Y);
+				num8++;
+			}
 		}
 		else if(card_temp->pos().y()==M_MELEE_COLUMN_POS_Y)
 		{
@@ -229,11 +238,7 @@ void GamePlayingBackground::updateStatus()
 			cardUILists[i]->operating_card->isWeatherControlled = e_Siege_weather;
 			num7++;
 		}
-		else if (card_temp->pos().y() == E_PREPARE_COLUMN_POS_Y)
-		{
-			card_temp->setPos(COLUMN_POS_X + num8*CARD_DIS, E_PREPARE_COLUMN_POS_Y);
-			num8++;
-		}
+
 		i++;
 	}
 
@@ -388,9 +393,8 @@ void GamePlayingBackground::CardisReleased()
 		}
 		
 		whetherUseFollowSkill();
-		view->viewport()->update();//立即重绘
 
-		putInEnemyText();
+		view->viewport()->update();//立即重绘
 
 }
 
@@ -655,7 +659,9 @@ void GamePlayingBackground::getFromEnemyText()
 				int i = 0;
 				foreach(CardsUI *card, cardUILists)
 				{
-					if (card->operating_card->No == temp_No)
+					if (card->operating_card->No == temp_No&&
+						card->operating_card->isFriend==temp_isFriend&&
+						card->operating_card->number == temp_number)
 					{
 						break;
 					}
@@ -694,6 +700,7 @@ void GamePlayingBackground::getFromEnemyText()
 					cardUILists[num]->operating_card->isGarbaged = temp_isGarbaged;
 					cardUILists[num]->operating_card->isUseFollowSkill = temp_isUseFollowSkill;
 					cardUILists[num]->operating_card->isWeatherControlled = temp_isWeatherControlled;
+					cardUILists[num]->setPos(COLUMN_POS_X, temp_position);
 				}
 				else
 				{
@@ -707,14 +714,17 @@ void GamePlayingBackground::getFromEnemyText()
 					cardUILists[i]->operating_card->isGarbaged = temp_isGarbaged;
 					cardUILists[i]->operating_card->isUseFollowSkill = temp_isUseFollowSkill;
 					cardUILists[i]->operating_card->isWeatherControlled = temp_isWeatherControlled;
+					cardUILists[i]->setPos(COLUMN_POS_X, temp_position);
 				}
+
+				updateStatus();
 			}
 
 		}
 	}
 	file.close();
+	view->viewport()->update();//立即重绘
 
-	updateStatus();
 }
 
 void GamePlayingBackground::useChooseScene(CardsUI *root_card)
@@ -1118,12 +1128,14 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 		usingSkillTimes = 0;
 		operation = false;
 		isUsingSkill = false;
+		putInEnemyText();
 		break;
 	case 17://萝卜，无主动技能
 		setCursor(QCursor(Qt::ArrowCursor));//恢复原光标
 		usingSkillTimes = 0;
 		operation = false;
 		isUsingSkill = false;
+		putInEnemyText();
 		break;
 	case 19://倾盆大雨
 		foreach(CardsUI *card, cardUILists)
@@ -1168,6 +1180,7 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 		usingSkillTimes = 0;
 		operation = false;
 		isUsingSkill = false;
+		putInEnemyText();
 		break;
 	case 23://畏惧者
 		num = 0;
@@ -1302,7 +1315,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
-
+			putInEnemyText();
 		}
 		break;
 
@@ -1316,6 +1329,7 @@ void GamePlayingBackground::useSkills(Card *card)
 		usingSkillTimes = 0;
 		operation = false;
 		isUsingSkill = false;
+		putInEnemyText();
 		break;
 
 	case 3://蔽日浓雾
@@ -1359,6 +1373,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1404,7 +1419,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
-
+			putInEnemyText();
 		}
 		break;
 
@@ -1423,6 +1438,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkill_card = selected_card;
 			view->setScene(main_scene);
 			CardisReleased();
+			putInEnemyText();
 		}
 		break;
 
@@ -1471,6 +1487,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			operation = false;
 			useMainScene = true;
 			view->setScene(main_scene);
+			putInEnemyText();
 		}
 		break;
 
@@ -1530,6 +1547,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkill_card = cardUILists[i];
 			view->setScene(main_scene);
 			CardisReleased();
+			putInEnemyText();
 		}
 		break;
 
@@ -1560,6 +1578,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1616,6 +1635,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1654,6 +1674,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1715,6 +1736,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1776,6 +1798,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1837,6 +1860,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1883,6 +1907,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1890,7 +1915,18 @@ void GamePlayingBackground::useSkills(Card *card)
 		//生成三只狼
 		for (int j = 0; j < 3; j++)
 		{
-			temp_card = new CardsUI(allCards.Raging_Wolf_No);
+			if (j == 0)
+			{
+				temp_card = new CardsUI(allCards.Raging_Wolf_No);
+			}
+			if (j == 1)
+			{
+				temp_card = new CardsUI(allCards.Raging_Wolf2_No);
+			}
+			if (j == 2)
+			{
+				temp_card = new CardsUI(allCards.Raging_Wolf3_No);
+			}
 			pos = QPointF(COLUMN_POS_X, M_MELEE_COLUMN_POS_Y);
 			temp_card->setPos(pos);
 			cardUILists.append(temp_card);
@@ -1934,6 +1970,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -1987,6 +2024,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			}
 		}
 		isGoldCardOut = false;
+		putInEnemyText();
 		break;
 
 
@@ -2031,6 +2069,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -2067,6 +2106,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -2096,6 +2136,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -2126,6 +2167,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			my_cardStackNo.insert(i, cardUILists[i]->operating_card->No);
 		}
 		updateStatus();
+		putInEnemyText();
 		break;
 
 	case 23://畏惧者
@@ -2186,6 +2228,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			isUsingSkill = false;
 			usingSkillTimes = 0;
 			operation = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -2245,6 +2288,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 
@@ -2282,6 +2326,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			putInEnemyText();
 		}
 		break;
 	}
