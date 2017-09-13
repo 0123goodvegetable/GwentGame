@@ -49,6 +49,7 @@
         <file alias="Caranthir">Resources/card/093090880.png</file>
         <file alias="Wild_Hunt_Rider">Resources/card/103100882.png</file>
         <file alias="Lesser_Earth_Elemental">Resources/card/300300212.png</file>
+        <file>Resources/card/cardBack.png</file>
     </qresource>
     <qresource prefix="/cursors">
         <file>Resources/cursor/cursor1_icon.png</file>

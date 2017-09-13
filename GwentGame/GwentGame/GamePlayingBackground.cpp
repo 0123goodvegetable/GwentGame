@@ -95,6 +95,11 @@ void GamePlayingBackground::init()
 	turnTextLabel = new QLabel(this);
 	myAllAttackLabel = new QLabel(this);
 	enemyAllAttackLabel = new QLabel(this);
+	timeShowLCD = new QLCDNumber(this);
+	timeShowLCD->setDigitCount(2);
+	clock = new QTimer(this);
+	clock->start(1000);
+
 
 	//设置窗口属性（没有滚动条）
 	view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -108,6 +113,9 @@ void GamePlayingBackground::init()
 
 	//建立释放技能的信号槽
 	connect(this, SIGNAL(toUseSkills(Card *)), this, SLOT(useSkills(Card *)));
+
+	//建立计时的信号槽
+	connect(clock, SIGNAL(timeout()), this, SLOT(timing()));
 
 	CardsUI *temp_card;
 	QPointF pos;
@@ -183,6 +191,9 @@ void GamePlayingBackground::init()
 	enemyAllAttackLabel->setPalette(palette);
 	enemyAllAttackLabel->setGeometry(150, 300, 100, 50);
 
+	//设置计时器位置
+	timeShowLCD->setGeometry(1500, 600, 100, 80);
+
 	//设置视口view的属性
 	view->setScene(main_scene);//初始化为游戏主界面
 	view->setRenderHints(QPainter::Antialiasing);
@@ -196,6 +207,8 @@ void GamePlayingBackground::changeMyTurn()
 	{
 		my_turn = true;
 		turnTextLabel->setText(tr("My Turn!"));
+		second_number = 30;
+		clock->start(1000);
 	}
 	else
 	{
@@ -516,6 +529,8 @@ void GamePlayingBackground::updateStatus()
 		}
 	}
 
+	cardUISizeAdjust();
+
 	myAllAttackLabel->setText(QString::number(my_allAttack));
 	enemyAllAttackLabel->setText(QString::number(enemy_allAttack));
 
@@ -775,10 +790,21 @@ void GamePlayingBackground::cardUISizeAdjust()
 	quint16 i = 0;
 	foreach(CardsUI* card, cardUILists)
 	{
+		if (card->operating_card->isFriend == false && card->operating_card->isFielded == false)
+		{
+			QPixmap temp_back(":/cards/Resources/card/cardBack.png");
+			temp_back = temp_back.scaled(CARD_WIDTH, CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			cardUILists[i]->setPixmap(temp_back);
+			cardUILists[i]->using_background = 0;
 
-		QPixmap pixmap = cardUIPixmapLists.at(i);
-		pixmap = pixmap.scaled(CARD_WIDTH, CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-		cardUILists[i]->setPixmap(pixmap);
+		}
+		else
+		{
+			QPixmap pixmap = cardUIPixmapLists.at(i);
+			pixmap = pixmap.scaled(CARD_WIDTH, CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			cardUILists[i]->setPixmap(pixmap);
+			cardUILists[i]->using_background = 4;
+		}
 		i++;
 	}
 }
@@ -922,6 +948,12 @@ void GamePlayingBackground::putInEnemyText()
 	if (me_end == false)
 	{
 		turnTextLabel->setText(tr("Not My Turn!"));
+		if (clock->isActive())
+		{
+			clock->stop();
+			second_number = 0;
+			timeShowLCD->display(0);
+		}
 	}
 	else
 	{
@@ -1274,12 +1306,30 @@ void GamePlayingBackground::keyPressEvent(QKeyEvent *event)
 		emit chooseEnd();
 		me_end = true;
 		turnTextLabel->setText(tr("End!"));
+
 		if (enemy_end == false)
 		{
 			putInEnemyText();
 		}
+		if (clock->isActive())
+			clock->stop();
 		putInText();
 		break;
+	}
+}
+
+void GamePlayingBackground::timing()
+{
+	if (second_number > 0)
+	{
+		timeShowLCD->display(second_number);
+		second_number--;
+	}
+	else
+	{
+		second_number = 0;
+		timeShowLCD->display(0);
+		putInEnemyText();
 	}
 }
 
@@ -2645,7 +2695,8 @@ void GamePlayingBackground::useSkills(Card *card)
 			foreach(CardsUI *card, cardUILists)
 			{
 				if (card->operating_card->No ==
-					selected_card->operating_card->No)
+					selected_card->operating_card->No&&
+					card->operating_card->isFriend==false)
 				{
 					cardUILists[i]->setPos(cardUILists[i]->pos().x(), usingSkill_card->pos().y());
 					break;
@@ -2653,6 +2704,7 @@ void GamePlayingBackground::useSkills(Card *card)
 				i++;
 			}
 		}
+		updateStatus();
 		usingSkillTimes = 1;
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)
 		{

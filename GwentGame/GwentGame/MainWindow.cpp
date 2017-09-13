@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
 		this, SLOT(toNetConnectionBackground()));
 	connect(gameEndBackground->close_button, SIGNAL(clicked()),
 		this, SLOT(toGameSelectionBackground()));
+	connect(gameSelectionBackground->quit_button, SIGNAL(clicked()),
+		this, SLOT(close()));
 
 	connect(cardsSelectionBackground->cardsSelectionFinished_button, &QPushButton::clicked,
 		myClient, &MyClient::MeReady);
@@ -61,9 +63,6 @@ MainWindow::MainWindow(QWidget *parent)
 		myServer, &MyServer::startlisten);
 	connect(netConnectionBackground, &NetConnectionBackground::connectToServer, 
 		myClient, &MyClient::tryToConnect);
-
-	//ÁªÍøºó´ýÐÞ¸Ä
-	//connect(cardsSelectionBackground->cardsSelectionFinished_button, SIGNAL(clicked()), this, SLOT(toGamePlayingBackground()));
 
 }
 

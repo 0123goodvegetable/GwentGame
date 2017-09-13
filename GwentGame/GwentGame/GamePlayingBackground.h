@@ -8,10 +8,13 @@
 #include <QPointF>
 #include<QResizeEvent>
 #include<QKeyEvent>
+#include<QTimerEvent>
 #include<QPushButton>
 #include<QMouseEvent>
 #include<QStringList>
 #include<QLabel>
+#include<QTimer>
+#include<QLCDNumber>
 
 
 #include"CP_Card.h"
@@ -41,6 +44,7 @@ public:
 	void getFromEnemyText();//从文件中获取敌方信息
 	void changeMyTurn();//到了我方轮次
 	void enemyEnd() { enemy_end = true; }//敌方结束
+	void timing();//计时
 
 signals:
 	void toUseSkills(Card *card);//释放技能的信号
@@ -67,8 +71,11 @@ private:
 	QLabel *turnTextLabel;//显示轮次的文本
 	QLabel *myAllAttackLabel;//我方战力总值
 	QLabel *enemyAllAttackLabel;//敌方战力总值
+	QLCDNumber *timeShowLCD;//显示计时的屏幕
+	QTimer *clock;//定时器
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
+	int second_number;//经过多少秒
 	int my_round;//第几回合
 	bool my_turn;//我方轮次
 	bool me_end;//我方选择结束
