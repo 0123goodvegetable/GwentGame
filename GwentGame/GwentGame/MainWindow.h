@@ -12,6 +12,7 @@
 #include"CardsEditBackground.h"
 #include"GamePlayingBackground.h"
 #include"NetConnectionBackground.h"
+#include"GameEndBackground.h"
 //网络连接相关头文件
 #include"CP_MyServer.h"
 #include"CP_MyClient.h"
@@ -25,6 +26,7 @@ class MyServer;
 class MyClient;
 class NetConnectionBackground;
 class GamePlayingBackground;
+class GameEndBackground;
 
 class MainWindow : public QMainWindow
 {
@@ -44,6 +46,7 @@ private slots:
 	void toCardsEditBackground();//将界面切换到牌组编辑界面
 	void toGamePlayingBackground();//将界面切换到游戏主界面
 	void toNetConnectionBackground();//将界面切换到网络连接界面
+	void toGameEndBackground();//将界面切换到游戏结束界面
 
 protected:
 	void keyPressEvent(QKeyEvent* event);//处理各窗口的按键信息
@@ -56,12 +59,8 @@ private:
 	Ui::MainWindowClass ui;
 	void init();//初始化各项数据
 
-	/*public slots:
-	void chooseServer();//选择服务端
-	void chooseClient();//选择客户端*/
-
 	QStackedWidget *BackgroundController;//控制界面的转换
-	int BackgroundNo;//所选界面的编号（开始界面-0，游戏选择界面-1，卡牌选择界面-2，牌组编辑界面-3，游戏主界面-4，网络连接界面-5）
+	int BackgroundNo;//所选界面的编号（开始界面-0，游戏选择界面-1，卡牌选择界面-2，牌组编辑界面-3，游戏主界面-4，网络连接界面-5，游戏结束界面-6）
 	
 	BeginBackground *beginBackground;//创建开始界面
 	GameSelectionBackground *gameSelectionBackground;//创建游戏选择界面
@@ -69,6 +68,7 @@ private:
 	CardsEditBackground *cardsEditBackground;//创建牌组编辑界面
 	GamePlayingBackground *gamePlayingBackground;//创建游戏主界面界面
 	NetConnectionBackground *netConnectionBackground;//创建网络连接界面
+	GameEndBackground *gameEndBackground;//创建结束界面
 
 	bool isServer;//该程序是服务端
 	bool isClient;//该程序是客户端

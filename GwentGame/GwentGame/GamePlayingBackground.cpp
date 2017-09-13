@@ -48,8 +48,9 @@ int COLUMN_LENGTH;//卡牌栏长度
 const int UNSEEN_ELDER_SKILL_TIMES = 2;
 const int NORMAL_SKILL_TIMES = 1;
 
-GamePlayingBackground::GamePlayingBackground(QWidget *parent)
-	: QWidget(parent)
+GamePlayingBackground::GamePlayingBackground(int round,QWidget *parent)
+	: QWidget(parent),
+	my_round(round)
 {
 	ui.setupUi(this);
 
@@ -74,6 +75,8 @@ void GamePlayingBackground::init()
 	useMainScene = true;
 	isGoldCardOut = false;
 	my_turn = false;
+	me_end = false;
+	enemy_end = false;
 
 	m_Melee_weather = 0;
 	m_Archer_weather = 0;
@@ -90,6 +93,8 @@ void GamePlayingBackground::init()
 	main_scene = new CardsScene();
 	choose_scene = new CardsScene();
 	turnTextLabel = new QLabel(this);
+	myAllAttackLabel = new QLabel(this);
+	enemyAllAttackLabel = new QLabel(this);
 
 	//设置窗口属性（没有滚动条）
 	view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -147,6 +152,8 @@ void GamePlayingBackground::init()
 	cardUISizeAdjust();
 
 	//添加文本 
+	QFont font;
+	QPalette palette;
 	if (my_turn == true)
 	{
 		turnTextLabel->setText(tr("My Turn!"));
@@ -155,13 +162,26 @@ void GamePlayingBackground::init()
 	{
 		turnTextLabel->setText(tr("Not My Turn!"));
 	}
-	QFont font;
+
 	font.setPixelSize(30); // 像素大小 
 	turnTextLabel->setFont(font);
-	QPalette palette;
 	palette.setColor(QPalette::WindowText, Qt::white);
 	turnTextLabel->setPalette(palette);
 	turnTextLabel->setGeometry(100, 430, 200, 50);
+
+	myAllAttackLabel->setText(tr("0"));
+	font.setPixelSize(40); // 像素大小 
+	myAllAttackLabel->setFont(font);
+	palette.setColor(QPalette::WindowText, Qt::white);
+	myAllAttackLabel->setPalette(palette);
+	myAllAttackLabel->setGeometry(150, 600, 100, 50);
+
+	enemyAllAttackLabel->setText(tr("0"));
+	font.setPixelSize(40); // 像素大小 
+	enemyAllAttackLabel->setFont(font);
+	palette.setColor(QPalette::WindowText, Qt::white);
+	enemyAllAttackLabel->setPalette(palette);
+	enemyAllAttackLabel->setGeometry(150, 300, 100, 50);
 
 	//设置视口view的属性
 	view->setScene(main_scene);//初始化为游戏主界面
@@ -172,8 +192,18 @@ void GamePlayingBackground::init()
 
 void GamePlayingBackground::changeMyTurn()
 {
-	 my_turn = true; 
-	 turnTextLabel->setText(tr("My Turn!")); 
+	if (me_end == false)
+	{
+		my_turn = true;
+		turnTextLabel->setText(tr("My Turn!"));
+	}
+	else
+	{
+		my_turn = false;
+		turnTextLabel->setText(tr("End!"));
+		putInEnemyText();
+	}
+
 
 	 //检测是否有受天气影响的卡牌
 	 if (m_Melee_weather == 1)//近战排有蔽日浓雾
@@ -399,7 +429,7 @@ void GamePlayingBackground::updateCoordinate()
 
 void GamePlayingBackground::updateStatus()
 {
-	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0, num8 = 0, i = 0;
+	int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0, num8 = 0, i = 0, my_allAttack = 0, enemy_allAttack = 0;
 	foreach(CardsUI* card_temp, cardUILists)
 	{
 		if (card_temp->operating_card->isGarbaged == true)//卡牌进入坟墓
@@ -471,6 +501,25 @@ void GamePlayingBackground::updateStatus()
 		cardUIPosLists[i] = card->pos();
 		i++;
 	}
+
+	foreach(CardsUI *card, cardUILists)
+	{
+		if (card->operating_card->isFielded == true &&
+			card->operating_card->isFriend == true)
+		{
+			my_allAttack += card->operating_card->attack;
+		}
+		if (card->operating_card->isFielded == true &&
+			card->operating_card->isFriend == false)
+		{
+			enemy_allAttack += card->operating_card->attack;
+		}
+	}
+
+	myAllAttackLabel->setText(QString::number(my_allAttack));
+	enemyAllAttackLabel->setText(QString::number(enemy_allAttack));
+
+	emit sendFinal(my_round, myAllAttackLabel->text().toInt(),enemyAllAttackLabel->text().toInt());
 }
 
 void GamePlayingBackground::updateStack(QList<CardsUI*> stack)
@@ -621,8 +670,8 @@ void GamePlayingBackground::CardisReleased()
 			}
 		}
 
-		whetherUseFollowSkill();
 	}
+	whetherUseFollowSkill();
 
 	view->viewport()->update();//立即重绘
 
@@ -769,7 +818,8 @@ void GamePlayingBackground::getFromText()
 
 void GamePlayingBackground::putInText()
 {
-	QFile file("my_playingCardStack.txt");
+	QFile file("my_leftCardStack.txt");
+	QList<int> leftCardNo;
 
 	if (file.open(QFile::WriteOnly | QIODevice::Truncate | QIODevice::Text))
 	{
@@ -777,11 +827,34 @@ void GamePlayingBackground::putInText()
 
 		foreach(CardsUI *card, cardUILists)
 		{
-			outPut << card->operating_card->No;
-			outPut << "\n";
+			if (card->operating_card->isFielded == false&&
+				card->operating_card->isFriend==true&&
+				card->operating_card->isGarbaged==false)//未上场余留手牌
+			{
+				outPut << card->operating_card->No;
+				outPut << "\n";
+				leftCardNo.append(card->operating_card->No);
+			}
 		}
 	}
 	file.close();
+
+	QFile file2("my_usedCardStack.txt");
+
+	if (file2.open(QFile::WriteOnly | QIODevice::Append| QIODevice::Text))
+	{
+		QTextStream outPut(&file2);
+
+		foreach(int No, my_cardStackNo)
+		{
+			if (!leftCardNo.contains(No))//已使用手牌
+			{
+				outPut << No;
+				outPut << "\n";
+			}
+		}
+	}
+	file2.close();
 }
 
 void GamePlayingBackground::putInEnemyText()
@@ -846,7 +919,15 @@ void GamePlayingBackground::putInEnemyText()
 
 	my_turn = false;
 
-	turnTextLabel->setText(tr("Not My Turn!"));
+	if (me_end == false)
+	{
+		turnTextLabel->setText(tr("Not My Turn!"));
+	}
+	else
+	{
+		turnTextLabel->setText(tr("End!"));
+	}
+
 }
 
 void GamePlayingBackground::getFromEnemyText()
@@ -1183,6 +1264,23 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 	SCREEN_HEIGHT2 = this->height();
 	updateCoordinate();
 
+}
+
+void GamePlayingBackground::keyPressEvent(QKeyEvent *event)
+{
+	switch (event->key())
+	{
+	case Qt::Key_Space:
+		emit chooseEnd();
+		me_end = true;
+		turnTextLabel->setText(tr("End!"));
+		if (enemy_end == false)
+		{
+			putInEnemyText();
+		}
+		putInText();
+		break;
+	}
 }
 
 //判断是否可以发动主动技能
@@ -1767,7 +1865,6 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkill_card = selected_card;
 			view->setScene(main_scene);
 			CardisReleased();
-			putInEnemyText();
 		}
 		break;
 
@@ -1876,7 +1973,6 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkill_card = cardUILists[i];
 			view->setScene(main_scene);
 			CardisReleased();
-			putInEnemyText();
 		}
 		break;
 
@@ -2275,7 +2371,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			//将卡牌添加到牌场上
 			cardUILists[i]->operating_card->isFielded = true;
 
-			my_cardStackNo.append(cardUILists[i]->operating_card->No);
+			//my_cardStackNo.append(cardUILists[i]->operating_card->No);
 		}
 		//降下蔽日浓雾
 		if (usingSkill_card->pos().y() == M_MELEE_COLUMN_POS_Y)
@@ -2353,7 +2449,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			}
 		}
 		isGoldCardOut = false;
-		putInEnemyText();
+		//putInEnemyText();
 		break;
 
 
@@ -2432,7 +2528,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			cardUISizeAdjust();
 			//将卡牌添加到牌场上
 			cardUILists[i]->operating_card->isFielded = true;
-			my_cardStackNo.insert(i,cardUILists[i]->operating_card->No);
+			//my_cardStackNo.insert(i,cardUILists[i]->operating_card->No);
 		}
 		updateStatus();
 		usingSkillTimes++;
@@ -2500,10 +2596,10 @@ void GamePlayingBackground::useSkills(Card *card)
 			cardUISizeAdjust();
 			//将卡牌添加到牌场上
 			cardUILists[i]->operating_card->isFielded = true;
-			my_cardStackNo.insert(i, cardUILists[i]->operating_card->No);
+			//my_cardStackNo.insert(i, cardUILists[i]->operating_card->No);
 		}
 		updateStatus();
-		putInEnemyText();
+		//putInEnemyText();
 		break;
 
 	case 23://畏惧者

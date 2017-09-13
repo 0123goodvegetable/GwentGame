@@ -7,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QPointF>
 #include<QResizeEvent>
+#include<QKeyEvent>
 #include<QPushButton>
 #include<QMouseEvent>
 #include<QStringList>
@@ -25,10 +26,11 @@ class GamePlayingBackground : public QWidget
 	Q_OBJECT
 
 public:
-	GamePlayingBackground(QWidget *parent = Q_NULLPTR);
+	GamePlayingBackground(int round = 0, QWidget *parent = Q_NULLPTR);
 	~GamePlayingBackground();
 
 	void resizeEvent(QResizeEvent*event);//画面调整事件
+	void keyPressEvent(QKeyEvent *event);//按键事件
 
 	CardsUI *selectedCardUI();//选取正在操作的卡牌
 	bool isCardUIClicked();//判断是否点击卡牌图片
@@ -38,11 +40,16 @@ public:
 	void putInEnemyText();//将我方数据存入文件进行传送
 	void getFromEnemyText();//从文件中获取敌方信息
 	void changeMyTurn();//到了我方轮次
+	void enemyEnd() { enemy_end = true; }//敌方结束
 
 signals:
 	void toUseSkills(Card *card);//释放技能的信号
 
 	void toSendFile(QString filename);//将存储我方数据的文件传输到另一边
+
+	void chooseEnd();//选择结束
+
+	void sendFinal(int i, int me_final_num,int enemy_final_num);//输出结果
 
 private:
 	Ui::GamePlayingBackground ui;
@@ -58,9 +65,14 @@ private:
 	CardsScene *main_scene;//正常游戏画面
 	CardsScene *choose_scene;//卡牌操作游戏画面
 	QLabel *turnTextLabel;//显示轮次的文本
+	QLabel *myAllAttackLabel;//我方战力总值
+	QLabel *enemyAllAttackLabel;//敌方战力总值
 
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
+	int my_round;//第几回合
 	bool my_turn;//我方轮次
+	bool me_end;//我方选择结束
+	bool enemy_end;//敌方结束
 	bool useMainScene;//使用主界面
 	bool operation;//是否在某张卡牌的移动中
 	bool isUsingSkill;//是否在使用技能阶段

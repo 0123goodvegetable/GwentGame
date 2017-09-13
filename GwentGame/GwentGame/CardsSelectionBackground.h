@@ -47,6 +47,8 @@ private:
 	QList<QPointF> cardUIPosLists;//卡牌图片位置列表
 	QList<QPixmap> cardUIPixmapLists;//卡牌图片图像列表
 	QList<int> cardStackNo;//可选择的牌组
+	QList<int> left_cardStackNo;//场上剩余卡牌
+	QList<int> used_cardStackNo;//已使用过的卡牌
 
 	int my_turn;//轮次
 	int cardsToAdjust_number;//可以调整的卡牌数

@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
 		this, SLOT(toGameSelectionBackground()));
 	connect(gameSelectionBackground->playWithPlayer_button, SIGNAL(clicked()), 
 		this, SLOT(toNetConnectionBackground()));
+	connect(gameEndBackground->close_button, SIGNAL(clicked()),
+		this, SLOT(toGameSelectionBackground()));
 
 	connect(cardsSelectionBackground->cardsSelectionFinished_button, &QPushButton::clicked,
 		myClient, &MyClient::MeReady);
@@ -40,7 +42,20 @@ MainWindow::MainWindow(QWidget *parent)
 		this, &MainWindow::toGamePlayingBackground);
 	connect(myClient, &MyClient::toPlayBackground,
 		this, &MainWindow::toGamePlayingBackground);
-	
+	connect(myServer, &MyServer::toCardsSelectionBackground,
+		this, &MainWindow::toCardsSelectionBackground);
+	connect(myClient, &MyClient::toCardsSelectionBackground,
+		this, &MainWindow::toCardsSelectionBackground);
+	connect(myServer, &MyServer::toGameEndBackground,
+		this, &MainWindow::toGameEndBackground);
+	connect(myClient, &MyClient::toGameEndBackground,
+		this, &MainWindow::toGameEndBackground);
+
+	connect(myClient, &MyClient::toTellFinal,
+		gameEndBackground, &GameEndBackground::receiveFinal);
+	connect(myServer, &MyServer::toTellFinal,
+		gameEndBackground, &GameEndBackground::receiveFinal);
+
 	//进行网络连接
 	connect(netConnectionBackground, &NetConnectionBackground::connectToClient, 
 		myServer, &MyServer::startlisten);
@@ -54,12 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-	/*delete BackgroundController;	
-	delete beginBackground;
-	delete gameSelectionBackground;
-	delete cardsSelectionBackground;
-	delete cardsEditBackground;
-	delete gamePlayingBackground;*/
+
 }
 
 void MainWindow::init()
@@ -67,17 +77,20 @@ void MainWindow::init()
 	//初始化各项变量
 	BackgroundController = new QStackedWidget(this);
 
-	beginBackground = new BeginBackground(this);
-	gameSelectionBackground = new GameSelectionBackground(this);
-	cardsSelectionBackground = new CardsSelectionBackground(max(myClient->turn, myServer->turn),this);
-	cardsEditBackground = new CardsEditBackground(this);
-	gamePlayingBackground = new GamePlayingBackground(this);
-	netConnectionBackground = new NetConnectionBackground(this);
-
 	isServer = false;
 	isClient = false;
 	myServer = new MyServer();
 	myClient = new MyClient();
+
+	beginBackground = new BeginBackground(this);
+	gameSelectionBackground = new GameSelectionBackground(this);
+	cardsSelectionBackground = new CardsSelectionBackground(max(myClient->turn, myServer->turn),this);
+	cardsEditBackground = new CardsEditBackground(this);
+	gamePlayingBackground = new GamePlayingBackground(max(myClient->turn, myServer->turn), this);
+	netConnectionBackground = new NetConnectionBackground(this);
+	gameEndBackground = new GameEndBackground(this);
+
+
 
 	this->setCentralWidget(BackgroundController);//将页面设置为中心窗口
 
@@ -88,6 +101,7 @@ void MainWindow::init()
 	BackgroundController->addWidget(cardsEditBackground);
 	BackgroundController->addWidget(gamePlayingBackground);
 	BackgroundController->addWidget(netConnectionBackground);
+	BackgroundController->addWidget(gameEndBackground);
 
 	BackgroundNo = 0;
 
@@ -143,7 +157,7 @@ void MainWindow::toCardsEditBackground()
 void MainWindow::toGamePlayingBackground()
 {
 	delete gamePlayingBackground;
-	gamePlayingBackground = new GamePlayingBackground(this);
+	gamePlayingBackground = new GamePlayingBackground(max(myClient->turn, myServer->turn), this);
 	BackgroundController->insertWidget(4,gamePlayingBackground);
 	if (myClient->isChoosed == true)
 	{
@@ -153,6 +167,13 @@ void MainWindow::toGamePlayingBackground()
 			gamePlayingBackground, &GamePlayingBackground::getFromEnemyText);
 		connect(myClient, &MyClient::changeTurn,
 			gamePlayingBackground, &GamePlayingBackground::changeMyTurn);
+		connect(gamePlayingBackground, &GamePlayingBackground::chooseEnd,
+			myClient, &MyClient::MeEnd);
+		connect(myClient, &MyClient::toKnowEnemyEnd,
+			gamePlayingBackground, &GamePlayingBackground::enemyEnd);
+		connect(gamePlayingBackground, &GamePlayingBackground::sendFinal,
+			myClient, &MyClient::getFinal);
+
 	}
 	if (myServer->isChoosed == true)
 	{
@@ -162,6 +183,12 @@ void MainWindow::toGamePlayingBackground()
 			gamePlayingBackground, &GamePlayingBackground::getFromEnemyText);
 		connect(myServer, &MyServer::changeTurn,
 			gamePlayingBackground, &GamePlayingBackground::changeMyTurn);
+		connect(gamePlayingBackground, &GamePlayingBackground::chooseEnd,
+			myServer, &MyServer::MeEnd);
+		connect(myServer, &MyServer::toKnowEnemyEnd,
+			gamePlayingBackground, &GamePlayingBackground::enemyEnd);
+		connect(gamePlayingBackground, &GamePlayingBackground::sendFinal,
+			myServer, &MyServer::getFinal);
 	}
 	srand((unsigned)time(NULL));
 	if (rand() % 100 < 50)
@@ -180,6 +207,13 @@ void MainWindow::toNetConnectionBackground()
 {
 
 	BackgroundNo = 5;
+	emit changeBackgroundNo(BackgroundNo);
+}
+
+void MainWindow::toGameEndBackground()
+{
+
+	BackgroundNo = 6;
 	emit changeBackgroundNo(BackgroundNo);
 }
 

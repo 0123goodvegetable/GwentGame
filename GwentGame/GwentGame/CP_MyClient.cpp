@@ -162,6 +162,11 @@ void MyClient::receiveFile()
 			emit receiveFinished();
 			emit changeTurn();
 		}
+		if (fileName == "end.txt")
+		{
+			EnemyEnd();
+		}
+
 
 		//≥ı ºªØ
 		totalReadBytes = 0;
@@ -178,9 +183,10 @@ void MyClient::EnemyReady()
 	enemyReady = true;
 	if (meReady == true)
 	{
-		emit toPlayBackground();
 		enemyReady = false;
 		meReady = false;
+		emit toPlayBackground();
+
 	}
 }
 
@@ -193,9 +199,134 @@ void MyClient::MeReady()
 
 	if (enemyReady == true)
 	{
-		emit toPlayBackground();
 		enemyReady = false;
 		meReady = false;
+		emit toPlayBackground();
+
 	}
 
+}
+/*
+void MyClient::EnemyEnd()
+{
+	enemyEnd = true;
+	emit toKnowEnemyEnd();
+	if (meEnd == true)
+	{
+		turn++;
+		if (turn <= 3)
+		{
+			enemyEnd = false;
+			meEnd = false;
+			emit toCardsSelectionBackground();
+		}
+		else
+		{
+			QString filename = "enemy_final.txt";
+			sendFile(filename);
+		}
+
+	}
+}
+
+void MyClient::MeEnd()
+{
+
+	meEnd = true;
+	QString filename = "end.txt";
+	sendFile(filename);
+
+	if (enemyEnd == true)
+	{
+		turn++;
+		if (turn <= 3)
+		{
+			enemyEnd = false;
+			meEnd = false;
+			emit toCardsSelectionBackground();
+		}
+		else
+		{
+			QString filename = "enemy_final.txt";
+			sendFile(filename);
+		}
+	}
+}*/
+
+void MyClient::EnemyEnd()
+{
+	enemyEnd = true;
+	emit toKnowEnemyEnd();
+	if (meEnd == true)
+	{
+		turn++;
+		if (turn <= 3)
+		{
+			enemyEnd = false;
+			meEnd = false;
+			emit toCardsSelectionBackground();
+		}
+		else
+		{
+			goToEnd();
+			enemyEnd = false;
+			meEnd = false;
+		}
+
+	}
+
+}
+
+void MyClient::MeEnd()
+{
+
+	meEnd = true;
+	QString filename = "end.txt";
+	sendFile(filename);
+
+	if (enemyEnd == true)
+	{
+		turn++;
+		if (turn <= 3)
+		{
+			enemyEnd = false;
+			meEnd = false;
+			emit toCardsSelectionBackground();
+		}
+		else
+		{
+			goToEnd();
+			enemyEnd = false;
+			meEnd = false;
+		}
+	}
+
+}
+void MyClient::getFinal(int i, int me_final_num,int enemy_final_num)
+{
+	switch (i)
+	{
+	case 1:
+		me_final1 = me_final_num;
+		enemy_final1 = enemy_final_num;
+		break;
+	case 2:
+		me_final2 = me_final_num;
+		enemy_final2 = enemy_final_num;
+		break;
+	case 3:
+		me_final3 = me_final_num;
+		enemy_final3 = enemy_final_num;
+		break;
+	}
+
+}
+
+void MyClient::goToEnd()
+{
+	
+
+	emit toTellFinal(me_final1, me_final2, me_final3, enemy_final1,enemy_final2,enemy_final3);
+
+	emit toGameEndBackground();
 }

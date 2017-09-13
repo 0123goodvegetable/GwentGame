@@ -8,6 +8,7 @@
 #include<QLineEdit>
 #include<QGridLayout>
 #include<QPushButton>
+#include<QResizeEvent>
 #include<QRectF>
 #include<QPalette>
 #include<QString>
@@ -24,6 +25,7 @@ public:
 	~NetConnectionBackground();
 
 	void init();//界面初始化函数
+	void resizeEvent(QResizeEvent*event);//使背景图片填充整个界面
 
 private slots:
 	void changeUI();//当选择服务器或者客户端不同时，调整控件属性

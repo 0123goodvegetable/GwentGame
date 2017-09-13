@@ -5,6 +5,8 @@
         <file>Resources/backgrounds/cardsSelection_background.jpg</file>
         <file>Resources/backgrounds/cardsEdit_background.jpg</file>
         <file>Resources/backgrounds/gamePlaying_background.jpg</file>
+        <file>Resources/backgrounds/netConnection_background.jpg</file>
+        <file>Resources/backgrounds/gameEnd_background.jpg</file>
     </qresource>
     <qresource prefix="/buttons">
         <file>Resources/buttons/editCardsDeck_button.png</file>
@@ -14,6 +16,7 @@
         <file>Resources/buttons/cardsHide_button.png</file>
         <file>Resources/buttons/cardsSelectionFinished_button.png</file>
         <file>Resources/buttons/saveAndQuit_button.png</file>
+        <file>Resources/buttons/close_button.png</file>
     </qresource>
     <qresource prefix="/cards">
         <file alias="Unseen_Elder">Resources/card/013010530.png</file>

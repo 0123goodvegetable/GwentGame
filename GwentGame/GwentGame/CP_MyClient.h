@@ -22,20 +22,34 @@ public:
 
 	bool isChoosed;//选择客户端
 	int turn;//轮次
+	int me_final1;//我方第一轮结束结果
+	int me_final2;//我方第二轮结束结果
+	int me_final3;//我方第三轮结束结果
+	int enemy_final1;//我方第一轮结束结果
+	int enemy_final2;//我方第二轮结束结果
+	int enemy_final3;//我方第三轮结束结果
 
 public slots:
 	void tryToConnect(QString ID,int host);//尝试连接服务器
 	void sendFile(QString filename);//传输文件
 	void MeReady();//我方就位
 	void EnemyReady();//敌方就位
+	void MeEnd();//我方选择结束
+	void EnemyEnd();//敌方选择结束
+	void getFinal(int i, int me_final_num,int enemy_final);
+	void goToEnd();//从文件中获取最后结果
 
 signals:
 	void changeBackground();//建立连接后切换背景
 	void toPlayBackground();//开始游戏
+	void toCardsSelectionBackground();//一局结束到选牌界面
+	void toGameEndBackground();//三局结束后到游戏结束界面
 	void toKnowMeReady();
 	void toKnowEnemyReady();
 	void receiveFinished();//文件接收完成
 	void changeTurn();//改变选手
+	void toKnowEnemyEnd();//告知敌方结束
+	void toTellFinal(int m_final1, int m_final2, int m_final3, int e_final1, int e_final2, int e_final3);//告知比分
 
 private:
 	//发出信息
@@ -57,6 +71,8 @@ private:
 
 	bool meReady;//我方选好牌准备开始游戏
 	bool enemyReady;//敌方选好牌准备开始游戏
+	bool meEnd;//我方选择结束
+	bool enemyEnd;//敌方选择结束
 
 private slots:
 	void successToConnection();//成功连接服务器

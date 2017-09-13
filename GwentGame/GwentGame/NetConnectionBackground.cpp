@@ -143,3 +143,20 @@ void NetConnectionBackground::createConnection()
 
 	toConnectButton->setStyleSheet("background-color:rgb(200,200,200)");
 }
+
+void NetConnectionBackground::resizeEvent(QResizeEvent*event)
+{
+	Q_UNUSED(event)//避免编译器警告
+
+	this->setAutoFillBackground(true);//自动填充背景
+
+	//添加背景
+	QImage image;
+	QPalette palette;
+	image.load(":/backgrounds/Resources/backgrounds/netConnection_background.jpg");//加载背景图片
+
+	palette.setBrush(this->backgroundRole(),
+		QBrush(image.scaled(this->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));//设置背景画刷
+
+	this->setPalette(palette);
+}

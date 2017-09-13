@@ -171,6 +171,14 @@ void MyServer::receiveFile()
 			emit receiveFinished();
 			emit changeTurn();
 		}
+		if (fileName == "end.txt")
+		{
+			EnemyEnd();
+		}
+		if (fileName == "enemy_final.txt")
+		{
+			EnemyEnd();
+		}
 
 		//≥ı ºªØ
 		totalReadBytes = 0;
@@ -186,9 +194,10 @@ void MyServer::EnemyReady()
 	enemyReady = true;
 	if (meReady == true)
 	{
-		emit toPlayBackground();
 		enemyReady = false;
 		meReady = false;
+		emit toPlayBackground();
+
 	}
 }
 
@@ -200,9 +209,94 @@ void MyServer::MeReady()
 
 	if (enemyReady == true)
 	{
-		emit toPlayBackground();
 		enemyReady = false;
 		meReady = false;
+		emit toPlayBackground();
+
 	}
 
+}
+
+void MyServer::EnemyEnd()
+{
+	enemyEnd = true;
+	emit toKnowEnemyEnd();
+	if (meEnd == true)
+	{
+		turn++;
+		if (turn <= 3)
+		{
+			enemyEnd = false;
+			meEnd = false;
+			emit toCardsSelectionBackground();
+		}
+		else
+		{
+			goToEnd();
+			enemyEnd = false;
+			meEnd = false;
+		}
+
+	}
+
+}
+
+void MyServer::MeEnd()
+{
+
+	meEnd = true;
+	QString filename = "end.txt";
+	sendFile(filename);
+
+	if (turn >= 3)
+	{
+		filename = "enemy_final.txt";
+		sendFile(filename);
+	}
+	if(enemyEnd==true)
+	{
+		turn++;
+		if (turn <= 3)
+		{
+			enemyEnd = false;
+			meEnd = false;
+			emit toCardsSelectionBackground();
+		}
+		else
+		{
+			goToEnd();
+			enemyEnd = false;
+			meEnd = false;
+		}
+	}
+
+}
+
+void MyServer::getFinal(int i, int me_final_num, int enemy_final_num)
+{
+	switch (i)
+	{
+	case 1:
+		me_final1 = me_final_num;
+		enemy_final1 = enemy_final_num;
+		break;
+	case 2:
+		me_final2 = me_final_num;
+		enemy_final2 = enemy_final_num;
+		break;
+	case 3:
+		me_final3 = me_final_num;
+		enemy_final3 = enemy_final_num;
+		break;
+	}
+
+}
+
+void MyServer::goToEnd()
+{
+
+
+	emit toTellFinal(me_final1, me_final2, me_final3, enemy_final1, enemy_final2, enemy_final3);
+
+	emit toGameEndBackground();
 }

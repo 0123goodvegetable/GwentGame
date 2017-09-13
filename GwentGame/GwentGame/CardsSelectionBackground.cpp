@@ -49,17 +49,9 @@ void CardsSelectionBackground::init()
 	textLabel = new QLabel(this);
 	cardsToAdjust_number = 3;
 
-	if (my_turn == 1)
+	if (my_turn != 0)
 	{
-		cardsToAdjust_number = 3;
-	}
-	if (my_turn == 2)
-	{
-		cardsToAdjust_number = 2;
-	}
-	if (my_turn == 3)
-	{
-		cardsToAdjust_number = 1;
+		cardsToAdjust_number = 4 - my_turn;
 	}
 
 	//初始化按钮图标
@@ -91,19 +83,60 @@ void CardsSelectionBackground::init()
 	AllCards all_cards;
 
 	//随机添加卡牌
-	for (int i = 0; i < 10; i++)
+	if (my_turn == 1)//刚开局
 	{
-		srand((unsigned)time(NULL));
-		int n = (rand() % cardStackNo.size());
+		for (int i = 0; i < 10; i++)
+		{
+			srand((unsigned)time(NULL));
+			int n = (rand() % cardStackNo.size());
 
-		temp_card = new CardsUI(cardStackNo.at(n));
-		pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
-		temp_card->setPos(pos);
-		cardUILists.append(temp_card);
-		cardUIPosLists.append(pos);
-		cardUIPixmapLists.append(temp_card->pixmap());
-		cardStackNo.removeAt(n);
+			temp_card = new CardsUI(cardStackNo.at(n));
+			pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
+			temp_card->setPos(pos);
+			cardUILists.append(temp_card);
+			cardUIPosLists.append(pos);
+			cardUIPixmapLists.append(temp_card->pixmap());
+			cardStackNo.removeAt(n);
+		}
 	}
+
+	else//第二局和第三局
+	{
+		int i = 0;
+		foreach(int num, left_cardStackNo)
+		{
+			temp_card = new CardsUI(num);
+			pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
+			temp_card->setPos(pos);
+			cardUILists.append(temp_card);
+			cardUIPosLists.append(pos);
+			cardUIPixmapLists.append(temp_card->pixmap());
+			i++;
+		}
+
+		int times = 4 - my_turn;
+		foreach(int j, cardStackNo)
+		{
+			if (!used_cardStackNo.contains(j))
+			{
+				temp_card = new CardsUI(j);
+				pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
+				temp_card->setPos(pos);
+				cardUILists.append(temp_card);
+				cardUIPosLists.append(pos);
+				cardUIPixmapLists.append(temp_card->pixmap());
+				cardStackNo.removeOne(j);
+				i++;
+				times--;
+			}
+			if (times <= 0)
+			{
+				break;
+			}
+		}
+	}
+
+
 
 	putInText();
 
@@ -126,7 +159,7 @@ void CardsSelectionBackground::init()
 	}
 
 	//添加文本 
-	textLabel->setText(tr("remain times to use: %1/3 ").arg(cardsToAdjust_number));
+	textLabel->setText(tr("remain times to use: %1/%2 ").arg(cardsToAdjust_number).arg(4-my_turn));
 	QFont font;
 	font.setPixelSize(30); // 像素大小 
 	textLabel->setFont(font);
@@ -250,8 +283,25 @@ void CardsSelectionBackground::changeCard()
 	{
 		CardsUI *temp_card;
 
-		srand((unsigned)time(NULL));
-		int n = (rand() % cardStackNo.size());
+		int n = 0;
+		if (my_turn != 1)
+		{
+			foreach(int no, cardStackNo)
+			{
+				if (!used_cardStackNo.contains(no))
+				{
+					break;
+				}
+				n++;
+
+			}
+		}
+		else if (my_turn == 1)
+		{
+			srand((unsigned)time(NULL));
+			n = rand() % cardStackNo.size();
+		}
+
 		temp_card = new CardsUI(cardStackNo.at(n));
 		temp_card->setPos(cardUILists[No]->pos());
 		cardStackNo.removeAt(n);
@@ -284,7 +334,7 @@ void CardsSelectionBackground::changeCard()
 
 		cardsToAdjust_number--;
 
-		textLabel->setText(tr("remain times to use: %1/3 ").arg(cardsToAdjust_number));
+		textLabel->setText(tr("remain times to use: %1/%2 ").arg(cardsToAdjust_number).arg(4-my_turn));
 	}
 
 	cardUISizeAdjust();
@@ -357,6 +407,39 @@ void CardsSelectionBackground::getFromText()
 	}
 
 	file.close();
+	if (my_turn != 1)
+	{
+		QFile file2("my_leftCardStack.txt");
+
+		if (file2.open(QFile::ReadOnly))
+		{
+			QTextStream inPut(&file2);
+			QString temp_No;
+			while (!inPut.atEnd())
+			{
+				temp_No = inPut.readLine();
+				left_cardStackNo.append(temp_No.toInt());
+			}
+		}
+
+		file2.close();
+
+		QFile file3("my_usedCardStack.txt");
+
+		if (file3.open(QFile::ReadOnly))
+		{
+			QTextStream inPut(&file3);
+			QString temp_No;
+			while (!inPut.atEnd())
+			{
+				temp_No = inPut.readLine();
+				used_cardStackNo.append(temp_No.toInt());
+			}
+		}
+
+		file3.close();
+	}
+
 }
 
 void CardsSelectionBackground::putInText()
@@ -374,6 +457,18 @@ void CardsSelectionBackground::putInText()
 		}
 	}
 	file.close();
+
+	if (my_turn == 1)
+	{
+		QFile file1("my_usedCardStack.txt");
+		file1.resize(0);
+		file1.close();
+	}
+
+	QFile file2("all_playingCardStack.txt");
+	file2.resize(0);
+	file2.close();
+	
 }
 
 void CardsSelectionBackground::resizeEvent(QResizeEvent *event)
