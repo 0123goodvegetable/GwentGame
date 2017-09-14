@@ -100,6 +100,13 @@ void GamePlayingBackground::init()
 	clock = new QTimer(this);
 	clock->start(1000);
 
+	m_Melee_weather_Label = new QLabel(this);
+	m_Archer_weather_Label = new QLabel(this);
+	m_Siege_weather_Label = new QLabel(this);
+	e_Melee_weather_Label = new QLabel(this);
+	e_Archer_weather_Label = new QLabel(this);
+	e_Siege_weather_Label = new QLabel(this);
+
 
 	//设置窗口属性（没有滚动条）
 	view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -120,12 +127,21 @@ void GamePlayingBackground::init()
 	CardsUI *temp_card;
 	QPointF pos;
 	//完善卡牌信息
-	for (int i = 0; i < my_cardStackNo.size(); i++)
+	for (int i = 0,j=0; i < my_cardStackNo.size(); i++,j++)
 	{
 		temp_card = new CardsUI(my_cardStackNo.at(i));
-		pos = QPointF(COLUMN_POS_X + CARD_DIS * i, PREPARE_COLUMN_POS_Y);
+		pos = QPointF(COLUMN_POS_X + CARD_DIS * j, PREPARE_COLUMN_POS_Y);
 		temp_card->setPos(pos);
-
+		if (temp_card->operating_card->isFriend == true && temp_card->operating_card->isHero == true)//友方领袖牌
+		{
+			temp_card->setPos(380, PREPARE_COLUMN_POS_Y);
+			j--;
+		}
+		if (temp_card->operating_card->isFriend == false && temp_card->operating_card->isHero == true)//敌方领袖牌
+		{
+			temp_card->setPos(380, E_PREPARE_COLUMN_POS_Y);
+			j--;
+		}
 		cardUILists.append(temp_card);
 		cardUIPosLists.append(pos);
 		cardUIPixmapLists.append(temp_card->pixmap());
@@ -190,6 +206,38 @@ void GamePlayingBackground::init()
 	palette.setColor(QPalette::WindowText, Qt::white);
 	enemyAllAttackLabel->setPalette(palette);
 	enemyAllAttackLabel->setGeometry(150, 300, 100, 50);
+
+	//设置天气显示label
+	font.setPixelSize(18);
+	palette.setColor(QPalette::WindowText, Qt::white);
+
+	m_Melee_weather_Label->setText("sunny");
+	m_Archer_weather_Label->setText("sunny");
+	m_Siege_weather_Label->setText("sunny");
+	e_Melee_weather_Label->setText("sunny");
+	e_Archer_weather_Label->setText("sunny");
+	e_Siege_weather_Label->setText("sunny");
+
+	m_Melee_weather_Label->setFont(font);
+	m_Archer_weather_Label->setFont(font);
+	m_Siege_weather_Label->setFont(font);
+	e_Melee_weather_Label->setFont(font);
+	e_Archer_weather_Label->setFont(font);
+	e_Siege_weather_Label->setFont(font);
+
+	m_Melee_weather_Label->setPalette(palette);
+	m_Archer_weather_Label->setPalette(palette);
+	m_Siege_weather_Label->setPalette(palette);
+	e_Melee_weather_Label->setPalette(palette);
+	e_Archer_weather_Label->setPalette(palette);
+	e_Siege_weather_Label->setPalette(palette);
+
+	e_Siege_weather_Label->setGeometry(409, 165, 90, 90);
+	e_Archer_weather_Label->setGeometry(409, 271, 90, 90);
+	e_Melee_weather_Label->setGeometry(409, 375, 90, 90);
+	m_Melee_weather_Label->setGeometry(409, 503, 90, 90);
+	m_Archer_weather_Label->setGeometry(409, 609, 90, 90);
+	m_Siege_weather_Label->setGeometry(409, 711, 90, 90);
 
 	//设置计时器位置
 	timeShowLCD->setGeometry(1500, 600, 100, 80);
@@ -457,15 +505,23 @@ void GamePlayingBackground::updateStatus()
 		}
 		else if(card_temp->operating_card->isFielded==false)//卡牌不在场上
 		{
-			if (card_temp->operating_card->isFriend == true)
+			if (card_temp->operating_card->isFriend == true && card_temp->operating_card->isHero==false)
 			{
 				card_temp->setPos(COLUMN_POS_X + num1*CARD_DIS, PREPARE_COLUMN_POS_Y);
 				num1++;
 			}
-			else
+			else if(card_temp->operating_card->isFriend == false && card_temp->operating_card->isHero == false)
 			{
 				card_temp->setPos(COLUMN_POS_X + num8*CARD_DIS, E_PREPARE_COLUMN_POS_Y);
 				num8++;
+			}
+			else if (card_temp->operating_card->isFriend == true && card_temp->operating_card->isHero == true)//友方领袖牌
+			{
+				card_temp->setPos(380, PREPARE_COLUMN_POS_Y);
+			}
+			else if (card_temp->operating_card->isFriend == false && card_temp->operating_card->isHero == true)//敌方领袖牌
+			{
+				card_temp->setPos(380, E_PREPARE_COLUMN_POS_Y);
 			}
 		}
 		else if(card_temp->pos().y()==M_MELEE_COLUMN_POS_Y)
@@ -531,10 +587,95 @@ void GamePlayingBackground::updateStatus()
 
 	cardUISizeAdjust();
 
+	//更新天气栏
+	if (m_Melee_weather == 1)
+	{
+		m_Melee_weather_Label->setText("fog");
+	}
+	if (m_Archer_weather == 1)
+	{
+		m_Archer_weather_Label->setText("fog");
+	}
+	if (m_Siege_weather == 1)
+	{
+		m_Siege_weather_Label->setText("fog");
+	}
+	if (e_Melee_weather == 1)
+	{
+		e_Melee_weather_Label->setText("fog");
+	}
+	if (e_Archer_weather == 1)
+	{
+		e_Archer_weather_Label->setText("fog");
+	}
+	if (e_Siege_weather == 1)
+	{
+		e_Siege_weather_Label->setText("fog");
+	}
+
+	if (m_Melee_weather == 2|| m_Melee_weather == 4)
+	{
+		m_Melee_weather_Label->setText("frost");
+	}
+	if (m_Archer_weather == 2|| m_Archer_weather==4)
+	{
+		m_Archer_weather_Label->setText("frost");
+	}
+	if (m_Siege_weather == 2|| m_Siege_weather==4)
+	{
+		m_Siege_weather_Label->setText("frost");
+	}
+	if (e_Melee_weather == 2|| e_Melee_weather==4)
+	{
+		e_Melee_weather_Label->setText("frost");
+	}
+	if (e_Archer_weather == 2|| e_Archer_weather==4)
+	{
+		e_Archer_weather_Label->setText("frost");
+	}
+	if (e_Siege_weather == 2|| e_Siege_weather==4)
+	{
+		e_Siege_weather_Label->setText("frost");
+	}
+
+	if (m_Melee_weather == 3)
+	{
+		m_Melee_weather_Label->setText("rain");
+	}
+	if (m_Archer_weather == 3)
+	{
+		m_Archer_weather_Label->setText("rain");
+	}
+	if (m_Siege_weather == 3)
+	{
+		m_Siege_weather_Label->setText("rain");
+	}
+	if (e_Melee_weather == 3)
+	{
+		e_Melee_weather_Label->setText("rain");
+	}
+	if (e_Archer_weather == 3)
+	{
+		e_Archer_weather_Label->setText("rain");
+	}
+	if (e_Siege_weather == 3)
+	{
+		e_Siege_weather_Label->setText("rain");
+	}
+
+	if (my_allAttack < 0)
+	{
+		my_allAttack = 0;
+	}
+	if (enemy_allAttack < 0)
+	{
+		enemy_allAttack = 0;
+	}
 	myAllAttackLabel->setText(QString::number(my_allAttack));
 	enemyAllAttackLabel->setText(QString::number(enemy_allAttack));
 
 	emit sendFinal(my_round, myAllAttackLabel->text().toInt(),enemyAllAttackLabel->text().toInt());
+
 }
 
 void GamePlayingBackground::updateStack(QList<CardsUI*> stack)
@@ -557,7 +698,7 @@ void GamePlayingBackground::isMoving(QPointF &pos)
 		pos_y = cardUIPosLists[num].y() + pos.y();
 
 
-		if (Pressed == true && operation == true && cardUILists[num]->operating_card->isFriend == true &&
+		if (Pressed == true && operation == true&&cardUILists[num]->operating_card->isFriend == true&&
 			pos_x >= COLUMN_POS_X&&pos_x <= COLUMN_POS_X + COLUMN_LENGTH&&
 			pos_y >= E_SIEGE_COLUMN_POS_Y&&pos_y < PREPARE_COLUMN_POS_Y)//确保在操作牌且将其拖到牌场中
 		{
@@ -791,7 +932,7 @@ void GamePlayingBackground::cardUISizeAdjust()
 	quint16 i = 0;
 	foreach(CardsUI* card, cardUILists)
 	{
-		if (card->operating_card->isFriend == false && card->operating_card->isFielded == false)
+		if (card->operating_card->isFriend == false && card->operating_card->isFielded == false &&card->operating_card->isHero==false)
 		{
 			QPixmap temp_back(":/cards/Resources/card/cardBack.png");
 			temp_back = temp_back.scaled(CARD_WIDTH, CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -1005,6 +1146,22 @@ void GamePlayingBackground::getFromEnemyText()
 				temp_isUseFollowSkill = lineData[8].toInt();
 				temp_isWeatherControlled = lineData[9].toInt();
 				temp_position = lineData[10].toInt();
+
+				if (temp_No == allCards.Frightener_No)
+				{
+					int num = 0;
+					foreach(CardsUI *card, cardUILists)
+					{
+						if (card->operating_card->No == allCards.Frightener_No)
+						{
+							num++;
+						}
+					}
+					if (num >= 2)
+					{
+						continue;
+					}
+				}
 
 				//更新牌组信息
 				int i = 0;
@@ -1241,7 +1398,8 @@ void GamePlayingBackground::useChooseScene(CardsUI *root_card)
 			{
 				 if((allCardUILists[j]->operating_card->material==0||
 					 allCardUILists[j]->operating_card->material == 1)&&
-					 !my_cardStackNo.contains(all_cardStackNo[j]))//是金卡或银卡且不在现有手牌中
+					 !my_cardStackNo.contains(all_cardStackNo[j])&&
+					 allCardUILists[j]->operating_card->isHero==false)//是金卡或银卡且不在现有手牌中
 				 {
 					 num = all_cardStackNo[j];
 					 j++;
@@ -1748,19 +1906,32 @@ void GamePlayingBackground::whetherUseFollowSkill()
 	}
 
 	//土元素技能
-	i = 0;
+	int num = 0;
 	foreach(CardsUI *card, cardUILists)
 	{
-		if (card->operating_card->skill == 22 &&
-			card->operating_card->isFriend == true &&
-			card->operating_card->isGarbaged==true&&
-			card->operating_card->isUseFollowSkill == false)
+		if (card->operating_card->No==allCards.Lesser_Earth_Elemental_No||
+			card->operating_card->No == allCards.Lesser_Earth_Elemental2_No)
 		{
-			emit toUseSkills(card->operating_card);
-			cardUILists[i]->operating_card->isUseFollowSkill = true;
 			break;
 		}
-		i++;
+		num++;
+	}
+	if (num >= cardUILists.size())
+	{
+		i = 0;
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->skill == 22 &&
+				card->operating_card->isFriend == true &&
+				card->operating_card->isGarbaged == true &&
+				card->operating_card->isUseFollowSkill == false)
+			{
+				emit toUseSkills(card->operating_card);
+				cardUILists[i]->operating_card->isUseFollowSkill = true;
+				break;
+			}
+			i++;
+		}
 	}
 }
 
@@ -2673,7 +2844,14 @@ void GamePlayingBackground::useSkills(Card *card)
 		//生成两个次级土元素
 		for (int j = 0; j < 2; j++)
 		{
-			temp_card = new CardsUI(allCards.Lesser_Earth_Elemental_No);
+			if (j == 0)
+			{
+				temp_card = new CardsUI(allCards.Lesser_Earth_Elemental_No);
+			}
+			if (j == 1)
+			{
+				temp_card = new CardsUI(allCards.Lesser_Earth_Elemental2_No);
+			}
 			pos = QPointF(COLUMN_POS_X,M_MELEE_COLUMN_POS_Y);
 			temp_card->setPos(pos);
 			cardUILists.append(temp_card);
@@ -2703,7 +2881,8 @@ void GamePlayingBackground::useSkills(Card *card)
 		foreach(CardsUI *card, allCardUILists)//抽一张卡牌
 		{
 			if (!my_cardStackNo.contains(card->operating_card->No)&&
-				card->operating_card->isHero==false)
+				card->operating_card->isHero==false&&
+				card->operating_card->No!=usingSkill_card->operating_card->No)
 			{
 				break;
 			}
@@ -2744,13 +2923,24 @@ void GamePlayingBackground::useSkills(Card *card)
 					card->operating_card->isFriend==false&&
 					card->operating_card->isFielded==true)
 				{
-					cardUILists[i]->setPos(cardUILists[i]->pos().x(), usingSkill_card->pos().y());
+					cardUILists[i]->setPos(cardUILists[i]->pos().x()+10, usingSkill_card->pos().y());
 					break;
 				}
 				i++;
 			}
 		}
-		updateStatus();
+		//设置畏惧者的属性
+		i = 0;
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->No == usingSkill_card->operating_card->No&&
+				card->operating_card->isFriend == true)
+			{
+				cardUILists[i]->operating_card->isFielded = true;
+				cardUILists[i]->operating_card->isFriend = false;
+			}
+			i++;
+		}
 		usingSkillTimes = 1;
 		if (usingSkillTimes == NORMAL_SKILL_TIMES)
 		{
@@ -2758,8 +2948,6 @@ void GamePlayingBackground::useSkills(Card *card)
 			isUsingSkill = false;
 			usingSkillTimes = 0;
 			operation = false;
-			cardUILists[cardUILists.indexOf(usingSkill_card)]->operating_card->isFriend = false;
-			cardUILists[cardUILists.indexOf(usingSkill_card)]->operating_card->isFielded = true;
 			updateStatus();
 			putInEnemyText();
 		}

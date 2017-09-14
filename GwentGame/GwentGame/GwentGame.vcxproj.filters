@@ -76,9 +76,6 @@
     <ClCompile Include="GameSelectionBackground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CP_CardStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_CardsSelectionBackground.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -242,9 +239,6 @@
     <ClInclude Include="GeneratedFiles\ui_GameSelectionBackground.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="CP_CardStack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_CardsSelectionBackground.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
@@ -265,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_GameEndBackground.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CP_CardStack.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

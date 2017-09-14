@@ -1,3 +1,5 @@
+//进行联网并实现服务端的功能。
+
 #pragma once
 #ifndef CP_MYSERVER_H
 #define CP_MYSERVER_H

@@ -142,7 +142,6 @@ void Card::CreateLogic(int num)
 		isShield = true;
 	}
 
-
 	temp_num = num / 100;
 	attack = temp_num % 100;//¿¨ÅÆÕ½¶·Á¦
 
@@ -279,6 +278,9 @@ void  Card::AddName(int num)
 		name = "Commander_Horn";
 		break;
 	case 300300212:
+		name = "Lesser_Earth_Elemental";
+		break;
+	case 300300222:
 		name = "Lesser_Earth_Elemental";
 		break;
 	}

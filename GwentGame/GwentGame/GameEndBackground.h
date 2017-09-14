@@ -1,3 +1,5 @@
+//实现游戏结束界面的相关显示和操作。
+
 #pragma once
 
 #include <QWidget>

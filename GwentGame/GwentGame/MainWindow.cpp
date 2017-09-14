@@ -222,8 +222,4 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	if (BackgroundNo == 0)
 		toGameSelectionBackground();
 
-	switch (event->key())
-	{
-	}
-
 }

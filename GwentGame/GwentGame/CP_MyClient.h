@@ -1,3 +1,4 @@
+//进行联网并实现客户端的功能。
 #pragma once
 #ifndef CP_MYCLIENT_H
 #define CP_MYCLIENT_H

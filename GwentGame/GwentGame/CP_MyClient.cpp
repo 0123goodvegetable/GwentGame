@@ -206,52 +206,6 @@ void MyClient::MeReady()
 	}
 
 }
-/*
-void MyClient::EnemyEnd()
-{
-	enemyEnd = true;
-	emit toKnowEnemyEnd();
-	if (meEnd == true)
-	{
-		turn++;
-		if (turn <= 3)
-		{
-			enemyEnd = false;
-			meEnd = false;
-			emit toCardsSelectionBackground();
-		}
-		else
-		{
-			QString filename = "enemy_final.txt";
-			sendFile(filename);
-		}
-
-	}
-}
-
-void MyClient::MeEnd()
-{
-
-	meEnd = true;
-	QString filename = "end.txt";
-	sendFile(filename);
-
-	if (enemyEnd == true)
-	{
-		turn++;
-		if (turn <= 3)
-		{
-			enemyEnd = false;
-			meEnd = false;
-			emit toCardsSelectionBackground();
-		}
-		else
-		{
-			QString filename = "enemy_final.txt";
-			sendFile(filename);
-		}
-	}
-}*/
 
 void MyClient::EnemyEnd()
 {
@@ -302,6 +256,7 @@ void MyClient::MeEnd()
 	}
 
 }
+
 void MyClient::getFinal(int i, int me_final_num,int enemy_final_num)
 {
 	switch (i)

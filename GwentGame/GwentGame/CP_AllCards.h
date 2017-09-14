@@ -49,6 +49,7 @@ int Unseen_Elder_No = 13010590;
  int Harpy_Egg2_No = 283280122;
  int Commander_Horn_No = 295290011;
  int Lesser_Earth_Elemental_No = 300300212;
+ int Lesser_Earth_Elemental2_No = 300300222;
 
 	const int AllCardsNo[35] =
 	{	0,
@@ -69,9 +70,6 @@ int Unseen_Elder_No = 13010590;
 		Crone_Brewess_No,
 		Thunderbolt_potion_No,
 		Woodland_Spirit_No,
-		/*Raging_Wolf_No,
-		Raging_Wolf2_No,
-		Raging_Wolf3_No,*/
 		Roach_No,
 		Roach2_No,
 		Roach3_No,
@@ -87,8 +85,6 @@ int Unseen_Elder_No = 13010590;
 		Arachas2_No,
 		Arachas3_No,
 		Arachas_Behemoth_No,
-		/*Harpy_Egg_No,
-		Harpy_Egg2_No,*/
 		Commander_Horn_No };
 
 };

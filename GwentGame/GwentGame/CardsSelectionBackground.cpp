@@ -85,7 +85,21 @@ void CardsSelectionBackground::init()
 	//随机添加卡牌
 	if (my_turn == 1)//刚开局
 	{
-		for (int i = 0; i < 10; i++)
+		foreach(int no, cardStackNo)
+		{
+			if ((no / 10) % 10 == 9)//领袖牌
+			{
+				temp_card = new CardsUI(no);
+				pos = QPointF(CARD_STA , CARD_POS_Y);
+				temp_card->setPos(pos);
+				cardUILists.append(temp_card);
+				cardUIPosLists.append(pos);
+				cardUIPixmapLists.append(temp_card->pixmap());
+				cardStackNo.removeOne(no);
+				break;
+			}
+		}
+		for (int i = 1; i < 10; i++)
 		{
 			srand((unsigned)time(NULL));
 			int n = (rand() % cardStackNo.size());

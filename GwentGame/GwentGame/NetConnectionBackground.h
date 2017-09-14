@@ -1,3 +1,5 @@
+//实现联网操作的界面
+
 #pragma once
 
 #include <QWidget>

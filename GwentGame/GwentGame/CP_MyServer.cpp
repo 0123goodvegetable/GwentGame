@@ -43,8 +43,6 @@ void MyServer::acceptConnection()
 		tcpServerConnection, &QObject::deleteLater);
 	connect(tcpServerConnection, SIGNAL(bytesWritten(qint64)),
 		this, SLOT(updateWriteProgress(qint64)));
-	/*connect(tcpServerConnection, SIGNAL(readyRead()),
-		this, SLOT(receiveFile()));*/
 	connect(tcpServerConnection, SIGNAL(readyRead()),
 		this, SLOT(receiveFile()), Qt::DirectConnection);
 	connect(this, SIGNAL(toKnowEnemyReady()),

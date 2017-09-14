@@ -33,77 +33,33 @@ QList<CardsUI*> PlayingLogic::operateCard(Card &card,int card_No)
 	case 4:
 		skill4(card_No);
 		break;
-	//5、不需要达冈技能
 	case 6:
 		skill6(card_No);
 		break;
-	//7、盖尔不需要技能
 	case 8:
 		skill8(card_No);
 		break;
-	//9、卡兰希尔不需要额外技能
-	//10、狂猎骑士不需要额外技能
-	//11、12、13老巫妪不需要额外技能
-
 	case 14:
 		skill14(card_No);
 		break;
-
-	//15、林妖不需要额外技能
-	//16、暴怒的狼无技能
 	case 19:
 		skill19(card_No);
 		break;
-	//20、赛尔伊诺鹰身女妖不需要额外技能
 	case 21:
 		skill21(card_No);
 		break;
-	//22、土元素不需要额外技能
-	//23、畏惧者不需要额外技能
-	//26、蟹蜘蛛不需要额外技能
 	case 29:
 		skill29(card_No);
 		break;
-
-/*
-
-	case 18:
-		skill18();
-		break;
-
-		skill21();
-		break;
-	case 22:
-		skill22();
-		break;
-	case 23:
-		skill23();
-		break;
-	case 24:
-		skill24();
-		break;
-	case 25:
-		skill25();
-		break;
-	case 26:
-		skill26();
-		break;
-	case 27:
-		skill27();
-		break;
-	case 28:
-		skill28();
-		break;
-*/
 	}
 
 	//返回改变后的牌组状态
 	return cardStack;
 }
 
-/*
-*实现所有卡牌的技能
-*/
+
+//实现所有卡牌的技能
+
 //1、暗影长者
 void PlayingLogic::skill1(int number)
 {
@@ -138,7 +94,7 @@ void PlayingLogic::skill2(int number)
 {
 
 	//搜寻打出卡牌后的后续卡牌,交换战斗力
-	int max_num=0, min_num=0, max_attack = cardStack[0]->operating_card->attack, min_attack = cardStack[0]->operating_card->attack;
+	int max_num=0, min_num=0, max_attack = -1, min_attack = 100;
 	for (int i = 0; i < cardStack.size(); i++)
 	{
 		if (cardStack[i]->operating_card->isFielded==true)
@@ -156,17 +112,21 @@ void PlayingLogic::skill2(int number)
 		}
 	}
 
-	if (cardStack[max_num]->operating_card->attack <= 10)
+	if (max_attack != -1 && min_attack != 100)
 	{
-		cardStack[min_num]->operating_card->attack += cardStack[max_num]->operating_card->attack;
-		cardStack[max_num]->operating_card->isGarbaged = true;
-		cardStack[max_num]->operating_card->isFielded = false;
+		if (cardStack[max_num]->operating_card->attack <= 10)
+		{
+			cardStack[min_num]->operating_card->attack += cardStack[max_num]->operating_card->attack;
+			cardStack[max_num]->operating_card->isGarbaged = true;
+			cardStack[max_num]->operating_card->isFielded = false;
+		}
+		else
+		{
+			cardStack[min_num]->operating_card->attack += 10;
+			cardStack[max_num]->operating_card->attack -= 10;
+		}
 	}
-	else
-	{
-		cardStack[min_num]->operating_card->attack += 10;
-		cardStack[max_num]->operating_card->attack -= 10;
-	}
+
 
 }
 

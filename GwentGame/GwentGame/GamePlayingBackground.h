@@ -74,6 +74,13 @@ private:
 	QLCDNumber *timeShowLCD;//显示计时的屏幕
 	QTimer *clock;//定时器
 
+	QLabel *m_Melee_weather_Label;
+	QLabel *m_Archer_weather_Label;
+	QLabel *m_Siege_weather_Label;
+	QLabel *e_Melee_weather_Label;
+	QLabel *e_Archer_weather_Label;
+	QLabel *e_Siege_weather_Label;
+
 	volatile bool Pressed;//（常用）点击鼠标的判断变量
 	int second_number;//经过多少秒
 	int my_round;//第几回合
