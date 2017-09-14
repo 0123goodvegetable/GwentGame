@@ -652,6 +652,7 @@ void GamePlayingBackground::CardisReleased()
 
 			whetherUseActiveSkill();
 
+
 		}
 		else if (operation == false && isUsingSkill == true)
 		{
@@ -1292,9 +1293,9 @@ void GamePlayingBackground::resizeEvent(QResizeEvent *event)
 		geometry().width(), geometry().height());
 
 	//更新全局变量
-	SCREEN_WIDTH2 = this->width();
-	SCREEN_HEIGHT2 = this->height();
-	updateCoordinate();
+	//SCREEN_WIDTH2 = this->width();
+	//SCREEN_HEIGHT2 = this->height();
+	//updateCoordinate();
 
 }
 
@@ -1432,7 +1433,8 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 		{
 			if ((card->operating_card->genre == 0 ||
 				card->operating_card->genre == 1) &&
-				!my_cardStackNo.contains(card->operating_card->No))//不在手牌中的金银卡
+				card->operating_card->isHero==false&&
+				!my_cardStackNo.contains(card->operating_card->No))//不在手牌中的非英雄金银卡
 			{
 				num++;
 			}
@@ -1468,6 +1470,8 @@ void  GamePlayingBackground::whetherUseActiveSkill()
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			Card *temp_card = new Card(allCards.Roach_No);
+			useSkills(temp_card);
 			putInEnemyText();
 		}
 		break;
@@ -1934,6 +1938,18 @@ void GamePlayingBackground::useSkills(Card *card)
 		updateStack(conductor->operateCard(*usingSkill_card->operating_card, usingSkill_card->operating_card->number));
 		updateStatus();
 		delete conductor;
+		if (usingSkill_card->pos().y() == M_MELEE_COLUMN_POS_Y)
+		{
+			m_Melee_weather = 0;
+		}
+		if (usingSkill_card->pos().y() == M_ARCHER_COLUMN_POS_Y)
+		{
+			m_Archer_weather = 0;
+		}
+		if (usingSkill_card->pos().y() == M_SIEGE_COLUMN_POS_Y)
+		{
+			m_Siege_weather = 0;
+		}
 		//将一张卡牌移至对方墓地
 		if (cardExist == true)
 		{
@@ -2421,20 +2437,49 @@ void GamePlayingBackground::useSkills(Card *card)
 			//将卡牌添加到牌场上
 			cardUILists[i]->operating_card->isFielded = true;
 
-			//my_cardStackNo.append(cardUILists[i]->operating_card->No);
 		}
 		//降下蔽日浓雾
 		if (usingSkill_card->pos().y() == M_MELEE_COLUMN_POS_Y)
 		{
 			e_Melee_weather = 1;
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == E_MELEE_COLUMN_POS_Y &&
+					card->operating_card->isFielded == true)
+				{
+					cardUILists[i]->operating_card->isWeatherControlled = 1;
+				}
+				i++;
+			}
 		}
 		if (usingSkill_card->pos().y() == M_ARCHER_COLUMN_POS_Y)
 		{
 			e_Archer_weather = 1;
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == E_ARCHER_COLUMN_POS_Y &&
+					card->operating_card->isFielded == true)
+				{
+					cardUILists[i]->operating_card->isWeatherControlled = 1;
+				}
+				i++;
+			}
 		}
 		if (usingSkill_card->pos().y() == M_SIEGE_COLUMN_POS_Y)
 		{
 			e_Siege_weather = 1;
+			int i = 0;
+			foreach(CardsUI *card, cardUILists)//选中同排其他卡牌
+			{
+				if (card->pos().y() == E_SIEGE_COLUMN_POS_Y &&
+					card->operating_card->isFielded == true)
+				{
+					cardUILists[i]->operating_card->isWeatherControlled = 1;
+				}
+				i++;
+			}
 		}
 
 		updateStatus();
@@ -2445,6 +2490,8 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			isUsingSkill = false;
+			Card *temp_card = new Card(allCards.Roach_No);
+			useSkills(temp_card);
 			putInEnemyText();
 		}
 		break;
@@ -2455,7 +2502,8 @@ void GamePlayingBackground::useSkills(Card *card)
 	case 17://萝卜
 		foreach(CardsUI *card, allCardUILists)
 		{
-			if(card->operating_card->skill==17&&
+			if(isGoldCardOut==true&&
+				card->operating_card->skill==17&&
 				!my_cardStackNo.contains(card->operating_card->No))
 			{
 				temp_card = new CardsUI(card->operating_card->No);
@@ -2499,7 +2547,7 @@ void GamePlayingBackground::useSkills(Card *card)
 			}
 		}
 		isGoldCardOut = false;
-		//putInEnemyText();
+
 		break;
 
 
@@ -2578,7 +2626,6 @@ void GamePlayingBackground::useSkills(Card *card)
 			cardUISizeAdjust();
 			//将卡牌添加到牌场上
 			cardUILists[i]->operating_card->isFielded = true;
-			//my_cardStackNo.insert(i,cardUILists[i]->operating_card->No);
 		}
 		updateStatus();
 		usingSkillTimes++;
@@ -2646,10 +2693,8 @@ void GamePlayingBackground::useSkills(Card *card)
 			cardUISizeAdjust();
 			//将卡牌添加到牌场上
 			cardUILists[i]->operating_card->isFielded = true;
-			//my_cardStackNo.insert(i, cardUILists[i]->operating_card->No);
 		}
 		updateStatus();
-		//putInEnemyText();
 		break;
 
 	case 23://畏惧者
@@ -2657,7 +2702,8 @@ void GamePlayingBackground::useSkills(Card *card)
 		i = 0;
 		foreach(CardsUI *card, allCardUILists)//抽一张卡牌
 		{
-			if (!my_cardStackNo.contains(card->operating_card->No))
+			if (!my_cardStackNo.contains(card->operating_card->No)&&
+				card->operating_card->isHero==false)
 			{
 				break;
 			}
@@ -2686,7 +2732,6 @@ void GamePlayingBackground::useSkills(Card *card)
 			//将卡牌添加到牌场上
 			my_cardStackNo.insert(i, cardUILists[i]->operating_card->No);
 
-			updateStatus();
 		}
 		//移动一张牌
 		if (cardExist == true)
@@ -2696,7 +2741,8 @@ void GamePlayingBackground::useSkills(Card *card)
 			{
 				if (card->operating_card->No ==
 					selected_card->operating_card->No&&
-					card->operating_card->isFriend==false)
+					card->operating_card->isFriend==false&&
+					card->operating_card->isFielded==true)
 				{
 					cardUILists[i]->setPos(cardUILists[i]->pos().x(), usingSkill_card->pos().y());
 					break;
@@ -2713,6 +2759,8 @@ void GamePlayingBackground::useSkills(Card *card)
 			usingSkillTimes = 0;
 			operation = false;
 			cardUILists[cardUILists.indexOf(usingSkill_card)]->operating_card->isFriend = false;
+			cardUILists[cardUILists.indexOf(usingSkill_card)]->operating_card->isFielded = true;
+			updateStatus();
 			putInEnemyText();
 		}
 		break;

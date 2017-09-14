@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 	this->resize(1800, 1000);
 	this->setWindowOpacity(1);
 	this->setAttribute(Qt::WA_TranslucentBackground);
+	this->setWindowTitle("Gwent Game");
 
 	connect(this, SIGNAL(changeBackgroundNo(int)), this, SLOT(updateBackground(int)));//随时更新场景
 

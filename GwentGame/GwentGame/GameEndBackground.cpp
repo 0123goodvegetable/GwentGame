@@ -124,7 +124,7 @@ void GameEndBackground::receiveFinal(int m_final1, int m_final2, int m_final3, i
 	}
 	else if (number < 0)
 	{
-		WinOrLose = "you Lose!";
+		WinOrLose = "You Lose!";
 	}
 	else
 	{

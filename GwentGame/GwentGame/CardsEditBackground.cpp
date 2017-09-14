@@ -19,7 +19,7 @@
 
 //定义全局变量
 const qreal CARD_DIS = 150;//卡牌间距
-const int CARDS_NUM = 38;//所有卡牌数量
+const int CARDS_NUM = 33;//所有卡牌数量
 
 int SCREEN_WIDTH = 1800;//画面宽度
 int SCREEN_HEIGHT = 961;//画面高度
@@ -199,12 +199,14 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 			}
 		}
 		else if(selected_card->operating_card->isInGameCardsStack == true&&
-			(selected_card->operating_card->genre==1|| selected_card->operating_card->genre == 3|| selected_card->operating_card->genre == 4))
+			(selected_card->operating_card->genre==1|| selected_card->operating_card->genre == 3|| selected_card->operating_card->genre == 4)&&
+			selected_card->operating_card->isHero==false)
 		{
 			foreach(CardsUI* card_temp, cardUILists)
 			{
 				if (card_temp->operating_card->isInGameCardsStack == true&&
-					(card_temp->operating_card->genre== 1|| card_temp->operating_card->genre == 3|| card_temp->operating_card->genre == 4))
+					(card_temp->operating_card->genre== 1|| card_temp->operating_card->genre == 3|| card_temp->operating_card->genre == 4)&&
+					card_temp->operating_card->isHero == false)
 				{
 					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
 						cardUIPosLists.at(i).y());
@@ -212,12 +214,13 @@ void  CardsEditBackground::isMoving(QPointF &pos)
 				i++;
 			}
 		}
-		else
+		else if(selected_card->operating_card->isHero == false)
 		{
 			foreach(CardsUI* card_temp, cardUILists)
 			{
 				if (card_temp->operating_card->isInGameCardsStack == true &&
-					card_temp->operating_card->genre == selected_card->operating_card->genre)
+					card_temp->operating_card->genre == selected_card->operating_card->genre&&
+					card_temp->operating_card->isHero == false)
 				{
 					card_temp->setPos(cardUIPosLists.at(i).x() + pos.x(),
 						cardUIPosLists.at(i).y());
@@ -338,6 +341,20 @@ void CardsEditBackground::editStacks()
 	{	
 		cardUILists[No]->operating_card->isInGameCardsStack = false;//卡牌退回未选择卡组中
 	}
+
+	//当选择一张英雄牌时
+	if (cardUILists[No]->operating_card->isHero == true)
+	{
+		cardUILists[No]->operating_card->isInGameCardsStack = true;
+		foreach(CardsUI *card, cardUILists)
+		{
+			if (card->operating_card->isHero == true &&
+				card->operating_card->No != cardUILists[No]->operating_card->No)
+			{
+				card->operating_card->isInGameCardsStack = false;
+			}
+		}
+	}
 	updatePictures();
 	cardUISizeAdjust();
 
@@ -357,40 +374,51 @@ void CardsEditBackground::updatePictures()
 			num1++;
 		}
 		if (card->operating_card->isInGameCardsStack == true &&
-			card->operating_card->genre == 0)
+			card->operating_card->genre == 0&&
+			card->operating_card->isHero==false)
 		{
 			card->setPos(FIGHT_COLUMN_POS_X + num2*SELECTED_CARD_WIDTH, MELEE_COLUMN_POS_Y);
 			num2++;
 		}
 		if (card->operating_card->isInGameCardsStack == true &&
-			card->operating_card->genre == 1)
+			card->operating_card->genre == 1&&
+			card->operating_card->isHero == false)
 		{
 			card->setPos(FIGHT_COLUMN_POS_X + num3*SELECTED_CARD_WIDTH, ARCHER_COLUMN_POS_Y);
 			num3++;
 		}
 		if (card->operating_card->isInGameCardsStack == true &&
-			card->operating_card->genre == 2)
+			card->operating_card->genre == 2&&
+			card->operating_card->isHero == false)
 		{
 			card->setPos(FIGHT_COLUMN_POS_X + num4*SELECTED_CARD_WIDTH, SIEGE_COLUMN_POS_Y);
 			num4++;
 		}
 		if (card->operating_card->isInGameCardsStack == true &&
-			card->operating_card->genre == 3)
+			card->operating_card->genre == 3&&
+			card->operating_card->isHero == false)
 		{
 			card->setPos(FIGHT_COLUMN_POS_X + num3*SELECTED_CARD_WIDTH, ARCHER_COLUMN_POS_Y);
 			num3++;
 		}
 		if (card->operating_card->isInGameCardsStack == true &&
-			card->operating_card->genre == 4)
+			card->operating_card->genre == 4&&
+			card->operating_card->isHero == false)
 		{
 			card->setPos(FIGHT_COLUMN_POS_X + num3*SELECTED_CARD_WIDTH, ARCHER_COLUMN_POS_Y);
 			num3++;
 		}
 		if (card->operating_card->isInGameCardsStack == true &&
-			card->operating_card->genre == 5)
+			card->operating_card->genre == 5&&
+			card->operating_card->isHero == false)
 		{
 			card->setPos(FUNCTION_COLUMN_POS_X + num5*SELECTED_CARD_WIDTH, FUNCTION_COLUMN_POS_Y);
 			num5++;
+		}
+		if (card->operating_card->isInGameCardsStack == true &&
+			card->operating_card->isHero == true)
+		{
+			card->setPos(180, 650);
 		}
 	}
 
@@ -498,6 +526,11 @@ void CardsEditBackground::cardUISizeAdjust()
 
 		}
 
+		//英雄牌就添加进去
+		if (card->operating_card->isHero == true)
+		{
+			scene->addItem(card);
+		}
 
 		QPixmap pixmap = cardUIPixmapLists.at(i);
 		if (card->operating_card->isInGameCardsStack == false)
@@ -507,6 +540,12 @@ void CardsEditBackground::cardUISizeAdjust()
 		else
 		{
 			pixmap = pixmap.scaled(SELECTED_CARD_WIDTH, SELECTED_CARD_HEIGHT, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+		}
+
+		//英雄牌额外大小
+		if (card->operating_card->isHero == true&&card->operating_card->isInGameCardsStack==true)
+		{
+			pixmap = pixmap.scaled(165, 190, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 		}
 		cardUILists[i]->setPixmap(pixmap);
 		i++;

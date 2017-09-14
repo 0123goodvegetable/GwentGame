@@ -117,7 +117,7 @@ void CardsSelectionBackground::init()
 		int times = 4 - my_turn;
 		foreach(int j, cardStackNo)
 		{
-			if (!used_cardStackNo.contains(j))
+			if (!used_cardStackNo.contains(j)&&!left_cardStackNo.contains(j)&&((j/10)%10)<9)
 			{
 				temp_card = new CardsUI(j);
 				pos = QPointF(CARD_STA + CARD_DIS * i, CARD_POS_Y);
@@ -288,7 +288,7 @@ void CardsSelectionBackground::changeCard()
 		{
 			foreach(int no, cardStackNo)
 			{
-				if (!used_cardStackNo.contains(no))
+				if (!used_cardStackNo.contains(no)&&!left_cardStackNo.contains(no)&&((no/10)%10)<9)
 				{
 					break;
 				}
@@ -302,6 +302,10 @@ void CardsSelectionBackground::changeCard()
 			n = rand() % cardStackNo.size();
 		}
 
+		if (n >= cardStackNo.size())
+		{
+			return;
+		}
 		temp_card = new CardsUI(cardStackNo.at(n));
 		temp_card->setPos(cardUILists[No]->pos());
 		cardStackNo.removeAt(n);

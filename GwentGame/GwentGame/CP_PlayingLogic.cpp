@@ -112,7 +112,8 @@ void PlayingLogic::skill1(int number)
 	for (num = 0; num < cardStack.size(); num++)
 	{
 		if (cardStack.at(num)->operating_card->skill== 1&&
-			cardStack.at(num)->operating_card->number==number)
+			cardStack.at(num)->operating_card->number==number&&
+			cardStack.at(num)->operating_card->isFriend==true)
 		{
 			break;
 		}
@@ -159,6 +160,7 @@ void PlayingLogic::skill2(int number)
 	{
 		cardStack[min_num]->operating_card->attack += cardStack[max_num]->operating_card->attack;
 		cardStack[max_num]->operating_card->isGarbaged = true;
+		cardStack[max_num]->operating_card->isFielded = false;
 	}
 	else
 	{
@@ -216,16 +218,6 @@ void PlayingLogic::skill6(int number)
 //8、杰洛特：伊格尼法印
 void PlayingLogic::skill8(int number)
 {
-	//搜寻打出卡牌，设置其属性为在场上
-	int num = 0;
-	for (num = 0; num < cardStack.size(); num++)
-	{
-		if (cardStack.at(num)->operating_card->skill == 8&&
-			cardStack.at(num)->operating_card->number==number)
-		{
-			break;
-		}
-	}
 
 	//搜寻打出卡牌后的后续卡牌
 	QList<int> record_num;
@@ -251,6 +243,7 @@ void PlayingLogic::skill8(int number)
 			if (cardStack[record_num[j]]->operating_card->attack == max_attack)
 			{
 				cardStack[record_num[j]]->operating_card->isGarbaged = true;
+				cardStack[record_num[j]]->operating_card->isFielded = false;
 			}
 		}
 	}
